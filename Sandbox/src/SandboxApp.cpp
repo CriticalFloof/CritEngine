@@ -10,6 +10,7 @@
 #include <EngineCore/Core/MainLoop.h>
 #include <EngineCore/Logging/Logger.h>
 #include <EngineCore/Event/Event.h>
+#include <EngineCore/Event/EventBus.h>
 #include <EngineCore/Window/Input.h>
 #include <EngineCore/Entry.h>
 #include <EngineCore/Graphics/Renderer.h>
@@ -63,31 +64,37 @@ class Sandbox : public Engine::Application
 public:
 
 	std::unique_ptr<Engine::EventBus> bus;
-	Engine::EventEmitterBase<int> intEmitter;
-	Engine::EventEmitterBase<> voidEmitter;
+	std::shared_ptr<Engine::Event<int>> intEmitter;
+	std::shared_ptr<Engine::Event<>> voidEmitter;
 
 	Sandbox() {
 		PushLayer(new LayerTest());
-		bus = std::make_unique<Engine::EventBus>();
-		bus->AddEmitter("emit1", &voidEmitter);
-		bus->AddEmitter("emit2", &intEmitter);
 
-		bus->AddListener("emit1", { []() {
+		this->intEmitter.reset(new Engine::Event<int>());
+		this->voidEmitter.reset(new Engine::Event<>());
+
+		
+		this->bus = std::make_unique<Engine::EventBus>();
+		this->bus->AddEvent("emit1", voidEmitter);
+		this->bus->AddEvent<int>("emit2", intEmitter);
+
+		this->bus->AddListener("emit1", { []() {
 			LogInfo("voidEmitter", "Void emitter emitted"); 
-			}});
+		}});
 
-		bus->AddListener<int>("emit2", { [](int i) {
+		this->bus->AddListener<int>("emit2", { [](int i) {
+			LogInfo("intEmitter", std::to_string(i));
+		}});
+
+		this->bus->Emit("emit2", 600);
+		this->bus->Emit("emit2", 1000);
+		this->bus->Emit("emit1");
+		this->bus->Emit("emit2", 1);
+		this->bus->RemoveListener<int>("emit2", { [](int i) {
 			LogInfo("intEmitter", std::to_string(i));
 			}});
-
-		bus->Emit("emit2", 600);
-		bus->Emit("emit2", 1000);
-		bus->Emit("emit1");
-		bus->Emit("emit2", 1);
-		bus->RemoveListener<int>("emit2", { [](int i) {
-			LogInfo("intEmitter", std::to_string(i));
-			}});
-		bus->Emit("emit2", 6);
+		this->bus->Emit("emit2", 6);
+		
 
 		this->shader.reset(new Engine::Shader(vertexShaderSource, fragmentShaderSource));
 
@@ -130,8 +137,6 @@ public:
 		std::shared_ptr<Engine::IndexBuffer> squareIB = Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		squareVA->SetIndexBuffer(squareIB);
 
-//		bus->AddEmitter("emit2", &intEmitter);
-
 	}
 
 
@@ -162,6 +167,8 @@ public:
 
 
 		Engine::Renderer::EndScene();
+
+		LogInfo("Sandbox", "Tick!");
 	}
 
 	~Sandbox()
