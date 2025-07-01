@@ -2,9 +2,9 @@
 
 namespace Engine {
 
-	std::shared_ptr<Engine::PerspectiveCamera> Renderer::activeCamera = std::make_shared<PerspectiveCamera>();
+	std::shared_ptr<Engine::BaseCamera> Renderer::activeCamera = std::make_shared<PerspectiveCamera>();
 
-	void Renderer::BeginScene(std::shared_ptr<PerspectiveCamera> camera)
+	void Renderer::BeginScene(std::shared_ptr<BaseCamera> camera)
 	{
 		Renderer::activeCamera = camera;
 	}

@@ -11,7 +11,7 @@ namespace Engine {
 	{
 	public:
 
-		ENGINE_API static void BeginScene(std::shared_ptr<PerspectiveCamera> camera);
+		ENGINE_API static void BeginScene(std::shared_ptr<BaseCamera> camera);
 		ENGINE_API static void EndScene();
 
 		ENGINE_API static void Submit(const std::shared_ptr<Model>& model);
@@ -19,7 +19,7 @@ namespace Engine {
 		ENGINE_API inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:
 
-		static std::shared_ptr<PerspectiveCamera> activeCamera;
+		static std::shared_ptr<BaseCamera> activeCamera;
 
 	};
 }

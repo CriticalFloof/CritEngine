@@ -2,6 +2,16 @@
 
 namespace Engine {
 
+	BaseCamera::BaseCamera(
+		float aspectRatio, 
+		float nearPlane, 
+		float farPlane, 
+		Vector3 position, 
+		Quaternion rotation
+	) : rotation(rotation), position(position), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane)
+	{
+	}
+
 	////////////////////////////////////////////////////////
 	//  Perspective Camera  ////////////////////////////////
 	////////////////////////////////////////////////////////
@@ -13,8 +23,7 @@ namespace Engine {
 		float farPlane,
 		Vector3 position,
 		Quaternion rotation
-	)
-		: rotation(rotation), position(position), verticalFOV(verticalFOV), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane)
+	) : BaseCamera(aspectRatio, nearPlane, farPlane, position, rotation), verticalFOV(verticalFOV)
 	{
 		this->CalculatePerspectiveMatrix();
 		this->CalculateViewMatrix();
@@ -29,7 +38,7 @@ namespace Engine {
 		Quaternion q = this->rotation;
 		Vector3 p = this->position;
 
-		// In the future the view matrix should be created in place to save on some cycles for every recalculation.
+		// In the future the view matrix should be created in one pass to avoid an unnessesary matrix multiply.
 
 		Matrix4f rotation = Matrix4f({
 			1 - 2 * q.y * q.y - 2 * q.z * q.z, 2 * q.x * q.y + 2 * q.w * q.z, 2 * q.x * q.z - 2 * q.w * q.y, 0,
@@ -67,46 +76,6 @@ namespace Engine {
 		this->viewPerspectiveMatrix = this->perspectiveMatrix * this->viewMatrix;
 	}
 
-	void PerspectiveCamera::SetVerticalFOV(float verticalFOV)
-	{
-		this->verticalFOV = verticalFOV;
-		this->CalculatePerspectiveMatrix();
-	}
-	void PerspectiveCamera::SetAspectRatio(float aspectRatio)
-	{
-		this->aspectRatio = aspectRatio;
-		this->CalculatePerspectiveMatrix();
-	}
-	void PerspectiveCamera::SetNearPlane(float nearPlane)
-	{
-		this->nearPlane = nearPlane;
-		this->CalculatePerspectiveMatrix();
-	}
-	void PerspectiveCamera::SetFarPlane(float farPlane)
-	{
-		this->farPlane = farPlane;
-		this->CalculatePerspectiveMatrix();
-	}
-	void PerspectiveCamera::SetPosition(Vector3 position)
-	{
-		this->position = position;
-		this->CalculateViewMatrix();
-	}
-	void PerspectiveCamera::SetRotation(Quaternion rotation)
-	{
-		this->rotation = rotation;
-		this->CalculateViewMatrix();
-	}
-
-	Vector3 PerspectiveCamera::GetPosition()
-	{
-		return this->position;
-	}
-	Quaternion PerspectiveCamera::GetRotation()
-	{
-		return this->rotation;
-	}
-
 	////////////////////////////////////////////////////////
 	//  Orthographic Camera  ///////////////////////////////
 	////////////////////////////////////////////////////////
@@ -119,7 +88,7 @@ namespace Engine {
 		Vector3 position,
 		Quaternion rotation
 	)
-		: rotation(rotation), position(position), height(height), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane)
+		: BaseCamera(aspectRatio, nearPlane, farPlane, position, rotation), height(height)
 	{
 		this->CalculatePerspectiveMatrix();
 		this->CalculateViewMatrix();
@@ -174,45 +143,5 @@ namespace Engine {
 
 		this->viewPerspectiveMatrix = this->perspectiveMatrix * this->viewMatrix;
 
-	}
-
-	void OrthographicCamera::SetHeight(float height)
-	{
-		this->height = height;
-		this->CalculatePerspectiveMatrix();
-	}
-	void OrthographicCamera::SetAspectRatio(float aspectRatio)
-	{
-		this->aspectRatio = aspectRatio;
-		this->CalculatePerspectiveMatrix();
-	}
-	void OrthographicCamera::SetNearPlane(float nearPlane)
-	{
-		this->nearPlane = nearPlane;
-		this->CalculatePerspectiveMatrix();
-	}
-	void OrthographicCamera::SetFarPlane(float farPlane)
-	{
-		this->farPlane = farPlane;
-		this->CalculatePerspectiveMatrix();
-	}
-	void OrthographicCamera::SetPosition(Vector3 position)
-	{
-		this->position = position;
-		this->CalculateViewMatrix();
-	}
-	void OrthographicCamera::SetRotation(Quaternion rotation)
-	{
-		this->rotation = rotation;
-		this->CalculateViewMatrix();
-	}
-
-	Vector3 OrthographicCamera::GetPosition()
-	{
-		return this->position;
-	}
-	Quaternion OrthographicCamera::GetRotation()
-	{
-		return this->rotation;
 	}
 }
