@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Math/Common.h"
-#include "Scene.h"
 
 
 namespace Engine {
@@ -10,7 +9,7 @@ namespace Engine {
 	{
 	public:
 
-		PerspectiveCamera(float verticalFOV, float aspectRatio, float nearPlane, float farPlane, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		PerspectiveCamera(float verticalFOV = 60.f, float aspectRatio = (16/9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
 
 		Matrix4f GetViewPerspectiveMatrix();
 		Matrix4f GetPerspectiveMatrix();

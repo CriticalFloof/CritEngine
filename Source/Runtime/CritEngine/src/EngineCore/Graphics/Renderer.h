@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Scene.h"
 #include "Camera.h"
 #include "RenderCommand.h"
 
@@ -19,6 +18,8 @@ namespace Engine {
 
 		ENGINE_API inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:
+
+		static std::shared_ptr<PerspectiveCamera> activeCamera;
 
 	};
 }

@@ -16,7 +16,6 @@
 #include <EngineCore/Entry.h>
 #include <EngineCore/Math/Vector2.h>
 #include <EngineCore/Graphics/Renderer.h>
-#include <EngineCore/Graphics/Scene.h>
 #include <EngineCore/Graphics/Camera.h>
 #include <EngineCore/Graphics/PIL/Texture.h>
 #include <EngineCore/Graphics/PIL/Pipeline.h>
@@ -108,8 +107,6 @@ public:
 		///////////////////////////////////////////////////////////////////////
 
 		PushLayer(new LayerTest());
-
-		Engine::Scene::SetActiveScene(std::make_shared<Engine::Scene>());
 
 		Engine::Quaternion camera_rot = Engine::Quaternion::FromEulerAngles(Engine::Vector3(0.4f, 0.f, 0.f));
 
