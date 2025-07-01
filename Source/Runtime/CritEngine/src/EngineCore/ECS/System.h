@@ -2,20 +2,20 @@
 
 namespace ECS {
 
-    class Scene;
+    class Context;
 
     class System {
     public:
         System() {};
         virtual ~System() {};
 
-        void SetScene(Scene* scene)
+        void SetScene(Context* scene)
         {
-            this->scene = scene;
+            this->context = scene;
         }
         virtual void Update() = 0;
 
-        Scene* scene = nullptr;
+        Context* context = nullptr;
     };
 
 }

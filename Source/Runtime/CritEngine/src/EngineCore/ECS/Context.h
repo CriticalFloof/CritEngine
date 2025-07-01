@@ -14,7 +14,7 @@ namespace ECS {
 
 	typedef std::bitset<MAX_COMPONENTS> ComponentMask;
 
-	class Scene
+	class Context
 	{
 	public:
 
@@ -108,9 +108,9 @@ namespace ECS {
 	};
 
 	template<typename... ComponentTypes>
-	struct SceneView
+	struct ContextView
 	{
-		SceneView(Scene& scene) : scene(&scene)
+		ContextView(Context& context) : context(&context)
 		{
 			if (sizeof...(ComponentTypes) == 0)
 			{
@@ -129,24 +129,24 @@ namespace ECS {
 
 		struct Iterator
 		{
-			Iterator(Scene* scene, EntityIndex index, ComponentMask mask, bool all)
-				: index(index), scene(scene), mask(mask), all(all)
+			Iterator(Context* context, EntityIndex index, ComponentMask mask, bool all)
+				: index(index), context(context), mask(mask), all(all)
 			{
 			}
 
 			EntityID operator*() const
 			{
-				return this->scene->GetEntity(this->index).id;
+				return this->context->GetEntity(this->index).id;
 			}
 
 			bool operator==(const Iterator& other) const
 			{
-				return this->index == other.index || this->index == this->scene->Size();
+				return this->index == other.index || this->index == this->context->Size();
 			}
 
 			bool operator!=(const Iterator& other) const
 			{
-				return this->index != other.index && this->index != this->scene->Size();
+				return this->index != other.index && this->index != this->context->Size();
 			}
 
 			Iterator& operator++()
@@ -154,7 +154,7 @@ namespace ECS {
 				do
 				{
 					index++;
-				} while (index < this->scene->Size() && !ValidIndex());
+				} while (index < this->context->Size() && !ValidIndex());
 				return *this;
 			}
 
@@ -162,13 +162,13 @@ namespace ECS {
 			{
 				return 
 				(
-					EntityUtils::IsEntityValid(this->scene->GetEntity(this->index).id) &&
-					(this->all || this->mask == (this->mask & this->scene->GetEntity(this->index).mask))
+					EntityUtils::IsEntityValid(this->context->GetEntity(this->index).id) &&
+					(this->all || this->mask == (this->mask & this->context->GetEntity(this->index).mask))
 				);
 			}
 
 			EntityIndex index;
-			Scene* scene;
+			Context* context;
 			ComponentMask mask;
 			bool all { false };
 		};
@@ -176,21 +176,21 @@ namespace ECS {
 		const Iterator begin() const
 		{
 			size_t firstIndex = 0;
-			while (firstIndex < this->scene->Size() &&
-				   (this->componentMask != (this->componentMask & this->scene->GetEntity(firstIndex).mask)
-				   || !EntityUtils::IsEntityValid(this->scene->GetEntity(firstIndex).id)))
+			while (firstIndex < this->context->Size() &&
+				   (this->componentMask != (this->componentMask & this->context->GetEntity(firstIndex).mask)
+				   || !EntityUtils::IsEntityValid(this->context->GetEntity(firstIndex).id)))
 			{
 				firstIndex++;
 			}
-			return Iterator(this->scene, firstIndex, this->componentMask, this->all);
+			return Iterator(this->context, firstIndex, this->componentMask, this->all);
 		}
 
 		const Iterator end() const
 		{
-			return Iterator(this->scene, EntityIndex(this->scene->Size()), this->componentMask, this->all);
+			return Iterator(this->context, EntityIndex(this->context->Size()), this->componentMask, this->all);
 		}
 
-		Scene* scene { nullptr };
+		Context* context { nullptr };
 		ComponentMask componentMask;
 		bool all { false };
 	};

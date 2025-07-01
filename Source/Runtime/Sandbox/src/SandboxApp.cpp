@@ -20,7 +20,7 @@
 #include <EngineCore/Graphics/PIL/Texture.h>
 #include <EngineCore/Graphics/PIL/Pipeline.h>
 #include <EngineCore/Resource/Resource.h>
-#include <EngineCore/ECS/Scene.h>
+#include <EngineCore/ECS/Context.h>
 #include <EngineCore/ECS/Components/Spatial.h>
 #include <EngineCore/Profiler/Profiler.h>
 
@@ -60,14 +60,13 @@ public:
 	public:
 
 		void Update() override {
-			
 
 			// Perform logic, make modifications, etc..
 			const std::chrono::time_point<std::chrono::high_resolution_clock> curTime = std::chrono::high_resolution_clock::now();
 			const std::chrono::duration<float> deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - this->prevTime);
-			for (ECS::EntityID entity : ECS::SceneView<SpatialComponent>(*scene))
+			for (ECS::EntityID entity : ECS::ContextView<SpatialComponent>(*context))
 			{
-				SpatialComponent* primitive = this->scene->GetComponent<SpatialComponent>(entity);
+				SpatialComponent* primitive = this->context->GetComponent<SpatialComponent>(entity);
 				
 				primitive->rotation = primitive->rotation * Engine::Quaternion::FromEulerAngles(Engine::Vector3(0, (deltaTime.count() * 10.f), 0));
 				primitive->position.y = sinf(std::chrono::duration_cast<std::chrono::milliseconds>(curTime - this->startTime).count() * 0.001f);
@@ -81,7 +80,7 @@ public:
 	};
 
 	PhysicsSystem physicsSystem;
-	ECS::Scene componentScene;
+	ECS::Context ECSContext;
 	ECS::EntityID player;
   
 	void Initialize() override
@@ -95,11 +94,11 @@ public:
 		window->GetInput()->OnKeyPressed([this](unsigned int key) { this->MoveCameraPosition(key); });
 
 		this->physicsSystem = PhysicsSystem();
-		this->physicsSystem.SetScene(&this->componentScene);
+		this->physicsSystem.SetScene(&this->ECSContext);
 
-		this->player = this->componentScene.CreateEntity();
+		this->player = this->ECSContext.CreateEntity();
 
-		SpatialComponent* primitive = this->componentScene.Assign<SpatialComponent>(player);
+		SpatialComponent* primitive = this->ECSContext.Assign<SpatialComponent>(player);
 
 		primitive->velocity.x = .0025f;
 
@@ -247,7 +246,7 @@ public:
 		std::shared_ptr<Engine::Window> window = this->window.lock();
 
 		this->physicsSystem.Update();
-		SpatialComponent* transform = this->componentScene.GetComponent<SpatialComponent>(player);
+		SpatialComponent* transform = this->ECSContext.GetComponent<SpatialComponent>(player);
 
 		this->camera->SetAspectRatio(window->GetAspectRatio());
 
