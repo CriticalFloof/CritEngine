@@ -3,6 +3,7 @@
 #include "../Resource/ResourceManager.h"
 #include "../Window/WindowManager.h"
 #include "../Application.h"
+#include "../Scene/SceneManager.h"
 #include "MainLoop.h"
 
 
@@ -17,6 +18,7 @@ namespace Engine {
 
 		ENGINE_API ResourceManager& GetResourceManager();
 		ENGINE_API WindowManager& GetWindowManager();
+		ENGINE_API SceneManager& GetSceneManager();
 
 		void Tick();
 
@@ -27,8 +29,9 @@ namespace Engine {
 
 		ResourceManager resourceManager;
 		WindowManager windowManager;
-		MainLoop mainLoop;
+		SceneManager sceneManager;
 		std::unique_ptr<Application> application = nullptr;
+		MainLoop mainLoop;
 	};
 
 }

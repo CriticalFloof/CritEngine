@@ -78,23 +78,30 @@ public:
 		std::chrono::time_point<std::chrono::high_resolution_clock> prevTime = std::chrono::high_resolution_clock::now();
 		std::chrono::time_point<std::chrono::high_resolution_clock> startTime = std::chrono::high_resolution_clock::now();
 	};
-
-	PhysicsSystem physicsSystem;
-	ECS::Context ECSContext;
-	ECS::EntityID player;
   
 	void Initialize() override
 	{
 		CE_PROFILE_FUNC(SandboxInitialization);
 
+		// Scene population
+
+		std::shared_ptr<Engine::Scene> scene = Engine::GlobalEngine::Get().GetSceneManager().GetBaseScene();
+
+		scene->SetSceneRoot(Engine::SceneObject::Create());
+		scene->GetSceneRoot()->AddChild(Engine::SceneObject::Create());
+
+		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
 		std::shared_ptr<Engine::Window> window = this->window.lock();
 
+		// Linking Window Events to functions
 		window->GetInput()->OnMouseMove([this](Engine::Vector2(cursorPosition)) { this->MoveCameraLook(cursorPosition); });
 		window->GetInput()->OnKeyPressed([this](unsigned int key) { this->MoveCameraPosition(key); });
 
+		// Create A Mock ECS System
 		this->physicsSystem = PhysicsSystem();
-		this->physicsSystem.SetScene(&this->ECSContext);
+		this->physicsSystem.SetContext(&this->ECSContext);
+
 
 		this->player = this->ECSContext.CreateEntity();
 
@@ -107,10 +114,11 @@ public:
 
 		PushLayer(new LayerTest());
 
+		// Camera setup
 		Engine::Quaternion camera_rot = Engine::Quaternion::FromEulerAngles(Engine::Vector3(0.4f, 0.f, 0.f));
-
 		this->camera.reset(new Engine::PerspectiveCamera(30, window->GetAspectRatio(), 0.01f, 100, Engine::Vector3(0, 1.25, 10), camera_rot));
 
+		// Mesh from files setup
 		Engine::Resource vertexShaderSource = Engine::Resource("Shader", ROOT_ASSET_PATH / "Shaders/shader.vertshader");
 		Engine::Resource fragmentShaderSource = Engine::Resource("Shader", ROOT_ASSET_PATH / "Shaders/shader.fragshader");
 
@@ -122,41 +130,13 @@ public:
 
 		this->material = Engine::Material::Create(vertexShader, fragmentShader, {sampleTexture});
 
-		//Cube
-
 		Engine::Resource cubeSource = Engine::Resource("Mesh", ROOT_ASSET_PATH / "Meshes/AegisSphere.obj");
 		std::shared_ptr<Engine::Mesh> cubeMesh = std::static_pointer_cast<Engine::Mesh>(cubeSource.Get());
 		cubeMesh->SetMaterial(this->material);
 
 		this->cubeModel = std::make_shared<Engine::Model>(cubeMesh);
 
-		//Spinny
-
-		float squareVertices[4 * 9] = {
-			-0.8f, -0.8f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-			 0.8f, -0.8f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.8f,  0.8f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-			-0.8f,  0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		};
-
-		std::shared_ptr<Engine::VertexBuffer> squareVB = Engine::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
-		squareVB->SetLayout({
-			{Engine::ShaderDataType::Float3, "aPos"},
-			{Engine::ShaderDataType::Float2, "aTexUV"},
-			{Engine::ShaderDataType::Float4, "aColor"},
-		});
-
-		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<Engine::IndexBuffer> squareIB = Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-
-		std::shared_ptr<Engine::Mesh> squareMesh = Engine::Mesh::Create();
-		squareMesh->AddVertexBuffer(squareVB);
-		squareMesh->SetIndexBuffer(squareIB);
-		squareMesh->SetMaterial(this->material);
-
-		this->squareModel = std::make_shared<Engine::Model>(squareMesh);
-
-		// Floor
+		// Procedural Floor Mesh
 
 		float floorVertices[4 * 9] = {
 			-50.0f, 0.0f,-50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -250,9 +230,6 @@ public:
 
 		this->camera->SetAspectRatio(window->GetAspectRatio());
 
-		//ImGui::Begin("Debug Window");
-		//ImGui::Text("TransformComponent Position: %f, %f, %f", transform->position.x, transform->position.y, transform->position.z);
-		//ImGui::End();
 		this->cubeModel->SetProjection(transform->GetMatrix());
 
 		
@@ -261,7 +238,6 @@ public:
 		Engine::Renderer::BeginScene(this->camera);
 
 		Engine::Renderer::Submit(this->floorModel);
-		//Engine::Renderer::Submit(this->squareModel);
 		Engine::Renderer::Submit(this->cubeModel);
 		
 		Engine::Renderer::EndScene();
@@ -274,10 +250,13 @@ public:
 
 private:
 
+	PhysicsSystem physicsSystem;
+	ECS::Context ECSContext;
+	ECS::EntityID player;
+
 	std::weak_ptr<Engine::Window> window;
 
 	std::shared_ptr<Engine::Material> material;
-	std::shared_ptr<Engine::Model> squareModel;
 	std::shared_ptr<Engine::Model> floorModel;
 	std::shared_ptr<Engine::Model> cubeModel;
 	std::shared_ptr<Engine::PerspectiveCamera> camera;

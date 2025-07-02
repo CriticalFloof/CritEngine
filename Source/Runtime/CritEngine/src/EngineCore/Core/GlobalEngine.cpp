@@ -20,6 +20,8 @@ namespace Engine {
 
 		engine->windowManager = WindowManager();
 
+		engine->sceneManager = SceneManager();
+
 		GlobalEngine::globalInstance = std::move(engine);
 		GlobalEngine::globalInstance->application->Initialize();
 
@@ -44,6 +46,11 @@ namespace Engine {
 	WindowManager& GlobalEngine::GetWindowManager()
 	{
 		return this->windowManager;
+	}
+	
+	SceneManager& GlobalEngine::GetSceneManager()
+	{
+		return this->sceneManager;
 	}
 
 	void GlobalEngine::Tick()

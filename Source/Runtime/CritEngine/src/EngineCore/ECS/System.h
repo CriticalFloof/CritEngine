@@ -9,7 +9,7 @@ namespace ECS {
         System() {};
         virtual ~System() {};
 
-        void SetScene(Context* scene)
+        void SetContext(Context* scene)
         {
             this->context = scene;
         }
