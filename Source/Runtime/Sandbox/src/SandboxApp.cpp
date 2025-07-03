@@ -27,6 +27,7 @@
 #include <EngineCore/Tasks/TaskScheduler.h>
 #include <EngineCore/Threading/ThreadingHelpers.h>
 #include <EngineCore/Resource/Loaders/GLSLShaderLoader.h>
+#include <EngineCore/Scene/Actor.h>
 
 #include <imgui.h>
 #include <EngineCore/Graphics/Material.h>
@@ -87,8 +88,8 @@ public:
 
 		std::shared_ptr<Engine::Scene> scene = Engine::GlobalEngine::Get().GetSceneManager().GetBaseScene();
 
-		scene->SetSceneRoot(Engine::SceneObject::Create());
-		scene->GetSceneRoot()->AddChild(Engine::SceneObject::Create());
+		scene->SetSceneRoot(std::make_shared<Engine::Actor>());
+		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
