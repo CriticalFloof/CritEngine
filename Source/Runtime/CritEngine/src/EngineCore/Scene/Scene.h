@@ -1,6 +1,6 @@
 #pragma once
-#include "SceneObject.h"
-
+#include "SceneGraphable.h"
+#include "../Core/Base.h"
 
 namespace Engine {
 
@@ -9,11 +9,11 @@ namespace Engine {
 	public:
 		ENGINE_API Scene();
 
-		ENGINE_API std::shared_ptr<SceneObject> GetSceneRoot() { return this->worldRoot; }
-		ENGINE_API void SetSceneRoot(std::shared_ptr<SceneObject> scene) { this->worldRoot = scene; }
+		ENGINE_API std::shared_ptr<ISceneGraphable> GetSceneRoot() { return this->worldRoot; }
+		ENGINE_API void SetSceneRoot(std::shared_ptr<ISceneGraphable> scene) { this->worldRoot = scene; }
 
 	private:
-		std::shared_ptr<SceneObject> worldRoot = nullptr;
+		std::shared_ptr<ISceneGraphable> worldRoot = nullptr;
 
 	};
 
