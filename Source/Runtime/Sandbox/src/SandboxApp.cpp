@@ -4,6 +4,7 @@
 #include <chrono>
 #include <vector>
 #include <numeric>
+#include <memory>
 
 #include <EngineCore/Layer.h>
 #include <EngineCore/Application.h>
@@ -90,6 +91,52 @@ public:
 
 		scene->SetSceneRoot(std::make_shared<Engine::Actor>());
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
+
+		// Reflection Testing
+		std::shared_ptr<Engine::Actor> actor = std::dynamic_pointer_cast<Engine::Actor>(scene->GetSceneRoot()->GetChildByIndex(0));
+		if (actor)
+		{
+			// Iterate through Engine::Actor's exposed properties.
+			Engine::TypeInfo<Engine::Actor> info = actor->GetTypeInfo();
+			for (Engine::TypeInfo<Engine::Actor>::Property& property : info.properties)
+			{
+				//filter for a property named "health"
+				void* value_ptr = property.get(*actor);
+
+				if (property.getName() == "health")
+				{
+					// Read the property from the Engine::Actor instance and print the "health" property
+					std::cout << property.getName() << ": " << *reinterpret_cast<int*>(value_ptr) << "\n";
+
+					// Set it to a new value
+					int new_value = 200;
+					property.set<int>(*actor, &new_value);
+
+					// Read and print it again
+					std::cout << property.getName() << ": " << *reinterpret_cast<int*>(value_ptr) << "\n";
+				}
+
+				if (property.getName() == "mana")
+				{
+					// Read the property from the Engine::Actor instance and print the "health" property
+					std::cout << property.getName() << ": " << *reinterpret_cast<float*>(value_ptr) << "\n";
+
+					// Set it to a new value
+					float new_value = 10.f;
+					property.set<float>(*actor, &new_value);
+
+					// Read and print it again
+					std::cout << property.getName() << ": " << *reinterpret_cast<float*>(value_ptr) << "\n";
+				}
+			}
+		}
+		else
+		{
+			LogInfo("Sandbox", "Object is not of type Actor");
+		}
+
+		// Log the real mana property to confirm setting via reflection worked.
+		Debug::Log("Sandbox", actor->mana);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
