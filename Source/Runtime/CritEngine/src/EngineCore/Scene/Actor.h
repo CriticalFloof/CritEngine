@@ -16,8 +16,16 @@ namespace Engine {
 		
 		int health = 0;
 		float mana = 0;
+
+		int GetInteger() { 
+			std::cout << "Hello, from GetInteger!!" << "\n";
+			return 10; 
+		};
 	};
 
 	PROPERTY(Actor, int, health);
 	PROPERTY(Actor, float, mana);
+
+	METHOD(Actor, GetInteger);
+
 }

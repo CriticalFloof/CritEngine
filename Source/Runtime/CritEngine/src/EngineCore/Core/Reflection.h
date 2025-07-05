@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <typeindex>
+#include <functional>
 
 #define REFLECT(CLASS_NAME) \
     static TypeInfo<CLASS_NAME>& GetTypeInfo() { \
@@ -18,6 +19,16 @@
             } \
         }; \
         static __PropertyRegister_##CLASS_NAME##_##FIELD_NAME __property_instance_##CLASS_NAME##_##FIELD_NAME; \
+    }
+
+#define METHOD(CLASS_NAME, METHOD_NAME) \
+    namespace { \
+        struct __MethodRegister_##CLASS_NAME##_##METHOD_NAME { \
+            __MethodRegister_##CLASS_NAME##_##METHOD_NAME() { \
+                CLASS_NAME::GetTypeInfo().AddMethod(#METHOD_NAME, &CLASS_NAME::METHOD_NAME); \
+            } \
+        }; \
+        static __MethodRegister_##CLASS_NAME##_##METHOD_NAME __method_instance_##CLASS_NAME##_##METHOD_NAME; \
     }
 
 namespace Engine {
@@ -46,18 +57,19 @@ namespace Engine {
             size_t offset;
             std::type_index type;
 
-            Property(std::string n, size_t o, std::type_index t) : name(std::move(n)), offset(o), type(t) {}
+            Property(std::string propertyName, size_t propertyOffset, std::type_index propertyType) 
+                : name(std::move(propertyName)), offset(propertyOffset), type(propertyType) {}
             virtual ~Property() = default;
 
-            const std::string& getName() const { return name; }
+            const std::string& GetName() const { return name; }
 
-            void* get(ClassType& instance) const
+            void* Get(ClassType& instance) const
             {
                 return reinterpret_cast<char*>(reinterpret_cast<void*>(&instance)) + offset;
             }
 
             template<typename FieldType>
-            void set(ClassType& instance, void* value) const
+            void Set(ClassType& instance, void* value) const
             {
                 *reinterpret_cast<FieldType*>(
                     reinterpret_cast<char*>(reinterpret_cast<void*>(&instance)) + offset
@@ -65,13 +77,59 @@ namespace Engine {
             }
         };
 
+        struct Method
+        {
+            std::string name;
+            std::function<void(void*, const std::vector<void*>&)> invoker;
+            std::type_index returnType;
+            std::vector<std::type_index> paramTypes;
+            
+            Method(std::string methodName, std::function<void(void*, const std::vector<void*>&)> invokeMethod, std::type_index methodReturnType, std::vector<std::type_index> methodParameters)
+                : name(std::move(methodName)), invoker(invokeMethod), returnType(methodReturnType), paramTypes(methodParameters) {}
+            virtual ~Method() = default;
+
+            const std::string& GetName() const { return name; }
+
+            void Invoke(ClassType& instance) const { 
+                this->invoker(static_cast<void*>(&instance), {});
+            }
+        };
+
         std::vector<Property> properties;
+        std::vector<Method> methods;
 
         template<typename FieldType>
         void AddProperty(const std::string& name, size_t offset)
         {
-            properties.emplace_back(Property(name, offset, typeid(FieldType)));
+            this->properties.emplace_back(Property(name, offset, typeid(FieldType)));
         }
+
+        template<typename Class, typename Ret, typename... Args>
+        void AddMethod(const std::string& name, Ret(Class::* method)(Args...))
+        {
+            std::function<void(void*, const std::vector<void*>&)> invoker =
+                [this, method](void* instance, const std::vector<void*>& args)
+            {
+                Class* obj = static_cast<Class*>(instance);
+                this->MethodCallHelper(obj, method, args, std::index_sequence_for<Args...>{});
+            };
+
+            this->methods.emplace_back(
+                Method(name,
+                invoker,
+                typeid(Ret),
+                { typeid(Args)... })
+            );
+        }
+
+        template<typename Class, typename Ret, typename... Args, std::size_t... I>
+        void MethodCallHelper(Class* obj, Ret(Class::* method)(Args...),
+                              const std::vector<void*>& args, std::index_sequence<I...>)
+        {
+            (obj->*method)(*reinterpret_cast<std::remove_reference_t<Args>*>(args[I])...);
+        }
+
+        
     };
 
 }
