@@ -4,7 +4,7 @@
 #include <vector>
 #include <typeindex>
 #include <functional>
-#include <cstdio>
+#include <any>
 
 #define REFLECT(CLASS_NAME) \
     static TypeInfo<CLASS_NAME>& GetTypeInfo() { \
@@ -55,11 +55,11 @@ namespace Engine {
         template<typename Class, typename Ret, typename... Args>
         void AddMethod(const std::string& name, Ret(Class::* method)(Args...))
         {
-            std::function<void(ClassType*, const std::vector<void*>&)> invoker =
-                [this, method](ClassType* instance, const std::vector<void*>& args)
+            std::function<std::any(ClassType*, const std::vector<void*>&)> invoker =
+                [this, method](ClassType* instance, const std::vector<void*>& args) -> std::any
             {
                 ClassType* obj = static_cast<ClassType*>(instance);
-                this->MethodCallHelper(obj, method, args, std::index_sequence_for<Args...>{});
+                return this->MethodCallHelper(obj, method, args, std::index_sequence_for<Args...>{});
             };
 
             this->methods.emplace_back(
@@ -71,10 +71,10 @@ namespace Engine {
         }
 
         template<typename Class, typename Ret, typename... Args, std::size_t... I>
-        void MethodCallHelper(ClassType* obj, Ret(Class::* method)(Args...),
+        Ret MethodCallHelper(ClassType* obj, Ret(Class::* method)(Args...),
                               const std::vector<void*>& args, std::index_sequence<I...>)
         {
-            (obj->*method)(*reinterpret_cast<std::remove_reference_t<Args>*>(args[I])...);
+            return (obj->*method)(*reinterpret_cast<std::remove_reference_t<Args>*>(args[I])...);
         }
 
         struct Property
@@ -118,11 +118,11 @@ namespace Engine {
         struct Method
         {
             std::string name;
-            std::function<void(ClassType*, const std::vector<void*>&)> invoker;
+            std::function<std::any(ClassType*, const std::vector<void*>&)> invoker;
             std::type_index returnType;
             std::vector<std::type_index> paramTypes;
 
-            Method(std::string methodName, std::function<void(ClassType*, const std::vector<void*>&)> invokeMethod, std::type_index methodReturnType, std::vector<std::type_index> methodParameters)
+            Method(std::string methodName, std::function<std::any(ClassType*, const std::vector<void*>&)> invokeMethod, std::type_index methodReturnType, std::vector<std::type_index> methodParameters)
                 : name(std::move(methodName)), invoker(invokeMethod), returnType(methodReturnType), paramTypes(methodParameters)
             {
             }
@@ -130,9 +130,10 @@ namespace Engine {
 
             const std::string& GetName() const { return name; }
 
-            void Invoke(ClassType* instance) const
+            template<typename... Args>
+            std::any Call(ClassType* instance) const
             {
-                this->invoker(instance, {});
+                return this->invoker(instance, {});
             }
         };
 

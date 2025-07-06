@@ -132,8 +132,9 @@ public:
 
 			for (Engine::TypeInfo<Engine::Actor>::Method& method : info.methods)
 			{
-				std::cout << method.GetName() << "\n";
-				method.Invoke(actor.get());
+				std::any result = method.Call(actor.get());
+				
+				std::cout << method.GetName() << " Returned " << std::any_cast<int>(result) << "\n";
 			}
 		}
 		else
