@@ -101,39 +101,39 @@ public:
 			for (Engine::TypeInfo<Engine::Actor>::Property& property : info.properties)
 			{
 				//filter for a property named "health"
-				void* value_ptr = property.Get(*actor);
 
 				if (property.GetName() == "health")
 				{
+					
+					int* value_ptr = property.Get<int>(actor.get());
 					// Read the property from the Engine::Actor instance and print the "health" property
-					std::cout << property.GetName() << ": " << *reinterpret_cast<int*>(value_ptr) << "\n";
+					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 
 					// Set it to a new value
-					int new_value = 200;
-					property.Set<int>(*actor, &new_value);
+					property.Set<int>(actor.get(), 200);
 
 					// Read and print it again
-					std::cout << property.GetName() << ": " << *reinterpret_cast<int*>(value_ptr) << "\n";
+					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 				}
 
 				if (property.GetName() == "mana")
 				{
+					float* value_ptr = property.Get<float>(actor.get());
 					// Read the property from the Engine::Actor instance and print the "health" property
-					std::cout << property.GetName() << ": " << *reinterpret_cast<float*>(value_ptr) << "\n";
+					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 
 					// Set it to a new value
-					float new_value = 10.f;
-					property.Set<float>(*actor, &new_value);
+					property.Set<float>(actor.get(), 10.f);
 
 					// Read and print it again
-					std::cout << property.GetName() << ": " << *reinterpret_cast<float*>(value_ptr) << "\n";
+					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 				}
 			}
 
 			for (Engine::TypeInfo<Engine::Actor>::Method& method : info.methods)
 			{
 				std::cout << method.GetName() << "\n";
-				method.Invoke(*actor);
+				method.Invoke(actor.get());
 			}
 		}
 		else

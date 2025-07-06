@@ -14,7 +14,7 @@ namespace Engine {
 		ENGINE_API Actor();
 
 		
-		int health = 0;
+		int health = 10;
 		float mana = 0;
 
 		int GetInteger() { 
@@ -23,8 +23,8 @@ namespace Engine {
 		};
 	};
 
-	PROPERTY(Actor, int, health);
-	PROPERTY(Actor, float, mana);
+	PROPERTY(Actor, health);
+	PROPERTY(Actor, mana);
 
 	METHOD(Actor, GetInteger);
 
