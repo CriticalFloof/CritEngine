@@ -17,8 +17,8 @@ namespace Engine {
 		int health = 10;
 		float mana = 0;
 
-		int GetInteger() { 
-			std::cout << "Hello, from GetInteger!!" << "\n";
+		int GetInteger(std::string str) { 
+			std::cout << "Hello, from GetInteger!! " << str << "\n";
 			return 10; 
 		};
 	};

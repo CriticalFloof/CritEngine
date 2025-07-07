@@ -34,6 +34,19 @@
 
 namespace Engine {
 
+    template<typename Tuple, typename F, std::size_t... I>
+    static void apply_with_index_impl(F&& f, Tuple& t, std::index_sequence<I...>)
+    {
+        (..., f(I, std::get<I>(t)));
+    }
+
+    template<typename Tuple, typename F>
+    static void apply_with_index(F&& f, Tuple& t)
+    {
+        constexpr auto size = std::tuple_size_v<std::remove_reference_t<Tuple>>;
+        apply_with_index_impl(std::forward<F>(f), t, std::make_index_sequence<size>{});
+    }
+
     template<typename ClassType>
     struct TypeInfo
     {
@@ -55,8 +68,8 @@ namespace Engine {
         template<typename Class, typename Ret, typename... Args>
         void AddMethod(const std::string& name, Ret(Class::* method)(Args...))
         {
-            std::function<std::any(ClassType*, const std::vector<void*>&)> invoker =
-                [this, method](ClassType* instance, const std::vector<void*>& args) -> std::any
+            std::function<std::any(ClassType*, const std::vector<std::shared_ptr<void>>&)> invoker =
+                [this, method](ClassType* instance, const std::vector<std::shared_ptr<void >>& args) -> std::any
             {
                 ClassType* obj = static_cast<ClassType*>(instance);
                 return this->MethodCallHelper(obj, method, args, std::index_sequence_for<Args...>{});
@@ -72,9 +85,9 @@ namespace Engine {
 
         template<typename Class, typename Ret, typename... Args, std::size_t... I>
         Ret MethodCallHelper(ClassType* obj, Ret(Class::* method)(Args...),
-                              const std::vector<void*>& args, std::index_sequence<I...>)
+                              const std::vector<std::shared_ptr<void>>& args, std::index_sequence<I...>)
         {
-            return (obj->*method)(*reinterpret_cast<std::remove_reference_t<Args>*>(args[I])...);
+            return (obj->*method)(*(std::static_pointer_cast<Args>( args[I] ).get())...);
         }
 
         struct Property
@@ -118,11 +131,11 @@ namespace Engine {
         struct Method
         {
             std::string name;
-            std::function<std::any(ClassType*, const std::vector<void*>&)> invoker;
+            std::function<std::any(ClassType*, const std::vector<std::shared_ptr<void>>&)> invoker;
             std::type_index returnType;
             std::vector<std::type_index> paramTypes;
 
-            Method(std::string methodName, std::function<std::any(ClassType*, const std::vector<void*>&)> invokeMethod, std::type_index methodReturnType, std::vector<std::type_index> methodParameters)
+            Method(std::string methodName, std::function<std::any(ClassType*, const std::vector<std::shared_ptr<void>>&)> invokeMethod, std::type_index methodReturnType, std::vector<std::type_index> methodParameters)
                 : name(std::move(methodName)), invoker(invokeMethod), returnType(methodReturnType), paramTypes(methodParameters)
             {
             }
@@ -131,9 +144,24 @@ namespace Engine {
             const std::string& GetName() const { return name; }
 
             template<typename... Args>
-            std::any Call(ClassType* instance) const
+            std::any Call(ClassType* instance, Args&&... args) const
             {
-                return this->invoker(instance, {});
+                auto values = std::make_shared<std::tuple<std::decay_t<Args>...>>(std::tuple<std::decay_t<Args>...>(args)...);
+
+                std::vector<std::shared_ptr<void>> argPtrs;
+                apply_with_index([&](auto index, auto& elem)
+                {
+                    if (index < this->paramTypes.size() && this->paramTypes[index] != typeid(elem))
+                    {
+                        throw std::runtime_error("Invalid Parameter Signature was given to TypeInfo::Method::Call()");
+                    }
+                    else
+                    {
+                        argPtrs.push_back(std::make_shared<std::decay_t<decltype(elem)>>(elem));
+                    }
+                }, *values);
+
+                return this->invoker(instance, argPtrs);
             }
         };
 

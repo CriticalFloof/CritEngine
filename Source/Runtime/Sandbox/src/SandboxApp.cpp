@@ -132,9 +132,11 @@ public:
 
 			for (Engine::TypeInfo<Engine::Actor>::Method& method : info.methods)
 			{
-				std::any result = method.Call(actor.get());
+				std::string hi = "hello";
+				int e = actor->GetInteger(hi);
+				std::any result = method.Call(actor.get(), "Char Array");
 				
-				std::cout << method.GetName() << " Returned " << std::any_cast<int>(result) << "\n";
+				std::cout << method.GetName() << e << " Returned " << std::any_cast<int>(result) << "\n";
 			}
 		}
 		else
