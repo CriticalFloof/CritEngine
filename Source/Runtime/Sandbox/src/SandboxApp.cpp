@@ -134,7 +134,7 @@ public:
 			{
 				std::string hi = "hello";
 				int e = actor->GetInteger(hi);
-				std::any result = method.Call(actor.get(), "Char Array");
+				std::any result = method.Call(actor.get(), std::string("Char Array"));
 				
 				std::cout << method.GetName() << e << " Returned " << std::any_cast<int>(result) << "\n";
 			}
