@@ -147,6 +147,9 @@ public:
 		// Log the real mana property to confirm setting via reflection worked.
 		Debug::Log("Sandbox", actor->mana);
 
+		// Serialization Test
+		actor->Serialize<Engine::Actor>();
+
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
 		std::shared_ptr<Engine::Window> window = this->window.lock();

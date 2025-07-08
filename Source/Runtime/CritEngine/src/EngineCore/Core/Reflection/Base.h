@@ -34,6 +34,8 @@
 
 namespace Engine {
 
+
+
     template<typename Tuple, typename F, std::size_t... I>
     static void apply_with_index_impl(F&& f, Tuple& t, std::index_sequence<I...>)
     {
@@ -51,7 +53,7 @@ namespace Engine {
     struct TypeInfo
     {
 
-        TypeInfo(std::string name) 
+        TypeInfo(std::string name)
             : name(name)
         {
         }
@@ -60,7 +62,7 @@ namespace Engine {
         template<typename Class, typename PropertyType>
         void AddProperty(const std::string& name, PropertyType Class::* propertyPtr)
         {
-            
+
             std::cout << typeid(PropertyType).name() << "\n";
             this->properties.emplace_back(Property(name, reinterpret_cast<void* Class::*>(propertyPtr), typeid(PropertyType)));
         }
@@ -85,9 +87,9 @@ namespace Engine {
 
         template<typename Class, typename Ret, typename... Args, std::size_t... I>
         Ret MethodCallHelper(ClassType* obj, Ret(Class::* method)(Args...),
-                              const std::vector<std::shared_ptr<void>>& args, std::index_sequence<I...>)
+                             const std::vector<std::shared_ptr<void>>& args, std::index_sequence<I...>)
         {
-            return (obj->*method)(*(std::static_pointer_cast<Args>( args[I] ).get())...);
+            return (obj->*method)(*(std::static_pointer_cast<Args>(args[I]).get())...);
         }
 
         struct Property

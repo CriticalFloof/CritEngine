@@ -1,12 +1,13 @@
 #pragma once
 #include "../Core/Base.h"
 #include "../Core/BaseObject.h"
-#include "../Core/Reflection.h"
+#include "../Core/Reflection/Base.h" //Move this to an intermediate object class
 #include "DefaultSceneGraphable.h"
+#include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
 
 namespace Engine {
 
-	class Actor : public BaseObject, public DefaultSceneGraphable
+	class Actor : public BaseObject, public DefaultSceneGraphable, public Reflectable, public DefaultSerializable
 	{
 	public:
 		REFLECT(Actor);
