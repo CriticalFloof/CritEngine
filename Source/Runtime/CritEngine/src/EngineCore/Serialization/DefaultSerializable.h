@@ -59,6 +59,10 @@ namespace Engine {
 		{
 			return std::to_string(*property.Get<float>(instance));
 		}
+		else if (property.type == typeid(std::string))
+		{
+			return *property.Get<std::string>(instance);
+		}
 		else
 		{
 			ASSERT(false, "Conversion from property to string isn't supported!")
@@ -70,6 +74,7 @@ namespace Engine {
 	template<typename Class>
 	static void StringToProperty(Class* instance, typename TypeInfo<Class>::Property& property, std::string value)
 	{
+
 		if (property.type == typeid(int))
 		{
 			property.Set<int>(instance, std::stoi(value));
@@ -77,6 +82,10 @@ namespace Engine {
 		else if (property.type == typeid(float))
 		{
 			property.Set<float>(instance, std::stof(value));
+		}
+		else if (property.type == typeid(std::string))
+		{
+			property.Set<std::string>(instance, value);
 		}
 		else
 		{
