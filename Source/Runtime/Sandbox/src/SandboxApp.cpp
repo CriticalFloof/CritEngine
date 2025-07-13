@@ -148,7 +148,7 @@ public:
 		Debug::Log("Sandbox", actor->mana);
 
 		// Serialization Test
-		actor->Serialize<Engine::Actor>();
+		actor->Serialize<Engine::Actor>(std::cout);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");

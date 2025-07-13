@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include <memory>
 
 namespace Engine {
 
@@ -7,8 +7,8 @@ namespace Engine {
 	{
 	public:
 
-		virtual std::string Serialize() = 0;
-		virtual void Deserialize(std::string source) = 0;
+		virtual void Serialize(std::ostream& write) = 0;
+		virtual void Deserialize(std::istream& read) = 0;
 	};
 
 }

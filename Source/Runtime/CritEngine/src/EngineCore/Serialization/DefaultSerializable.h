@@ -11,35 +11,29 @@ namespace Engine {
 	{
 	public:
 
-		virtual std::string Serialize() override { return std::string(""); }
+		virtual void Serialize(std::ostream& write) override { return; }
 
 		template<typename Class>
-		std::enable_if_t<std::is_base_of_v<Reflectable, Class>, std::string> Serialize()
+		std::enable_if_t<std::is_base_of_v<Reflectable, Class>> Serialize(std::ostream& write)
 		{	
 			Class* obj = static_cast<Class*>(this);
 			TypeInfo<Class> info = obj->GetTypeInfo();
-			std::string result = "";
+			
+			write << "Class: " << info.name << "\n";
 
-			result += "Class: ";
-			result += info.name + "\n";
-
-			result += "Properties[\n";
+			write << "Properties[\n";
 			for (TypeInfo<Class>::Property& prop : info.properties)
 			{
-				result += "    ";
-				result += prop.name + ": ";
-				result += std::string(prop.type.name()) + " | ";
-				result += PropertyToString<Class>(obj, prop) + "\n";
+				write << "    ";
+				write << prop.name + ": ";
+				write << std::string(prop.type.name()) + " | ";
+				write << PropertyToString<Class>(obj, prop) + "\n";
 			
 			}
-			result += "]\n";
-
-
-			std::cout << "Hello Serialization! " << result << "\n";
-			return result;
+			write << "]\n";
 		}
 
-		virtual void Deserialize(std::string source) override
+		virtual void Deserialize(std::istream& source) override
 		{
 
 		}
