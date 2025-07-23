@@ -7,6 +7,9 @@
 
 namespace Engine {
 
+	/*
+	Implements generic serialization through the reflection of exposed data members.
+	*/
 	class DefaultSerializable : public ISerializable
 	{
 	public:
@@ -28,7 +31,6 @@ namespace Engine {
 				write << prop.name + ": ";
 				write << std::string(prop.type.name()) + " | ";
 				write << PropertyToString<Class>(obj, prop) + "\n";
-			
 			}
 			write << "]\n";
 		}
@@ -43,50 +45,46 @@ namespace Engine {
 	};
 
 	template<typename Class>
-	static std::string PropertyToString(Class* instance, typename TypeInfo<Class>::Property& property)
+	static std::string PropertyToString(Class* instance, typename TypeInfo<Class>::Property& prop)
 	{
-		if (property.type == typeid(int))
+
+		if (prop.type == typeid(int))
 		{
-			return std::to_string(*property.Get<int>(instance));
+			return std::to_string(*prop.Get<int>(instance));
 		}
-		else if (property.type == typeid(float))
+		else if (prop.type == typeid(float))
 		{
-			return std::to_string(*property.Get<float>(instance));
+			return std::to_string(*prop.Get<float>(instance));
 		}
-		else if (property.type == typeid(std::string))
+		else if (prop.type == typeid(std::string))
 		{
-			return *property.Get<std::string>(instance);
+			return *prop.Get<std::string>(instance);
 		}
 		else
 		{
-			ASSERT(false, "Conversion from property to string isn't supported!")
+			ASSERT(false, "Conversion from " + prop.name + " to string isn't supported!")
 		}
-
-		return std::string();
 	}
 
 	template<typename Class>
-	static void StringToProperty(Class* instance, typename TypeInfo<Class>::Property& property, std::string value)
+	static void StringToProperty(Class* instance, typename TypeInfo<Class>::Property& prop, std::string value)
 	{
-
-		if (property.type == typeid(int))
+		if (prop.type == typeid(int))
 		{
-			property.Set<int>(instance, std::stoi(value));
+			prop.Set(instance, std::stoi(value));
 		}
-		else if (property.type == typeid(float))
+		else if (prop.type == typeid(float))
 		{
-			property.Set<float>(instance, std::stof(value));
+			prop.Set(instance, std::stof(value));
 		}
-		else if (property.type == typeid(std::string))
+		else if (prop.type == typeid(std::string))
 		{
-			property.Set<std::string>(instance, value);
+			prop.Set(instance, value);
 		}
 		else
 		{
-			ASSERT(false, "Conversion from string to property isn't supported!")
+			ASSERT(false, "Conversion from string to "+ prop.name +" isn't supported!")
 		}
-
-		return std::string();
 	}
 
 }

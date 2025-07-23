@@ -110,7 +110,7 @@ public:
 					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 
 					// Set it to a new value
-					property.Set<int>(actor.get(), 200);
+					property.Set(actor.get(), 200);
 
 					// Read and print it again
 					std::cout << property.GetName() << ": " << *value_ptr << "\n";
@@ -123,7 +123,7 @@ public:
 					std::cout << property.GetName() << ": " << *value_ptr << "\n";
 
 					// Set it to a new value
-					property.Set<float>(actor.get(), 10.f);
+					property.Set(actor.get(), 10.f);
 
 					// Read and print it again
 					std::cout << property.GetName() << ": " << *value_ptr << "\n";
