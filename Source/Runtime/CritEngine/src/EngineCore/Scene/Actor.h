@@ -2,7 +2,7 @@
 #include "../Core/Base.h"
 #include "../Core/BaseObject.h"
 #include "DefaultSceneGraphable.h"
-#include "../Core/Reflection/Primitives.h" // temporary remove pls
+#include "../Core/Reflection/ReflectedSymbols/Primitives.h" // temporary remove pls
 //#include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
 
 namespace Engine {

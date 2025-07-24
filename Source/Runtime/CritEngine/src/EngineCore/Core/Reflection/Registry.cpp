@@ -12,11 +12,9 @@ namespace Reflection {
 		}
 
 		void SetMetadata(std::type_index type, std::unique_ptr<TypeInfo> metadata) {
-			std::cout << "Registered Type " + metadata->name << std::endl;
 			// We assert here because it is very bad practice to modify the reflection data after engine initalization.
 			ASSERT(this->Instance().registeredTypes.find(type) == this->Instance().registeredTypes.end(), "Overwriting reflected type information is not allowed.")
 				this->Instance().registeredTypes[type] = *metadata.get();
-			std::cout << this->Instance().registeredTypes.size() << std::endl;
 		};
 
 		const TypeInfo* GetMetadata(std::type_index type)

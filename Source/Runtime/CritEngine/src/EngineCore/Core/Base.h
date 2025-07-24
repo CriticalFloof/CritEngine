@@ -9,7 +9,6 @@
 #ifdef CE_PLATFORM_WINDOWS
     #ifdef ENGINE_BUILD_DLL
          #define ENGINE_API __declspec(dllexport)
-         #define ENGINE_MODULE
     #else
          #define ENGINE_API __declspec(dllimport)
     #endif

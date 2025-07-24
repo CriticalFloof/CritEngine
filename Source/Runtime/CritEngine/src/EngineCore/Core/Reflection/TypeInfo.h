@@ -14,15 +14,18 @@ namespace Reflection {
 			t.size = sizeof(T);
 			t.alignment = alignof(T);
 			t.kind = Kind::Unknown;
-
-			std::cout << "Created Metadata " + std::to_string((long)&t) << std::endl;
-
 			return t;
 		}
 
-		~TypeInfo()
+		template<>
+		static TypeInfo Create<void>(std::string name)
 		{
-			std::cout << "Destroyed Metadata " << std::endl;
+			TypeInfo t = TypeInfo();
+			t.name = name;
+			t.size = 0;
+			t.alignment = 0;
+			t.kind = Kind::Unknown;
+			return t;
 		}
 
 		std::string name;
