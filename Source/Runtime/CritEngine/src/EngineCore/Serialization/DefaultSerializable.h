@@ -18,7 +18,7 @@ namespace Engine {
 
 		template<typename Class>
 		std::enable_if_t<std::is_base_of_v<Reflectable, Class>> Serialize(std::ostream& write)
-		{	
+		{
 			Class* obj = static_cast<Class*>(this);
 			TypeInfo<Class> info = obj->GetTypeInfo();
 			

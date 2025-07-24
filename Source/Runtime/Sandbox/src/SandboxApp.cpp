@@ -92,64 +92,6 @@ public:
 		scene->SetSceneRoot(std::make_shared<Engine::Actor>());
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 
-		// Reflection Testing
-		std::shared_ptr<Engine::Actor> actor = std::dynamic_pointer_cast<Engine::Actor>(scene->GetSceneRoot()->GetChildByIndex(0));
-		if (actor)
-		{
-			// Iterate through Engine::Actor's exposed properties.
-			Engine::TypeInfo<Engine::Actor> info = actor->GetTypeInfo();
-			for (Engine::TypeInfo<Engine::Actor>::Property& property : info.properties)
-			{
-				//filter for a property named "health"
-
-				if (property.GetName() == "health")
-				{
-					
-					int* value_ptr = property.Get<int>(actor.get());
-					// Read the property from the Engine::Actor instance and print the "health" property
-					std::cout << property.GetName() << ": " << *value_ptr << "\n";
-
-					// Set it to a new value
-					property.Set(actor.get(), 200);
-
-					// Read and print it again
-					std::cout << property.GetName() << ": " << *value_ptr << "\n";
-				}
-
-				if (property.GetName() == "mana")
-				{
-					float* value_ptr = property.Get<float>(actor.get());
-					// Read the property from the Engine::Actor instance and print the "health" property
-					std::cout << property.GetName() << ": " << *value_ptr << "\n";
-
-					// Set it to a new value
-					property.Set(actor.get(), 10.f);
-
-					// Read and print it again
-					std::cout << property.GetName() << ": " << *value_ptr << "\n";
-				}
-			}
-
-			for (Engine::TypeInfo<Engine::Actor>::Method& method : info.methods)
-			{
-				std::string hi = "hello";
-				int e = actor->GetInteger(hi);
-				std::any result = method.Call(actor.get(), std::string("Char Array"));
-				
-				std::cout << method.GetName() << e << " Returned " << std::any_cast<int>(result) << "\n";
-			}
-		}
-		else
-		{
-			LogInfo("Sandbox", "Object is not of type Actor");
-		}
-
-		// Log the real mana property to confirm setting via reflection worked.
-		Debug::Log("Sandbox", actor->mana);
-
-		// Serialization Test
-		actor->Serialize<Engine::Actor>(std::cout);
-
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
 		std::shared_ptr<Engine::Window> window = this->window.lock();
