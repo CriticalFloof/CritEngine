@@ -8,6 +8,9 @@
 
 namespace Reflection {
 
+	/*
+	DLL-safe handle into the reflection system's type registry.
+	*/
 	class ENGINE_API TypeRegistryHandle
 	{
 	public:
@@ -18,6 +21,9 @@ namespace Reflection {
 		TypeRegistry* impl;
 	};
 
+	/*
+	Allows users to leverage static initialization to automatically register type metadata.
+	*/
 	class ENGINE_API TypeRegistrar
 	{
 	public:
