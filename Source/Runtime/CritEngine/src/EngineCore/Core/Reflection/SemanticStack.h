@@ -19,11 +19,16 @@ namespace Reflection {
 		Const = 1 << 0,
 	    Volatile = 1 << 1,
 	};
-
 	inline QualifierSemanticFlags operator|(QualifierSemanticFlags lhs, QualifierSemanticFlags rhs)
 	{
 		return static_cast<QualifierSemanticFlags>(
-			static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs)
+			static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)
+			);
+	}
+	inline QualifierSemanticFlags operator&(QualifierSemanticFlags lhs, QualifierSemanticFlags rhs)
+	{
+		return static_cast<QualifierSemanticFlags>(
+			static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)
 			);
 	}
 
