@@ -1,8 +1,9 @@
 #pragma once
-#include "../Common.h"
+#include "../KindRegistry.h"
 
 
 namespace Reflection {
+
     #ifdef ENGINE_BUILD_DLL
     REFLECT_PRIMITIVE(short, short)
     REFLECT_PRIMITIVE(int, int)

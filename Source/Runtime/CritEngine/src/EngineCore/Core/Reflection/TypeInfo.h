@@ -1,45 +1,28 @@
-#pragma once 
-#include <string>
-#include <cstdio>
+#pragma once
+#include "KindInfo.h"
+#include "SemanticStack.h"
+#include "KindRegistry.h"
+#include "Reduce.h"
 
 namespace Reflection {
 
-	struct TypeInfo
+	class TypeInfo
 	{
+	public:
+
 		template<typename T>
-		static TypeInfo Create(std::string name) 
+		static TypeInfo Get()
 		{
-			TypeInfo t = TypeInfo();
-			t.name = name;
-			t.size = sizeof(T);
-			t.alignment = alignof(T);
-			t.kind = Kind::Unknown;
-			return t;
+			TypeInfo result = TypeInfo();
+			KindRegistryHandle handle = KindRegistryHandle();
+
+			result.semantics = SemanticStack::Create<T>();
+			result.kind = handle.GetMetadata(typeid(reduce<T>));
 		}
 
-		template<>
-		static TypeInfo Create<void>(std::string name)
-		{
-			TypeInfo t = TypeInfo();
-			t.name = name;
-			t.size = 0;
-			t.alignment = 0;
-			t.kind = Kind::Unknown;
-			return t;
-		}
-
-		std::string name;
-		std::size_t size;
-		std::size_t alignment;
-
-		enum class Kind : uint8_t
-		{
-			Integral,
-			FloatingPoint,
-			Boolean,
-			Character,
-			Unknown
-		} kind;
+	private:
+		KindInfo kind;
+		SemanticStack semantics;
 	};
-	
+
 }
