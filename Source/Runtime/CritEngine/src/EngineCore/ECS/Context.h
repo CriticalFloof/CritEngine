@@ -182,7 +182,7 @@ namespace ECS {
 			{
 				firstIndex++;
 			}
-			return Iterator(this->context, firstIndex, this->componentMask, this->all);
+			return Iterator(this->context, static_cast<EntityIndex>(firstIndex), this->componentMask, this->all);
 		}
 
 		const Iterator end() const

@@ -17,10 +17,11 @@ namespace Reflection {
 			KindRegistryHandle handle = KindRegistryHandle();
 
 			result.semantics = SemanticStack::Create<T>();
-			result.kind = handle.GetMetadata(typeid(reduce<T>));
+			result.kind = *handle.GetMetadata(typeid(reduce<T>::type));
+
+			return result;
 		}
 
-	private:
 		KindInfo kind;
 		SemanticStack semantics;
 	};

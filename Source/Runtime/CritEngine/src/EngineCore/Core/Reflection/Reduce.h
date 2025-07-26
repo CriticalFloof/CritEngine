@@ -11,55 +11,55 @@ namespace Reflection {
 	template<typename T>
 	struct reduce<T&>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<T&&>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<T*>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<T* const>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<T* volatile>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<T* const volatile>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<const T>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<volatile T>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 	template<typename T>
 	struct reduce<const volatile T>
 	{
-		using type = reduce<T>::type;
+		using type = typename reduce<T>::type;
 	};
 
 

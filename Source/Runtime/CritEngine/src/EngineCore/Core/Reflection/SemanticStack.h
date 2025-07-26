@@ -20,6 +20,13 @@ namespace Reflection {
 	    Volatile = 1 << 1,
 	};
 
+	inline QualifierSemanticFlags operator|(QualifierSemanticFlags lhs, QualifierSemanticFlags rhs)
+	{
+		return static_cast<QualifierSemanticFlags>(
+			static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs)
+			);
+	}
+
 	struct SemanticLayer
 	{
 		SemanticLayer(FundamentalSemantic fundamental, QualifierSemanticFlags qualifiers = static_cast<QualifierSemanticFlags>(0))
@@ -37,8 +44,8 @@ namespace Reflection {
 		static SemanticStack Create()
 		{
 			SemanticStack stack = SemanticStack();
-
 			stack.ExtractLayer<T>();
+			return stack;
 		}
 
 	private:
@@ -46,32 +53,35 @@ namespace Reflection {
 		template<typename T>
 		void ExtractLayer()
 		{
+			bool is_ref = std::is_reference_v<T>;
+			std::remove_reference<T> debug;
+			
 			// Extraction
 			if constexpr (std::is_lvalue_reference_v<T>)
 			{
-				ASSERT(this->internalStack.size == 0, "References can only be at the outermost semantic layer.");
+				ASSERT(this->internalStack.size() == 0, "References can only be at the outermost semantic layer.");
 
 				SemanticLayer layer = SemanticLayer(FundamentalSemantic::Reference);
-				this->internalStack.push(layer);
+				this->internalStack.push_back(layer);
 
-				using U = std::remove_reference<T>;
+				using U = std::remove_reference_t<T>;
 				this->ExtractLayer<U>();
 			}
 			else if constexpr (std::is_rvalue_reference_v<T>)
 			{
-				ASSERT(this->internalStack.size == 0, "References can only be at the outermost semantic layer.");
+				ASSERT(this->internalStack.size() == 0, "References can only be at the outermost semantic layer.");
 
 				SemanticLayer layer = SemanticLayer(FundamentalSemantic::TemporaryReference);
-				this->internalStack.push(layer);
+				this->internalStack.push_back(layer);
 
-				using U = std::remove_reference<T>;
+				using U = std::remove_reference_t<T>;
 				this->ExtractLayer<U>();
 			}
 			else if constexpr (std::is_pointer_v<T>)
 			{
 				SemanticLayer layer = SemanticLayer(FundamentalSemantic::Pointer);
-				this->ExtractQualifiers(layer);
-				this->internalStack.push(layer);
+				this->ExtractQualifiers<T>(layer);
+				this->internalStack.push_back(layer);
 
 				using U = std::remove_pointer_t<std::remove_cv_t<T>>;
 				this->ExtractLayer<U>();
@@ -79,8 +89,8 @@ namespace Reflection {
 			else if constexpr (std::is_object_v<T> || std::is_void_v<T>)
 			{
 				SemanticLayer layer = SemanticLayer(FundamentalSemantic::Value);
-				this->ExtractQualifiers(layer);
-				this->internalStack.push(layer);
+				this->ExtractQualifiers<T>(layer);
+				this->internalStack.push_back(layer);
 
 				// If using value semantics we no longer recurse
 			}
@@ -91,7 +101,7 @@ namespace Reflection {
 		}
 
 		template<typename T>
-		void ExtractQualifiers(SemanticLayer layer)
+		void ExtractQualifiers(SemanticLayer& layer)
 		{
 			if constexpr (std::is_const_v<T>)
 			{
