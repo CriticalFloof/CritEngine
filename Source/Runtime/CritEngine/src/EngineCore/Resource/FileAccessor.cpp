@@ -161,8 +161,8 @@ namespace Engine {
     {
         std::string output = "";
 
-        int iter = this->buffer.size() - this->position;
-        for (int i = 0; i < iter; i++)
+        size_t iter = this->buffer.size() - this->position;
+        for (size_t i = 0; i < iter; i++)
         {
             char value = static_cast<char>(*(this->buffer.data() + this->position));
             if (value == delimiter)

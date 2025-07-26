@@ -151,9 +151,9 @@ namespace Engine {
 						igEnd == UINT64_MAX ? igStart = igEnd : igStart = igEnd + 1;
 					}
 
-					uint32_t positionIndex = indexGroup[0] > 0 ? indexGroup[0] - 1 : (rawVertexPositions.size() + indexGroup[0]);
-					uint32_t textureUVIndex = indexGroup[1] > 0 ? indexGroup[1] - 1 : (rawVertexTextureUVs.size() + indexGroup[1]);
-					uint32_t normalIndex = indexGroup[2] > 0 ? indexGroup[2] - 1 : (rawVertexNormals.size() + indexGroup[2]);
+					uint32_t positionIndex = indexGroup[0] > 0 ? indexGroup[0] - 1 : (static_cast<uint32_t>(rawVertexPositions.size()) + indexGroup[0]);
+					uint32_t textureUVIndex = indexGroup[1] > 0 ? indexGroup[1] - 1 : (static_cast<uint32_t>(rawVertexTextureUVs.size()) + indexGroup[1]);
+					uint32_t normalIndex = indexGroup[2] > 0 ? indexGroup[2] - 1 : (static_cast<uint32_t>(rawVertexNormals.size()) + indexGroup[2]);
 
 					if (i >= 3)
 					{
@@ -179,13 +179,13 @@ namespace Engine {
 		{
 			if (intermediate.capacity() < intermediate.size() + 1)
 			{
-				intermediate.capacity() == 0 ? intermediate.reserve(64) : intermediate.reserve(intermediate.capacity() * 1.5);
+				intermediate.capacity() == 0 ? intermediate.reserve(64) : intermediate.reserve(static_cast<size_t>(static_cast<float>(intermediate.capacity()) * 1.5f));
 			}
 
 			std::vector<VertexIndex>::iterator result = std::find(intermediate.begin(), intermediate.end(), rawVertexIndices[i]);
 			if (result == intermediate.end())
 			{
-				vertexIndices.push_back(intermediate.size());
+				vertexIndices.push_back(static_cast<uint32_t>(intermediate.size()));
 				intermediate.push_back(rawVertexIndices[i]);
 
 				ASSERT(rawVertexPositions.size() > rawVertexIndices[i].position);
@@ -211,14 +211,14 @@ namespace Engine {
 			}
 			else
 			{
-				vertexIndices.push_back(std::distance(intermediate.begin(), result));
+				vertexIndices.push_back(static_cast<uint32_t>(std::distance(intermediate.begin(), result)));
 			}
 
 		}
 
 		// Convert Obj data into mesh data.
 
-		std::shared_ptr<Engine::VertexBuffer> objVB = Engine::VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(float));
+		std::shared_ptr<Engine::VertexBuffer> objVB = Engine::VertexBuffer::Create(vertices.data(), static_cast<uint32_t>(vertices.size()) * sizeof(float));
 
 		std::vector<BufferElement> Attributes = {{Engine::ShaderDataType::Float3, "aPos"}};
 
@@ -233,7 +233,7 @@ namespace Engine {
 
 		objVB->SetLayout(Attributes);
 
-		std::shared_ptr<Engine::IndexBuffer> objIB = Engine::IndexBuffer::Create(vertexIndices.data(), vertexIndices.size());
+		std::shared_ptr<Engine::IndexBuffer> objIB = Engine::IndexBuffer::Create(vertexIndices.data(), static_cast<uint32_t>(vertexIndices.size()));
 
 		std::shared_ptr<Mesh> objMesh = Mesh::Create();
 		objMesh->AddVertexBuffer(objVB);
