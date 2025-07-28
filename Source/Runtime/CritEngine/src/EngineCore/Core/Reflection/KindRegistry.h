@@ -6,8 +6,6 @@
 #include "../Base.h"
 #include "KindInfoInterface.h"
 
-#define REFLECT_PRIMITIVE(name, type) KindRegistrar registerKind_##name = KindRegistrar(typeid(type), std::make_unique<KindInfo>(KindInfo::Create<##type>(#type)));
-
 namespace Reflection {
 
 	/*

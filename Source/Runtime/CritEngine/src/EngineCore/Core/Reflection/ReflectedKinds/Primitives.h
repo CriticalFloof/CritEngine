@@ -1,11 +1,7 @@
 #pragma once
-#include "../KindRegistry.h"
-#include "../KindInfo.h"
+#include "../Common.h"
 
-
-namespace Reflection {
-
-    #ifdef ENGINE_BUILD_DLL
+#ifdef ENGINE_BUILD_DLL
     REFLECT_PRIMITIVE(short, short)
     REFLECT_PRIMITIVE(int, int)
     REFLECT_PRIMITIVE(long, long)
@@ -30,5 +26,4 @@ namespace Reflection {
     REFLECT_PRIMITIVE(bool, bool)
 
     REFLECT_PRIMITIVE(void, void)
-    #endif
-}
+#endif

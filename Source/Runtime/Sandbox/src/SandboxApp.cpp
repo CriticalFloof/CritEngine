@@ -60,18 +60,10 @@ public:
 	float b;
 };
 
-namespace Reflection {
-	KindRegistrar registerKind_Test = KindRegistrar(typeid(Test), std::make_unique<KindInfo>(
-		[]() -> KindInfo
-	{
-		KindInfo k = KindInfo::Create<Test>("Test");
-		k.AddClassMember("a", &Test::a);
-		k.AddClassMember("b", &Test::b);
-		return k;
-	}()
-	));
-}
-
+REFLECT_CLASS(Test)
+REFLECT_MEMBER(Test, a)
+REFLECT_MEMBER(Test, b)
+END_CLASS()
 
 
 

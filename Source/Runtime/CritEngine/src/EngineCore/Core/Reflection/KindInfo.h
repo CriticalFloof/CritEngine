@@ -65,9 +65,6 @@ namespace Reflection {
 			k.categories = k.categories | KindCategories::Function;
 		}
 
-		k.classMembers = std::make_shared<std::vector<MemberInfo>>();
-		k.enumMembers = std::make_shared<std::vector<EnumInfo>>();
-
 		return k;
 	}
 
@@ -83,6 +80,11 @@ namespace Reflection {
     void KindInfo::AddClassMember(std::string name, T C::* member)
     {
 		ASSERT((this->categories & KindCategories::Class) >> 3, "Cannot register a class member to a non-class type.")
+
+		if (this->classMembers == nullptr)
+		{
+			this->classMembers = std::make_shared<std::vector<MemberInfo>>();
+		}
 		this->classMembers->push_back(MemberInfo(name, TypeInfo::Get<T>()));
     }
 
@@ -101,6 +103,10 @@ namespace Reflection {
 	inline void KindInfo::AddEnumMember(std::string name, int position)
 	{
 		ASSERT((this->categories & KindCategories::Enum) >> 2, "Cannot register an enum member to a non-enum type.")
+		if (this->enumMembers == nullptr)
+		{
+			this->enumMembers = std::make_shared<std::vector<EnumInfo>>();
+		}
 		this->enumMembers->push_back(EnumInfo(name, position));
 	}
 }
