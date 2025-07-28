@@ -79,8 +79,8 @@ namespace Reflection {
 		return k;
 	}
 
-    template<typename T>
-    void KindInfo::AddClassMember(std::string name)
+    template<typename T, typename C>
+    void KindInfo::AddClassMember(std::string name, T C::* member)
     {
 		ASSERT((this->categories & KindCategories::Class) >> 3, "Cannot register a class member to a non-class type.")
 		this->classMembers->push_back(MemberInfo(name, TypeInfo::Get<T>()));

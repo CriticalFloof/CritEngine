@@ -55,6 +55,7 @@ public:
 
 class Test
 {
+public:
 	int**** a;
 	float b;
 };
@@ -64,8 +65,8 @@ namespace Reflection {
 		[]() -> KindInfo
 	{
 		KindInfo k = KindInfo::Create<Test>("Test");
-		k.AddClassMember<int****>("a");
-		k.AddClassMember<float>("b");
+		k.AddClassMember("a", &Test::a);
+		k.AddClassMember("b", &Test::b);
 		return k;
 	}()
 	));
