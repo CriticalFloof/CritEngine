@@ -1,84 +1,106 @@
-#pragma once 
-#include <string>
-#include <cstdio>
-#include <type_traits>
+#pragma once
+#include "KindInfoInterface.h"
+#include "TypeInfo.h"
 
 namespace Reflection {
 
-	class TypeInfo;
-
-	enum KindCategories : uint8_t
+	struct MemberInfo
 	{
-		Integral = 1 << 0,
-		FloatingPoint = 1 << 1,
-		Enum = 1 << 2,
-		Class = 1 << 3,
-		Function = 1 << 4,
-	};
-	inline KindCategories operator|(KindCategories lhs, KindCategories rhs)
-	{
-		return static_cast<KindCategories>(
-			static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs)
-		);
-	}
-	inline KindCategories operator&(KindCategories lhs, KindCategories rhs)
-	{
-		return static_cast<KindCategories>(
-			static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs)
-		);
-	}
-
-	struct KindInfo
-	{
-		template<typename T>
-		static KindInfo Create(std::string name)
-		{
-			KindInfo t = KindInfo();
-			t.name = name;
-			t.size = sizeof(T);
-			t.alignment = alignof(T);
-
-			if constexpr (std::is_integral_v<T>)
-			{
-				t.categories = t.categories | KindCategories::Integral;
-			}
-			if constexpr (std::is_floating_point_v<T>)
-			{
-				t.categories = t.categories | KindCategories::FloatingPoint;
-			}
-			if constexpr (std::is_enum_v<T>)
-			{
-				t.categories = t.categories | KindCategories::Enum;
-				// fill enum entries, needs a way for users to register enum names explicitly.
-
-			}
-			if constexpr (std::is_class_v<T>)
-			{
-				t.categories = t.categories | KindCategories::Class;
-				// fill class members, needs a way for users to register class members.
-			}
-			if constexpr (std::is_function_v<T>)
-			{
-				t.categories = t.categories | KindCategories::Function;
-				// fill function signature fields, needs a way for users to register functions/methods.
-			}
-
-			return t;
-		}
-
-		template<>
-		static KindInfo Create<void>(std::string name)
-		{
-			KindInfo t = KindInfo();
-			t.name = name;
-			return t;
-		}
+		MemberInfo(std::string& name, TypeInfo& type) : name(name), type(type) {}
 
 		std::string name;
-		std::size_t size = 0;
-		std::size_t alignment = 0;
-		KindCategories categories = static_cast<KindCategories>(0);
-
+		TypeInfo type;
 	};
-	
+
+	struct FunctionSignature
+	{
+		FunctionSignature(TypeInfo& returnType, std::vector<TypeInfo> parameterTypes) : returnType(returnType), parameterTypes(parameterTypes) {}
+
+		TypeInfo returnType;
+		std::vector<TypeInfo> parameterTypes;
+	};
+
+	struct FunctionInfo
+	{
+		FunctionInfo(std::string& name, FunctionSignature signature) : name(name), signature(signature) {}
+
+		std::string name;
+		FunctionSignature signature;
+	};
+
+	struct EnumInfo
+	{
+		EnumInfo(std::string& name, int position) : name(name), position(position) {}
+
+		std::string name;
+		int position;
+	};
+
+    template<typename T>
+    KindInfo KindInfo::Create(std::string name)
+	{
+		KindInfo k = KindInfo();
+		k.name = name;
+		k.size = sizeof(T);
+		k.alignment = alignof(T);
+
+		if constexpr (std::is_integral_v<T>)
+		{
+			k.categories = k.categories | KindCategories::Integral;
+		}
+		if constexpr (std::is_floating_point_v<T>)
+		{
+			k.categories = k.categories | KindCategories::FloatingPoint;
+		}
+		if constexpr (std::is_enum_v<T>)
+		{
+			k.categories = k.categories | KindCategories::Enum;
+		}
+		if constexpr (std::is_class_v<T>)
+		{
+			k.categories = k.categories | KindCategories::Class;
+		}
+		if constexpr (std::is_function_v<T>)
+		{
+			k.categories = k.categories | KindCategories::Function;
+		}
+
+		k.classMembers = std::make_shared<std::vector<MemberInfo>>();
+		k.enumMembers = std::make_shared<std::vector<EnumInfo>>();
+
+		return k;
+	}
+
+	template<>
+	inline KindInfo KindInfo::Create<void>(std::string name)
+	{
+		KindInfo k = KindInfo();
+		k.name = name;
+		return k;
+	}
+
+    template<typename T>
+    void KindInfo::AddClassMember(std::string name)
+    {
+		ASSERT((this->categories & KindCategories::Class) >> 3, "Cannot register a class member to a non-class type.")
+		this->classMembers->push_back(MemberInfo(name, TypeInfo::Get<T>()));
+    }
+
+	template<typename T>
+	void KindInfo::AddFunctionSignature(std::string name)
+	{
+		ASSERT((this->categories & KindCategories::Function) >> 4, "Cannot register a function signature to a non-function type.")
+		// TODO:
+		// Split T into return type and parameter tuple type
+		// run TypeInfo::Get<T>() on every type.
+		// move result into function signature.
+
+		//this->functionInfo.reset(FunctionInfo(name, FunctionSignature())); 
+	}
+
+	inline void KindInfo::AddEnumMember(std::string name, int position)
+	{
+		ASSERT((this->categories & KindCategories::Enum) >> 2, "Cannot register an enum member to a non-enum type.")
+		this->enumMembers->push_back(EnumInfo(name, position));
+	}
 }

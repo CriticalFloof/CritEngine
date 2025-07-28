@@ -1,5 +1,6 @@
 #pragma once
 #include "../KindRegistry.h"
+#include "../KindInfo.h"
 
 
 namespace Reflection {

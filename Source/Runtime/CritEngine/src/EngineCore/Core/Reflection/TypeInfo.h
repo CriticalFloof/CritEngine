@@ -1,5 +1,4 @@
 #pragma once
-#include "KindInfo.h"
 #include "SemanticStack.h"
 #include "KindRegistry.h"
 #include "Reduce.h"
@@ -17,12 +16,12 @@ namespace Reflection {
 			KindRegistryHandle handle = KindRegistryHandle();
 
 			result.semantics = SemanticStack::Create<T>();
-			result.kind = *handle.GetMetadata(typeid(reduce<T>::type));
+			result.kind = handle.GetMetadata(typeid(reduce<T>::type));
 
 			return result;
 		}
 
-		KindInfo kind;
+		const KindInfo* kind;
 		SemanticStack semantics;
 	};
 

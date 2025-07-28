@@ -58,9 +58,6 @@ namespace Reflection {
 		template<typename T>
 		void ExtractLayer()
 		{
-			bool is_ref = std::is_reference_v<T>;
-			std::remove_reference<T> debug;
-			
 			// Extraction
 			if constexpr (std::is_lvalue_reference_v<T>)
 			{

@@ -53,6 +53,28 @@ public:
 };
 
 
+class Test
+{
+	int**** a;
+	float b;
+};
+
+namespace Reflection {
+	KindRegistrar registerKind_Test = KindRegistrar(typeid(Test), std::make_unique<KindInfo>(
+		[]() -> KindInfo
+	{
+		KindInfo k = KindInfo::Create<Test>("Test");
+		k.AddClassMember<int****>("a");
+		k.AddClassMember<float>("b");
+		return k;
+	}()
+	));
+}
+
+
+
+
+
 class Sandbox : public Engine::Application
 {
 
@@ -96,9 +118,9 @@ public:
 
 		//
 
-		Reflection::TypeInfo info = Reflection::TypeInfo::Get<const double *const *>();
+		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Test>();
 
-		Debug::Log(info.kind.name);
+		Debug::Log(info.kind->name);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
