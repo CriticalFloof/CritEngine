@@ -60,10 +60,16 @@ public:
 	float b;
 };
 
-REFLECT_CLASS(Test)
-REFLECT_MEMBER(Test, a)
-REFLECT_MEMBER(Test, b)
-END_CLASS()
+namespace {
+
+	::Reflection::KindInfo kind = ::Reflection::KindInfo::Create<Test>("Test")
+		.AddClassMember("a", &Test::a)
+		.AddClassMember("b", &Test::b);
+
+	REFLECT_KIND(Test, kind);
+}
+
+
 
 
 
@@ -112,8 +118,8 @@ public:
 		//
 
 		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Test>();
-
-		Debug::Log(info.kind->name);
+		
+		Debug::Log(info.kind->GetClassMember("a").type.kind->name);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");

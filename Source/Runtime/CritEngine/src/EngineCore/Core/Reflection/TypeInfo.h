@@ -21,7 +21,7 @@ namespace Reflection {
 			return result;
 		}
 
-		const KindInfo* kind;
+		KindInfoRegistryEntry kind;
 		SemanticStack semantics;
 	};
 

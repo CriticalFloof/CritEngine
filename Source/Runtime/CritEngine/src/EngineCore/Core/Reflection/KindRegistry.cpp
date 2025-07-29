@@ -17,7 +17,7 @@ namespace Reflection {
 				this->Instance().registeredTypes[type] = *metadata.get();
 		};
 
-		const KindInfo* GetMetadata(std::type_index type)
+		KindInfoRegistryEntry GetMetadata(std::type_index type)
 		{
 			return &this->Instance().registeredTypes.at(type);
 		};
@@ -31,7 +31,7 @@ namespace Reflection {
 		impl->SetMetadata(type, std::move(metadata));
 	}
 
-	const KindInfo* KindRegistryHandle::GetMetadata(std::type_index type)
+	KindInfoRegistryEntry KindRegistryHandle::GetMetadata(std::type_index type)
 	{
 		return impl->GetMetadata(type);
 	}

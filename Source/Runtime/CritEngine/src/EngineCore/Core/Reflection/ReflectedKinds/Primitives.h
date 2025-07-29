@@ -2,6 +2,7 @@
 #include "../Common.h"
 
 #ifdef ENGINE_BUILD_DLL
+namespace {
     REFLECT_PRIMITIVE(short, short)
     REFLECT_PRIMITIVE(int, int)
     REFLECT_PRIMITIVE(long, long)
@@ -26,4 +27,5 @@
     REFLECT_PRIMITIVE(bool, bool)
 
     REFLECT_PRIMITIVE(void, void)
+}
 #endif

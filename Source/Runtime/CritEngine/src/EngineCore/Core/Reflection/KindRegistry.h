@@ -8,6 +8,9 @@
 
 namespace Reflection {
 
+	// Pointer to a registry owned, const KindInfo.
+	using KindInfoRegistryEntry = const KindInfo*;
+
 	/*
 	DLL-safe handle into the reflection system's type registry.
 	*/
@@ -15,7 +18,7 @@ namespace Reflection {
 	{
 	public:
 		void SetMetadata(std::type_index type, std::unique_ptr<KindInfo> metadata);
-		const KindInfo* GetMetadata(std::type_index type);
+		KindInfoRegistryEntry GetMetadata(std::type_index type);
 	private:
 		class KindRegistry;
 		KindRegistry* impl;

@@ -43,10 +43,13 @@ namespace Reflection {
 		static KindInfo Create<void>(std::string name);
 
 		template<typename T, typename C>
-		void AddClassMember(std::string name, T C::* member);
+		KindInfo& AddClassMember(std::string name, T C::* member);
 		template<typename T>
-		void AddFunctionSignature(std::string name);
-		void AddEnumMember(std::string name, int position);
+		KindInfo& AddFunctionSignature(std::string name);
+		KindInfo& AddEnumMember(std::string name, int position);
+
+		const MemberInfo& GetClassMember(std::string name) const;
+		const EnumInfo& GetEnumMember(size_t position) const;
 
 		std::string name;
 		std::size_t size = 0;

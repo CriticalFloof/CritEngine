@@ -1,6 +1,7 @@
 #pragma once
 #include "KindInfoInterface.h"
 #include "TypeInfo.h"
+#include <algorithm>
 
 namespace Reflection {
 
@@ -30,10 +31,10 @@ namespace Reflection {
 
 	struct EnumInfo
 	{
-		EnumInfo(std::string& name, int position) : name(name), position(position) {}
+		EnumInfo(std::string& name, size_t position) : name(name), position(position) {}
 
 		std::string name;
-		int position;
+		size_t position;
 	};
 
     template<typename T>
@@ -77,7 +78,7 @@ namespace Reflection {
 	}
 
     template<typename T, typename C>
-    void KindInfo::AddClassMember(std::string name, T C::* member)
+	KindInfo& KindInfo::AddClassMember(std::string name, T C::* member)
     {
 		ASSERT((this->categories & KindCategories::Class) >> 3, "Cannot register a class member to a non-class type.")
 
@@ -86,10 +87,12 @@ namespace Reflection {
 			this->classMembers = std::make_shared<std::vector<MemberInfo>>();
 		}
 		this->classMembers->push_back(MemberInfo(name, TypeInfo::Get<T>()));
+
+		return *this;
     }
 
 	template<typename T>
-	void KindInfo::AddFunctionSignature(std::string name)
+	KindInfo& KindInfo::AddFunctionSignature(std::string name)
 	{
 		ASSERT((this->categories & KindCategories::Function) >> 4, "Cannot register a function signature to a non-function type.")
 		// TODO:
@@ -98,9 +101,11 @@ namespace Reflection {
 		// move result into function signature.
 
 		//this->functionInfo.reset(FunctionInfo(name, FunctionSignature())); 
+		return *this;
 	}
 
-	inline void KindInfo::AddEnumMember(std::string name, int position)
+
+	inline KindInfo& KindInfo::AddEnumMember(std::string name, int position)
 	{
 		ASSERT((this->categories & KindCategories::Enum) >> 2, "Cannot register an enum member to a non-enum type.")
 		if (this->enumMembers == nullptr)
@@ -108,5 +113,28 @@ namespace Reflection {
 			this->enumMembers = std::make_shared<std::vector<EnumInfo>>();
 		}
 		this->enumMembers->push_back(EnumInfo(name, position));
+		return *this;
+	}
+
+	const MemberInfo& KindInfo::GetClassMember(std::string name) const
+	{
+		std::vector<MemberInfo>::iterator result = std::find_if(this->classMembers->begin(), this->classMembers->end(), 
+		[name](const MemberInfo& value){
+			return value.name == name;
+		});
+
+		ASSERT(result != this->classMembers->end(), ("Class '" + this->name + "' does not have reflected member '" + name + "'").c_str())
+		return *result;
+	}
+	const EnumInfo& KindInfo::GetEnumMember(size_t position) const
+	{
+		std::vector<EnumInfo>::iterator result = std::find_if(this->enumMembers->begin(), this->enumMembers->end(),
+		[position](const EnumInfo& value)
+		{
+			return value.position == position;
+		});
+
+		ASSERT(result != this->enumMembers->end(), ("Enum '" + this->name + "' does not have reflected member '" + name + "'").c_str())
+		return *result;
 	}
 }
