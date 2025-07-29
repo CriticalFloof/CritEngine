@@ -15,11 +15,9 @@ namespace Reflection {
 
 	enum KindCategories : uint8_t
 	{
-		Integral = 1 << 0,
-		FloatingPoint = 1 << 1,
+		Function = 1 << 0,
+		Class = 1 << 1,
 		Enum = 1 << 2,
-		Class = 1 << 3,
-		Function = 1 << 4,
 	};
 	inline KindCategories operator|(KindCategories lhs, KindCategories rhs)
 	{
@@ -42,10 +40,10 @@ namespace Reflection {
 		template<>
 		static KindInfo Create<void>(std::string name);
 
+		template<typename R, typename ...Args>
+		KindInfo& SetFunctionSignature(std::function<R(Args...)> func); 
 		template<typename T, typename C>
 		KindInfo& AddClassMember(std::string name, T C::* member);
-		template<typename T>
-		KindInfo& AddFunctionSignature(std::string name);
 		KindInfo& AddEnumMember(std::string name, int position);
 
 		const MemberInfo& GetClassMember(std::string name) const;
@@ -63,4 +61,39 @@ namespace Reflection {
 	private:
 		//
 	};
+
+	bool IsIntegral(KindInfo& info)
+	{
+		return 
+			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 && 
+			info.name == "short" ||
+			info.name == "int" ||
+			info.name == "long" ||
+			info.name == "long_long" ||
+			info.name == "unsigned_short" ||
+			info.name == "unsigned_int" ||
+			info.name == "unsigned_long" ||
+			info.name == "unsigned_long_long";
+	}
+
+	bool IsFloatingPoint(KindInfo& info)
+	{
+		return
+			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
+			info.name == "float" ||
+			info.name == "double" ||
+			info.name == "long_double";
+	}
+
+	bool IsChar(KindInfo& info)
+	{
+		return
+			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
+			info.name == "char" ||
+			info.name == "signed_char" ||
+			info.name == "unsigned_char" ||
+			info.name == "wchar_t" ||
+			info.name == "char16_t" ||
+			info.name == "char32_t";
+	}
 }

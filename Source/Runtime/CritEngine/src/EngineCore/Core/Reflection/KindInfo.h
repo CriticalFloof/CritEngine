@@ -45,14 +45,6 @@ namespace Reflection {
 		k.size = sizeof(T);
 		k.alignment = alignof(T);
 
-		if constexpr (std::is_integral_v<T>)
-		{
-			k.categories = k.categories | KindCategories::Integral;
-		}
-		if constexpr (std::is_floating_point_v<T>)
-		{
-			k.categories = k.categories | KindCategories::FloatingPoint;
-		}
 		if constexpr (std::is_enum_v<T>)
 		{
 			k.categories = k.categories | KindCategories::Enum;
@@ -77,10 +69,23 @@ namespace Reflection {
 		return k;
 	}
 
-    template<typename T, typename C>
+	template<typename R, typename ...Args>
+	KindInfo& KindInfo::SetFunctionSignature(std::function<R(Args...)> func)
+	{
+		ASSERT((this->categories & KindCategories::Function) >> 0, "Cannot register a function signature to a non-function type.")
+			// TODO:
+			// Split T into return type and parameter tuple type
+			// run TypeInfo::Get<T>() on every type.
+			// move result into function signature.
+
+			//this->functionInfo.reset(FunctionInfo(name, FunctionSignature())); 
+			return *this;
+	}
+
+	template<typename T, typename C>
 	KindInfo& KindInfo::AddClassMember(std::string name, T C::* member)
     {
-		ASSERT((this->categories & KindCategories::Class) >> 3, "Cannot register a class member to a non-class type.")
+		ASSERT((this->categories & KindCategories::Class) >> 1, "Cannot register a class member to a non-class type.")
 
 		if (this->classMembers == nullptr)
 		{
@@ -90,20 +95,6 @@ namespace Reflection {
 
 		return *this;
     }
-
-	template<typename T>
-	KindInfo& KindInfo::AddFunctionSignature(std::string name)
-	{
-		ASSERT((this->categories & KindCategories::Function) >> 4, "Cannot register a function signature to a non-function type.")
-		// TODO:
-		// Split T into return type and parameter tuple type
-		// run TypeInfo::Get<T>() on every type.
-		// move result into function signature.
-
-		//this->functionInfo.reset(FunctionInfo(name, FunctionSignature())); 
-		return *this;
-	}
-
 
 	inline KindInfo& KindInfo::AddEnumMember(std::string name, int position)
 	{
