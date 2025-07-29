@@ -33,8 +33,7 @@
 #include <imgui.h>
 #include <EngineCore/Graphics/Material.h>
 #include <EngineCore/Graphics/Model.h>
-
-#include <EngineCore/Core/Reflection/TypeInfo.h>
+#include <EngineCore/Core/Reflection/Common.h>
 
 const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path() / "Assets"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
 
@@ -115,7 +114,7 @@ public:
 		scene->SetSceneRoot(std::make_shared<Engine::Actor>());
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 
-		//
+		// Reflection
 
 		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Test>();
 		

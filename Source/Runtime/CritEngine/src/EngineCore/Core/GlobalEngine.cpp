@@ -1,8 +1,10 @@
 #include "GlobalEngine.h"
 
+#include "../Core/Reflection/ReflectedKinds/Primitives.h" // Reflection
 #include "../Resource/Loaders/BitmapLoader.h"
 #include "../Resource/Loaders/GLSLShaderLoader.h"
 #include "../Resource/Loaders/ObjLoader.h"
+
 
 namespace Engine {
 
