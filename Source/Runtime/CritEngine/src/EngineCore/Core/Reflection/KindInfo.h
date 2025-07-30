@@ -21,14 +21,6 @@ namespace Reflection {
 		std::vector<TypeInfo> parameterTypes;
 	};
 
-	struct FunctionInfo
-	{
-		FunctionInfo(std::string& name, FunctionSignature signature) : name(name), signature(signature) {}
-
-		std::string name;
-		FunctionSignature signature;
-	};
-
 	struct EnumInfo
 	{
 		EnumInfo(std::string& name, size_t position) : name(name), position(position) {}
