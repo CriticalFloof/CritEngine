@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <memory>
 #include <vector>
+#include <functional>
 
 namespace Reflection {
 
@@ -41,6 +42,7 @@ namespace Reflection {
 		static KindInfo Create<void>(std::string name);
 
 		// Setters
+
 		template<typename R, typename ...Args>
 		KindInfo& SetFunctionSignature(std::function<R(Args...)> func); 
 		template<typename T, typename C>
@@ -50,11 +52,22 @@ namespace Reflection {
 		// Class introspection
 		
 		// Searches for a class member that matches a given name
-		const MemberInfo& GetClassMember(std::string name) const;
+		const MemberInfo& GetMemberInfo(std::string name) const;
 		// Like GetClassMember, but also only matches for function types.
-		const MemberInfo& GetClassMethod(std::string name) const;
+		const MemberInfo& GetMethodInfo(std::string name) const;
 		// Like GetClassMember, but also only matches for non-function types.
-		const MemberInfo& GetClassProperty(std::string name) const;
+		const MemberInfo& GetPropertyInfo(std::string name) const;
+
+		// Class code injection
+
+		template<class Class, typename R, typename ...Args>
+		R CallMethod(std::string name, Class* ptr, Args... args) const;
+
+		template<typename T, class Class>
+		void SetProperty(std::string name, Class* ptr, T value) const;
+
+		template<typename T, class Class>
+		T GetProperty(std::string name, Class* ptr) const;
 
 		// Enum introspection
 
@@ -74,7 +87,7 @@ namespace Reflection {
 	};
 
 	// Primitive Group Functions
-	bool IsIntegral(KindInfo& info)
+	inline bool IsIntegral(KindInfo& info)
 	{
 		return 
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 && 
@@ -88,7 +101,7 @@ namespace Reflection {
 			info.name == "unsigned_long_long";
 	}
 
-	bool IsFloatingPoint(KindInfo& info)
+	inline bool IsFloatingPoint(KindInfo& info)
 	{
 		return
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
@@ -97,7 +110,7 @@ namespace Reflection {
 			info.name == "long_double";
 	}
 
-	bool IsChar(KindInfo& info)
+	inline bool IsChar(KindInfo& info)
 	{
 		return
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&

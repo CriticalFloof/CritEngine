@@ -33,7 +33,6 @@
 #include <imgui.h>
 #include <EngineCore/Graphics/Material.h>
 #include <EngineCore/Graphics/Model.h>
-#include <EngineCore/Core/Reflection/Common.h>
 
 const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path() / "Assets"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
 
@@ -50,28 +49,6 @@ public:
 	}
 
 };
-
-
-class Test
-{
-public:
-	int**** a;
-	float b;
-};
-
-namespace {
-
-	::Reflection::KindInfo kind = ::Reflection::KindInfo::Create<Test>("Test")
-		.AddClassMember("a", &Test::a)
-		.AddClassMember("b", &Test::b);
-
-	REFLECT_KIND(Test, kind);
-}
-
-
-
-
-
 
 class Sandbox : public Engine::Application
 {
@@ -113,12 +90,18 @@ public:
 
 		scene->SetSceneRoot(std::make_shared<Engine::Actor>());
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
+		Engine::Actor* actor = static_cast<Engine::Actor*>(scene->GetSceneRoot().get());
 
 		// Reflection
 
-		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Test>();
+		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Engine::Actor>();
+
+
 		
-		Debug::Log(info.kind->GetClassMember("a").type.kind->name);
+		Debug::Log(info.kind->GetPropertyInfo("health").type.kind->name);
+		Debug::Log(info.kind->GetProperty<int>("health", actor));
+		info.kind->SetProperty<int>("health", actor, 100);
+		Debug::Log(info.kind->GetProperty<int>("health", actor));
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
