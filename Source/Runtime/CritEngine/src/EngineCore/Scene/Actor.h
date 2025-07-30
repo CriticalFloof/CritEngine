@@ -14,7 +14,7 @@ namespace Engine {
 
 		
 		int health = 10;
-		int mana = 0;
+		char mana = 60;
 
 		int GetInteger(std::string str) { 
 			std::cout << "Hello, from GetInteger!! " << str << "\n";

@@ -98,7 +98,14 @@ namespace Reflection {
 			info.name == "unsigned_short" ||
 			info.name == "unsigned_int" ||
 			info.name == "unsigned_long" ||
-			info.name == "unsigned_long_long";
+			info.name == "unsigned_long_long" ||
+			info.name == "bool" ||
+			info.name == "char" ||
+			info.name == "signed_char" ||
+			info.name == "unsigned_char" ||
+			info.name == "wchar_t" ||
+			info.name == "char16_t" ||
+			info.name == "char32_t";
 	}
 
 	inline bool IsFloatingPoint(const KindInfo& info)
@@ -108,18 +115,6 @@ namespace Reflection {
 			info.name == "float" ||
 			info.name == "double" ||
 			info.name == "long_double";
-	}
-
-	inline bool IsChar(const KindInfo& info)
-	{
-		return
-			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
-			info.name == "char" ||
-			info.name == "signed_char" ||
-			info.name == "unsigned_char" ||
-			info.name == "wchar_t" ||
-			info.name == "char16_t" ||
-			info.name == "char32_t";
 	}
 
 	inline bool IsSigned(const KindInfo& info)
