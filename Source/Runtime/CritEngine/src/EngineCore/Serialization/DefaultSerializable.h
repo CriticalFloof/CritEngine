@@ -2,10 +2,55 @@
 #include <string>
 
 #include "Serializable.h"
-#include "../Core/Reflection/Reflectable.h"
-#include "../Core/Reflection/Base.h"
+#include "../Core/Reflection/Common.h"
 
 namespace Engine {
+
+	static std::string PropertyToString(void* instance, const ::Reflection::MemberInfo& prop)
+	{
+
+
+		if (::Reflection::IsIntegral(*prop.type.kind))
+		{
+			void* value = prop.getter(instance);
+			uint8_t buffer[8] = { 0 };
+			std::memcpy(buffer, value, prop.type.kind->size);
+
+			if (::Reflection::IsSigned(*prop.type.kind))
+			{
+				return std::to_string(*static_cast<int64_t*>(static_cast<void*>(buffer)));
+			}
+			else
+			{
+				return std::to_string(*static_cast<uint64_t*>(static_cast<void*>(buffer)));
+			}
+		}
+		else
+		{
+			ASSERT(false, ("Conversion from " + prop.type.kind->name + " to string isn't supported!").c_str())
+		}
+	}
+
+	static void StringToProperty(void* instance, const ::Reflection::MemberInfo& prop, std::string value)
+	{
+		if (::Reflection::IsIntegral(*prop.type.kind))
+		{
+			if (::Reflection::IsSigned(*prop.type.kind))
+			{
+				int64_t deserializedValue = std::stoll(value);
+				prop.setter(instance, &deserializedValue);
+			}
+			else
+			{
+				uint64_t deserializedValue = std::stoull(value);
+				prop.setter(instance, &deserializedValue);
+			}
+		}
+		else
+		{
+			ASSERT(false, ("Conversion from string to " + prop.type.kind->name + " isn't supported!").c_str())
+		}
+	}
 
 	/*
 	Implements generic serialization through the reflection of exposed data members.
@@ -14,77 +59,47 @@ namespace Engine {
 	{
 	public:
 
-		virtual void Serialize(std::ostream& write) override { return; }
-
-		template<typename Class>
-		std::enable_if_t<std::is_base_of_v<Reflectable, Class>> Serialize(std::ostream& write)
+		virtual bool Serialize(std::ostream& dest) override
 		{
-			Class* obj = static_cast<Class*>(this);
-			TypeInfo<Class> info = obj->GetTypeInfo();
-			
-			write << "Class: " << info.name << "\n";
+			return false; // We can't serialize the object without passing in type information.
+		}
+		virtual bool Deserialize(std::istream& source) override
+		{
+			return false;
+		}
 
-			write << "Properties[\n";
-			for (TypeInfo<Class>::Property& prop : info.properties)
+		template<typename C>
+		bool Serialize(std::ostream& dest)
+		{
+			::Reflection::TypeInfo info = ::Reflection::TypeInfo::Get<C>();
+
+			dest << "Class: " << info.kind->name << "\n";
+
+			dest << "Properties[\n";
+			for (::Reflection::MemberInfo& member : *info.kind->classMembers)
 			{
-				write << "    ";
-				write << prop.name + ": ";
-				write << std::string(prop.type.name()) + " | ";
-				write << PropertyToString<Class>(obj, prop) + "\n";
+				// Functions can't be serialized.
+				if (member.type.kind->categories & ::Reflection::KindCategories::Function >> 0) continue;
+
+				dest << "    ";
+				dest << member.name + ": ";
+				dest << std::string(member.type.kind->name) + " | ";
+				dest << PropertyToString(static_cast<C*>(this), member) + "\n";
 			}
-			write << "]\n";
+			dest << "]\n";
+
+			return true;
 		}
 
-		virtual void Deserialize(std::istream& source) override
+		template<typename C>
+		bool Deserialize(std::istream& source)
 		{
-
+			return false;
 		}
+
+
 
 	private:
 		
 	};
-
-	template<typename Class>
-	static std::string PropertyToString(Class* instance, typename TypeInfo<Class>::Property& prop)
-	{
-
-		if (prop.type == typeid(int))
-		{
-			return std::to_string(*prop.Get<int>(instance));
-		}
-		else if (prop.type == typeid(float))
-		{
-			return std::to_string(*prop.Get<float>(instance));
-		}
-		else if (prop.type == typeid(std::string))
-		{
-			return *prop.Get<std::string>(instance);
-		}
-		else
-		{
-			ASSERT(false, "Conversion from " + prop.name + " to string isn't supported!")
-		}
-	}
-
-	template<typename Class>
-	static void StringToProperty(Class* instance, typename TypeInfo<Class>::Property& prop, std::string value)
-	{
-		if (prop.type == typeid(int))
-		{
-			prop.Set(instance, std::stoi(value));
-		}
-		else if (prop.type == typeid(float))
-		{
-			prop.Set(instance, std::stof(value));
-		}
-		else if (prop.type == typeid(std::string))
-		{
-			prop.Set(instance, value);
-		}
-		else
-		{
-			ASSERT(false, "Conversion from string to "+ prop.name +" isn't supported!")
-		}
-	}
-
 }

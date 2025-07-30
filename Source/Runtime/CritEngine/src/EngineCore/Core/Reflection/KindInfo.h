@@ -113,15 +113,15 @@ namespace Reflection {
 	template<typename T, class Class>
 	void KindInfo::SetProperty(std::string name, Class* ptr, T value) const
 	{
-		const MemberInfo& methodInfo = this->GetPropertyInfo(name);
-		methodInfo.setter(ptr, &value);
+		const MemberInfo& propInfo = this->GetPropertyInfo(name);
+		propInfo.setter(ptr, &value);
 	}
 
 	template<typename T, class Class>
 	T KindInfo::GetProperty(std::string name, Class* ptr) const
 	{
-		const MemberInfo& methodInfo = this->GetPropertyInfo(name);
-		void* result = methodInfo.getter(ptr);
+		const MemberInfo& propInfo = this->GetPropertyInfo(name);
+		void* result = propInfo.getter(ptr);
 		return *static_cast<T*>(result);
 	}
 

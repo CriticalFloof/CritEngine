@@ -7,8 +7,8 @@ namespace Engine {
 	{
 	public:
 
-		virtual void Serialize(std::ostream& write) = 0;
-		virtual void Deserialize(std::istream& read) = 0;
+		virtual bool Serialize(std::ostream& write) = 0;
+		virtual bool Deserialize(std::istream& read) = 0;
 	};
 
 }

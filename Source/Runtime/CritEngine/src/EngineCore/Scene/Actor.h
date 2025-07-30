@@ -3,18 +3,18 @@
 #include "../Core/BaseObject.h"
 #include "../Core/Reflection/Common.h"
 #include "DefaultSceneGraphable.h"
-//#include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
+#include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
 
 namespace Engine {
 
-	class Actor : public BaseObject, public DefaultSceneGraphable
+	class Actor : public BaseObject, public DefaultSceneGraphable, public DefaultSerializable
 	{
 	public:
 		ENGINE_API Actor();
 
 		
 		int health = 10;
-		float mana = 0;
+		int mana = 0;
 
 		int GetInteger(std::string str) { 
 			std::cout << "Hello, from GetInteger!! " << str << "\n";

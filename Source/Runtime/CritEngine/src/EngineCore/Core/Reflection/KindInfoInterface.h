@@ -87,7 +87,7 @@ namespace Reflection {
 	};
 
 	// Primitive Group Functions
-	inline bool IsIntegral(KindInfo& info)
+	inline bool IsIntegral(const KindInfo& info)
 	{
 		return 
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 && 
@@ -101,7 +101,7 @@ namespace Reflection {
 			info.name == "unsigned_long_long";
 	}
 
-	inline bool IsFloatingPoint(KindInfo& info)
+	inline bool IsFloatingPoint(const KindInfo& info)
 	{
 		return
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
@@ -110,7 +110,7 @@ namespace Reflection {
 			info.name == "long_double";
 	}
 
-	inline bool IsChar(KindInfo& info)
+	inline bool IsChar(const KindInfo& info)
 	{
 		return
 			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
@@ -120,5 +120,27 @@ namespace Reflection {
 			info.name == "wchar_t" ||
 			info.name == "char16_t" ||
 			info.name == "char32_t";
+	}
+
+	inline bool IsSigned(const KindInfo& info)
+	{
+		return
+			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
+			info.name == "short" ||
+			info.name == "int" ||
+			info.name == "long" ||
+			info.name == "long_long" ||
+			info.name == "signed_char";
+	}
+
+	inline bool IsUnsigned(const KindInfo& info)
+	{
+		return
+			(info.categories & (KindCategories::Class | KindCategories::Function | KindCategories::Enum)) == 0 &&
+			info.name == "unsigned_short" ||
+			info.name == "unsigned_int" ||
+			info.name == "unsigned_long" ||
+			info.name == "unsigned_long_long" ||
+			info.name == "unsigned_char";
 	}
 }
