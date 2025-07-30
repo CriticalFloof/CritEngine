@@ -40,13 +40,24 @@ namespace Reflection {
 		template<>
 		static KindInfo Create<void>(std::string name);
 
+		// Setters
 		template<typename R, typename ...Args>
 		KindInfo& SetFunctionSignature(std::function<R(Args...)> func); 
 		template<typename T, typename C>
 		KindInfo& AddClassMember(std::string name, T C::* member);
 		KindInfo& AddEnumMember(std::string name, int position);
 
+		// Class introspection
+		
+		// Searches for a class member that matches a given name
 		const MemberInfo& GetClassMember(std::string name) const;
+		// Like GetClassMember, but also only matches for function types.
+		const MemberInfo& GetClassMethod(std::string name) const;
+		// Like GetClassMember, but also only matches for non-function types.
+		const MemberInfo& GetClassProperty(std::string name) const;
+
+		// Enum introspection
+
 		const EnumInfo& GetEnumMember(size_t position) const;
 
 		std::string name;
@@ -59,9 +70,10 @@ namespace Reflection {
 		std::shared_ptr<FunctionInfo> functionInfo;
 
 	private:
-		//
+		
 	};
 
+	// Primitive Group Functions
 	bool IsIntegral(KindInfo& info)
 	{
 		return 

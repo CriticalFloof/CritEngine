@@ -117,6 +117,31 @@ namespace Reflection {
 		ASSERT(result != this->classMembers->end(), ("Class '" + this->name + "' does not have reflected member '" + name + "'").c_str())
 		return *result;
 	}
+
+	inline const MemberInfo& KindInfo::GetClassMethod(std::string name) const
+	{
+		std::vector<MemberInfo>::iterator result = std::find_if(this->classMembers->begin(), this->classMembers->end(),
+		[name](const MemberInfo& value)
+		{
+			return value.name == name && value.type.kind->categories & KindCategories::Function >> 0;
+		});
+
+		ASSERT(result != this->classMembers->end(), ("Class '" + this->name + "' does not have reflected method '" + name + "'").c_str())
+		return *result;
+	}
+
+	inline const MemberInfo& KindInfo::GetClassProperty(std::string name) const
+	{
+		std::vector<MemberInfo>::iterator result = std::find_if(this->classMembers->begin(), this->classMembers->end(),
+		[name](const MemberInfo& value)
+		{
+			return value.name == name && !(value.type.kind->categories & KindCategories::Function >> 0);
+		});
+
+		ASSERT(result != this->classMembers->end(), ("Class '" + this->name + "' does not have reflected property '" + name + "'").c_str())
+		return *result;
+	}
+
 	const EnumInfo& KindInfo::GetEnumMember(size_t position) const
 	{
 		std::vector<EnumInfo>::iterator result = std::find_if(this->enumMembers->begin(), this->enumMembers->end(),
