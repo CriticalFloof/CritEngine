@@ -11,7 +11,7 @@ Start by cloning this repository in your preferred directory using the command: 
 
 <ins>**2. Setting up the engine**<ins>
 
-Run one of the [shell build files](https://github.com/CriticalFloof/CritEngine/tree/scene-management/Binaries%2FDotNET%2FCritBuildTool) file, this will create a Visual Studio solution of the project.
+Run one of the [shell build files](https://github.com/CriticalFloof/CritEngine/tree/scene-management/Binaries%2FDotNET%2FCritBuildTool), this will create a Visual Studio solution of the project.
 
 If you make changes to the engine, or if you want to regenerate project files, rerun the build_workspace_vs2022.bat script file.
 
