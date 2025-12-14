@@ -9,6 +9,7 @@ namespace Engine {
 	{
 	public:
 		BaseCamera(float aspectRatio = (16 / 9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		virtual ~BaseCamera() {};
 
 		virtual Matrix4f GetViewPerspectiveMatrix() = 0;
 		virtual Matrix4f GetPerspectiveMatrix() = 0;
@@ -44,6 +45,7 @@ namespace Engine {
 	{
 	public:
 		PerspectiveCamera(float verticalFOV = 60.f, float aspectRatio = (16/9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		virtual ~PerspectiveCamera() {};
 
 		virtual Matrix4f GetViewPerspectiveMatrix() override;
 		virtual Matrix4f GetPerspectiveMatrix() override;
@@ -63,6 +65,7 @@ namespace Engine {
 	{
 	public:
 		OrthographicCamera(float height = 720.f, float aspectRatio = (16/9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		virtual ~OrthographicCamera() {};
 
 		virtual Matrix4f GetViewPerspectiveMatrix() override;
 		virtual Matrix4f GetPerspectiveMatrix() override;

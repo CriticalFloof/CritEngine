@@ -2,7 +2,6 @@
 #include "../Core/Base.h"
 #include "../Core/BaseObject.h"
 #include "DefaultSceneGraphable.h"
-#include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
 
 namespace Engine {
 
@@ -10,6 +9,7 @@ namespace Engine {
 	{
 	public:
 		ENGINE_API Actor();
+		virtual ~Actor() {};
 
 		
 		int health = 10;

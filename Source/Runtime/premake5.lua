@@ -33,7 +33,7 @@ project "CritEngine"
 	links { "GLFW", "GLM", "GLAD", "ImGui" }
 
 	filter "system:windows"
-		cppdialect "C++20"
+		cppdialect "C++23"
 		staticruntime "Off"
 		systemversion "latest"
 
@@ -89,7 +89,7 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++20"
+		cppdialect "C++23"
 		staticruntime "Off"
 		systemversion "latest"
 
