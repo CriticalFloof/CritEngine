@@ -92,17 +92,6 @@ public:
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 		Engine::Actor* actor = static_cast<Engine::Actor*>(scene->GetSceneRoot().get());
 
-		// Reflection
-
-		Reflection::TypeInfo info = Reflection::TypeInfo::Get<Engine::Actor>();
-
-		//Debug::Log(info.kind->GetPropertyInfo("health").type.kind->name);
-		//Debug::Log(info.kind->GetProperty<int>("health", actor));
-		info.kind->SetProperty<int>("health", actor, 100);
-		Debug::Log(info.kind->GetProperty<int>("health", actor)); 
-
-		actor->Serialize<Engine::Actor>(std::cout);
-
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
 		std::shared_ptr<Engine::Window> window = this->window.lock();

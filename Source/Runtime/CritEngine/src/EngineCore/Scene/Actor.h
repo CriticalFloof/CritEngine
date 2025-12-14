@@ -1,13 +1,12 @@
 #pragma once
 #include "../Core/Base.h"
 #include "../Core/BaseObject.h"
-#include "../Core/Reflection/Common.h"
 #include "DefaultSceneGraphable.h"
 #include "../Serialization/DefaultSerializable.h" //Move this to an intermediate object class
 
 namespace Engine {
 
-	class Actor : public BaseObject, public DefaultSceneGraphable, public DefaultSerializable
+	class Actor : public BaseObject, public DefaultSceneGraphable
 	{
 	public:
 		ENGINE_API Actor();
@@ -21,14 +20,4 @@ namespace Engine {
 			return 10; 
 		};
 	};
-
-#ifdef ENGINE_BUILD_DLL
-	namespace {
-
-		::Reflection::KindInfo kind = ::Reflection::KindInfo::Create<Actor>("Actor")
-			.AddClassMember("health", &Actor::health)
-			.AddClassMember("mana", &Actor::mana);
-		REFLECT_KIND(Actor, kind);
-	}
-#endif
 }
