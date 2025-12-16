@@ -63,6 +63,11 @@ function DependencyFetcher.Setup()
     DependencyFetcher.FetchRepo("https://github.com/ocornut/imgui.git", 
     "CritEngine/thirdparty/libs/imgui",
     "master")
+
+    DependencyFetcher.FetchRepo("https://github.com/veselink1/refl-cpp.git",
+    "CritEngine/thirdparty/libs/refl-cpp",
+    "master"
+    )
     
     print("[DependencyFetcher] Dependency fetch completed!\n")
     

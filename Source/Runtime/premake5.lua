@@ -22,7 +22,16 @@ project "CritEngine"
 	
 	targetdir (outputDirectory)
 	objdir (intermediateDirectory .. "%{prj.name}")
-	includedirs { "CritEngine/thirdparty/libs/glfw/include/", "CritEngine/thirdparty/libs/glad/include/", "CritEngine/thirdparty/libs/glm/", "CritEngine/thirdparty/libs/imgui/", "CritEngine/thirdparty/libs/imgui/examples"}
+
+	includedirs 
+	{ 
+		"CritEngine/thirdparty/libs/glfw/include/", 
+		"CritEngine/thirdparty/libs/glad/include/", 
+		"CritEngine/thirdparty/libs/glm/", 
+		"CritEngine/thirdparty/libs/imgui/", 
+		"CritEngine/thirdparty/libs/imgui/examples",
+		"CritEngine/thirdparty/libs/refl-cpp/include/"
+	}
 
 	files
 	{
@@ -30,7 +39,7 @@ project "CritEngine"
 		"%{prj.name}/src/**.cpp"
 	}
 
-	links { "GLFW", "GLM", "GLAD", "ImGui" }
+	links { "GLFW", "GLM", "GLAD", "ImGui", "ReflCpp" }
 
 	filter "system:windows"
 		cppdialect "C++23"
@@ -59,6 +68,7 @@ project "CritEngine"
 	include "CritEngine/thirdparty/glad.lua"
 	include "CritEngine/thirdparty/glm.lua"
 	include "CritEngine/thirdparty/imgui.lua"
+	include "CritEngine/thirdparty/refl-cpp.lua"
 
 project "Sandbox"
 	location "Sandbox"
@@ -80,12 +90,13 @@ project "Sandbox"
 	{
 		"%{wks.location}/CritEngine/src",
 		"CritEngine/thirdparty/libs/glm/",
-		"CritEngine/thirdparty/libs/imgui/"
+		"CritEngine/thirdparty/libs/imgui/",
+		"CritEngine/thirdparty/libs/refl-cpp/include/"
 	}
 	
 	links 
 	{
-		"CritEngine", "GLM", "ImGui"
+		"CritEngine", "GLM", "ImGui", "ReflCpp"
 	}
 
 	filter "system:windows"
