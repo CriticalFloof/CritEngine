@@ -1,6 +1,7 @@
 project "ReflCpp"
 	kind "StaticLib"
 	language "C++"
+	cppdialect "C++23"
 	architecture "x86_64"
 
 	targetdir "bin/%{cfg.buildcfg}"
