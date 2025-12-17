@@ -2,6 +2,7 @@
 #include "../Core/Base.h"
 #include "../Core/BaseObject.h"
 #include "DefaultSceneGraphable.h"
+#include <refl.hpp>
 
 namespace Engine {
 
@@ -21,3 +22,9 @@ namespace Engine {
 		};
 	};
 }
+
+REFL_TYPE(Engine::Actor, bases<>)
+    REFL_FIELD(health, refl::attr::usage::member())
+	REFL_FIELD(mana, refl::attr::usage::member())
+	REFL_FUNC(GetInteger)
+REFL_END

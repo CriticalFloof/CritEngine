@@ -30,6 +30,7 @@
 #include <EngineCore/Threading/ThreadingHelpers.h>
 #include <EngineCore/Resource/Loaders/GLSLShaderLoader.h>
 #include <EngineCore/Scene/Actor.h>
+#include <EngineCore/Serialization/Serializer.h>
 
 #include <imgui.h>
 #include <EngineCore/Graphics/Material.h>
@@ -52,51 +53,6 @@ public:
 	}
 
 };
-
-// define an empty maker attribute to be used on fields and functions only
-struct serializable : refl::attr::usage::field, refl::attr::usage::function
-{
-};
-
-template <typename T>
-void serialize(std::ostream& os, T&& value)
-{
-	// iterate over the members of T
-	for_each(refl::reflect(value).members, [&](auto member)
-	{
-		// is_readable checks if the member is a non-const field
-		// or a 0-arg const-qualified function marked with property attribute
-		if constexpr (is_readable(member) && refl::descriptor::has_attribute<serializable>(member))
-		{
-			// get_display_name prefers the friendly_name of the property over the function name
-			os << get_display_name(member) << "=";
-			// member(value) returns a reference to the field or calls the property accessor
-			os << member(value) << ";";
-		}
-	});
-}
-
-struct Point
-{
-	float x;
-	float y;
-
-	float magnitude() const
-	{
-		return std::sqrt(x * x + y * y);
-	}
-};
-
-void debug_point(std::ostream& os, const Point& pt)
-{
-	os << "(" << pt.x << ", " << pt.y << ")";
-}
-
-REFL_TYPE(Point, debug(debug_point), bases<>)
-    REFL_FIELD(x, serializable()) // here we use serializable only as a maker
-    REFL_FIELD(y, serializable())
-    REFL_FUNC(magnitude)
-REFL_END
 
 class Sandbox : public Engine::Application
 {
@@ -143,15 +99,7 @@ public:
 		// Reflection Test
 
 		std::cout << "Custom serialization: ";
-		serialize(std::cout, Point { 1, 1 });
-
-		std::cout << "\nBuilt-in debug (supports arbitrary containers): ";
-		std::vector<Point> pts { {0,1}, {1,0} };
-
-		// debug will print the debug representation of the value to the stream;
-		// for types with begin() and end(), refl-cpp will automatically
-		// interate over the target value and print the values as well.
-		refl::runtime::debug(std::cout, pts);
+		serialize(std::cout, Engine::Actor{} );
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
