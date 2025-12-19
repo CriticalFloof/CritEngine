@@ -49,11 +49,13 @@ function DependencyFetcher.Setup()
 
     DependencyFetcher.FetchRepo("https://github.com/Dav1dde/glad.git",
     "CritEngine/thirdparty/libs/glad", 
-    "c")
+    "c",
+    "5bf3eda6da606324999775b88a90ed572202be93")
     
     DependencyFetcher.FetchRepo("https://github.com/glfw/glfw.git",
     "CritEngine/thirdparty/libs/glfw", 
-    "master")
+    "master",
+    "e7ea71be039836da3a98cea55ae5569cb5eb885c")
     
     DependencyFetcher.FetchRepo("https://github.com/g-truc/glm.git", 
     "CritEngine/thirdparty/libs/glm",
@@ -62,12 +64,13 @@ function DependencyFetcher.Setup()
 
     DependencyFetcher.FetchRepo("https://github.com/ocornut/imgui.git", 
     "CritEngine/thirdparty/libs/imgui",
-    "master")
+    "master",
+    "89b5a2c3d50e4ca6a0a88378f096d7d05ff1c962")
 
     DependencyFetcher.FetchRepo("https://github.com/veselink1/refl-cpp.git",
     "CritEngine/thirdparty/libs/refl-cpp",
-    "master"
-    )
+    "master",
+    "27fbd7d2e6d86bc135b87beef6b5f7ce53afd4fc")
     
     print("[DependencyFetcher] Dependency fetch completed!\n")
     
