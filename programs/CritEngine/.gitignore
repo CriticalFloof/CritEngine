@@ -4,31 +4,13 @@
 
 # C/C++ source files
 !*.c
-!*.cc
+!*.unit.c
 !*.cpp
-!*.cpp.template
+!*.unit.cpp
 !*.h
-!*.h.template
 !*.hpp
-!*.inl
-!*.inc
-!*.m
-!*.mm
-!*.rc
-!*.rc2
-!*.def
-!*.manifest
-
-# C# source files
-!*.cs
-!*.cs.template
-!*.aspx
-!*.resx
 
 # Shader formats
-!*.usf
-!*.ush
-!*.hlsl
 !*.glsl
 !*.fragshader
 !*.vertshader
@@ -61,17 +43,11 @@
 !ChangeLog
 !.gitignore
 
-# ThirdParty Executables
-!**/thirdparty/**/*.exe
-
-# Autogen Directories
-Intermediate/
-libs/
-obj/
-.vs/
-
-
 # Media Files
 !*.bmp
 !*.mtl
 !*.obj
+
+# Exclude Build and Dependency Directories
+**/build
+**/external/libs

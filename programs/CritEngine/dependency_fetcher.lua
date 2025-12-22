@@ -43,37 +43,4 @@ function DependencyFetcher.FetchRepo(url, targetDir, treeName, commitID)
 
 end
 
-function DependencyFetcher.Setup()
-
-    print("\n[DependencyFetcher] Fetching dependencies...")
-
-    DependencyFetcher.FetchRepo("https://github.com/Dav1dde/glad.git",
-    "CritEngine/thirdparty/libs/glad", 
-    "c",
-    "5bf3eda6da606324999775b88a90ed572202be93")
-    
-    DependencyFetcher.FetchRepo("https://github.com/glfw/glfw.git",
-    "CritEngine/thirdparty/libs/glfw", 
-    "master",
-    "e7ea71be039836da3a98cea55ae5569cb5eb885c")
-    
-    DependencyFetcher.FetchRepo("https://github.com/g-truc/glm.git", 
-    "CritEngine/thirdparty/libs/glm",
-    "master",
-    "a40974fb8647717b15dbfd212b4a33845a405a88") 
-
-    DependencyFetcher.FetchRepo("https://github.com/ocornut/imgui.git", 
-    "CritEngine/thirdparty/libs/imgui",
-    "master",
-    "89b5a2c3d50e4ca6a0a88378f096d7d05ff1c962")
-
-    DependencyFetcher.FetchRepo("https://github.com/veselink1/refl-cpp.git",
-    "CritEngine/thirdparty/libs/refl-cpp",
-    "master",
-    "27fbd7d2e6d86bc135b87beef6b5f7ce53afd4fc")
-    
-    print("[DependencyFetcher] Dependency fetch completed!\n")
-    
-end
-
 return DependencyFetcher

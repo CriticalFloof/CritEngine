@@ -1,14 +1,22 @@
-project "GLAD"
+local c = require("common")
+
+print("Running glm.lua")
+
+project "GLM"
+	location "libs/glm"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
 
-	targetdir "bin/%{cfg.buildcfg}"
-	objdir "obj/%{cfg.buildcfg}"
-    
-    includedirs { "libs/glad/include/" }
+	targetdir(c.build_directory)
+	objdir(c.object_directory)
+	
+	includedirs { "libs/glm/" }
 
-	files { "libs/glad/src/glad.c" }
+	files
+	{
+		"libs/glm/glm/**"
+	}
     
 	filter "system:linux"
 		pic "On"
@@ -18,7 +26,7 @@ project "GLAD"
 
 		defines
 		{
-			"_GLAD_X11"
+			"_GLM_X11"
 		}
 
 	filter "system:windows"
@@ -27,7 +35,7 @@ project "GLAD"
 
 		defines 
 		{ 
-			"_GLAD_WIN32",
+			"_GLM_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 

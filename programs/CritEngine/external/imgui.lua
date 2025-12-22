@@ -1,16 +1,28 @@
-project "GLM"
+local c = require("common")
+
+print("Running imgui.lua")
+
+project "ImGui"
+	location "libs/imgui"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
 
-	targetdir "bin/%{cfg.buildcfg}"
-	objdir "obj/%{cfg.buildcfg}"
+	targetdir(c.build_directory)
+	objdir(c.object_directory)
 	
-	includedirs { "libs/glm/" }
+	includedirs { "libs/imgui/", "libs/glad/include", "libs/glfw/include/" }
 
 	files
 	{
-		"libs/glm/glm/**"
+		"libs/imgui/*.cpp",
+		"libs/imgui/backends/imgui_impl_glfw.cpp",
+		"libs/imgui/backends/imgui_impl_opengl3.cpp"
+	}
+
+	defines 
+	{
+		"IMGUI_IMPL_OPENGL_LOADER_GLAD"
 	}
     
 	filter "system:linux"
@@ -21,7 +33,7 @@ project "GLM"
 
 		defines
 		{
-			"_GLM_X11"
+			"_IMGUI_X11"
 		}
 
 	filter "system:windows"
@@ -30,7 +42,7 @@ project "GLM"
 
 		defines 
 		{ 
-			"_GLM_WIN32",
+			"_IMGUI_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 

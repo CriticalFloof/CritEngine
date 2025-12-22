@@ -1,24 +1,19 @@
-project "ImGui"
+local c = require("common")
+
+print("Running glad.lua")
+
+project "GLAD"
+	location "libs/glad"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
 
-	targetdir "bin/%{cfg.buildcfg}"
-	objdir "obj/%{cfg.buildcfg}"
-	
-	includedirs { "libs/imgui/", "libs/glad/include", "libs/glfw/include/" }
+	targetdir(c.build_directory)
+	objdir(c.object_directory)
+    
+    includedirs { "libs/glad/include/" }
 
-	files
-	{
-		"libs/imgui/*.cpp",
-		"libs/imgui/backends/imgui_impl_glfw.cpp",
-		"libs/imgui/backends/imgui_impl_opengl3.cpp"
-	}
-
-	defines 
-	{
-		"IMGUI_IMPL_OPENGL_LOADER_GLAD"
-	}
+	files { "libs/glad/src/glad.c" }
     
 	filter "system:linux"
 		pic "On"
@@ -28,7 +23,7 @@ project "ImGui"
 
 		defines
 		{
-			"_IMGUI_X11"
+			"_GLAD_X11"
 		}
 
 	filter "system:windows"
@@ -37,7 +32,7 @@ project "ImGui"
 
 		defines 
 		{ 
-			"_IMGUI_WIN32",
+			"_GLAD_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
 

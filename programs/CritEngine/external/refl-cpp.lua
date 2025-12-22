@@ -1,18 +1,22 @@
+local c = require("common")
+
+print("Running refl-cpp.lua")
+
 project "ReflCpp"
+    location "libs/refl-cpp"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++23"
 	architecture "x86_64"
 
-	targetdir "bin/%{cfg.buildcfg}"
-	objdir "obj/%{cfg.buildcfg}"
+	targetdir(c.build_directory)
+	objdir(c.object_directory)
 
 	includedirs { "libs/refl-cpp/include/" }
 
 	files
 	{
 		"libs/refl-cpp/include/*.cpp",
-		"libs/refl-cpp/include/*.hpp",
+        "libs/refl-cpp/include/*.hpp"
 	}
 
 	systemversion "latest"

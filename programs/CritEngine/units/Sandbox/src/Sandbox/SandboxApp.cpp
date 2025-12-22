@@ -5,40 +5,37 @@
 #include <vector>
 #include <numeric>
 #include <memory>
-#include <type_traits>
 
-#include <EngineCore/Layer.h>
-#include <EngineCore/Application.h>
-#include <EngineCore/Core/GlobalEngine.h>
-#include <EngineCore/Core/MainLoop.h>
-#include <EngineCore/Logging/Logger.h>
-#include <EngineCore/Event/Event.h>
-#include <EngineCore/Event/KeyboardEvent.h>
-#include <EngineCore/Input/Input.h>
-#include <EngineCore/Entry.h>
-#include <EngineCore/Math/Vector2.h>
-#include <EngineCore/Graphics/Renderer.h>
-#include <EngineCore/Graphics/Camera.h>
-#include <EngineCore/Graphics/PIL/Texture.h>
-#include <EngineCore/Graphics/PIL/Pipeline.h>
-#include <EngineCore/Resource/Resource.h>
-#include <EngineCore/ECS/Context.h>
-#include <EngineCore/ECS/Components/Spatial.h>
-#include <EngineCore/Profiler/Profiler.h>
+#include <Core/Layer.h>
+#include <Core/Application.h>
+#include <Core/Core/GlobalEngine.h>
+#include <Core/Core/MainLoop.h>
+#include <Core/Logging/Logger.h>
+#include <Core/Event/Event.h>
+#include <Core/Event/KeyboardEvent.h>
+#include <Core/Input/Input.h>
+#include <Core/Entry.h>
+#include <Core/Math/Vector2.h>
+#include <Core/Graphics/Renderer.h>
+#include <Core/Graphics/Camera.h>
+#include <Core/Graphics/PIL/Texture.h>
+#include <Core/Graphics/PIL/Pipeline.h>
+#include <Core/Resource/Resource.h>
+#include <Core/ECS/Context.h>
+#include <Core/ECS/Components/Spatial.h>
+#include <Core/Profiler/Profiler.h>
 
-#include <EngineCore/Tasks/TaskScheduler.h>
-#include <EngineCore/Threading/ThreadingHelpers.h>
-#include <EngineCore/Resource/Loaders/GLSLShaderLoader.h>
-#include <EngineCore/Scene/Actor.h>
-#include <EngineCore/Serialization/Serializer.h>
+#include <Core/Tasks/TaskScheduler.h>
+#include <Core/Threading/ThreadingHelpers.h>
+#include <Core/Resource/Loaders/GLSLShaderLoader.h>
+#include <Core/Scene/Actor.h>
 
 #include <imgui.h>
-#include <EngineCore/Graphics/Material.h>
-#include <EngineCore/Graphics/Model.h>
+#include <Core/Graphics/Material.h>
+#include <Core/Graphics/Model.h>
 #include <refl.hpp>
 
-
-const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path() / "Assets"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
+const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path().parent_path().parent_path() / "data"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
 
 class LayerTest : public Engine::Layer {
 
@@ -96,10 +93,9 @@ public:
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 		Engine::Actor* actor = static_cast<Engine::Actor*>(scene->GetSceneRoot().get());
 
-		// Reflection Test
+		// Woa
 
-		std::cout << "Custom serialization: ";
-		serialize(std::cout, Engine::Actor{} );
+		refl::runtime::detail::indent(std::cout, 1);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");

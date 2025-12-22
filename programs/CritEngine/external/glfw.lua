@@ -1,10 +1,15 @@
+local c = require("common")
+
+print("Running glfw.lua")
+
 project "GLFW"
+	location "libs/glfw"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
 
-	targetdir "bin/%{cfg.buildcfg}"
-	objdir "obj/%{cfg.buildcfg}"
+	targetdir(c.build_directory)
+	objdir(c.object_directory)
 	
 	includedirs { "libs/glfw/include/" }
 
