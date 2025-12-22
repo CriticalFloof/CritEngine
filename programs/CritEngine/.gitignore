@@ -1,0 +1,53 @@
+# Ignore all files by default, but scan all directories
+*
+!*/
+
+# C/C++ source files
+!*.c
+!*.unit.c
+!*.cpp
+!*.unit.cpp
+!*.h
+!*.hpp
+
+# Shader formats
+!*.glsl
+!*.fragshader
+!*.vertshader
+
+# Text files
+!*.txt
+!*.md
+
+# Script files
+!*.bat
+!*.sh
+!*.pl
+!*.py
+!*.ps1
+!*.js
+!*.ts
+!*.tsx
+!*.command
+
+# Projects and premake
+!*.csproj
+!*.lua
+
+# Specific names
+!README
+!AUTHORS
+!LICENSE
+!FAQ
+!VERSION
+!ChangeLog
+!.gitignore
+
+# Media Files
+!*.bmp
+!*.mtl
+!*.obj
+
+# Exclude Build and Dependency Directories
+**/build
+**/external/libs
