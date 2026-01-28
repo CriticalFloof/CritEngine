@@ -13,8 +13,9 @@ namespace Engine {
 		virtual ~Actor() {};
 
 		
-		int health = 10;
-		char mana = 60;
+		int health = 100;
+		short mana = 600;
+		std::string h = "Hello!";
 
 		int GetInteger(std::string str) { 
 			std::cout << "Hello, from GetInteger!! " << str << "\n";
@@ -26,5 +27,6 @@ namespace Engine {
 REFL_TYPE(Engine::Actor, bases<>)
     REFL_FIELD(health, refl::attr::usage::member())
 	REFL_FIELD(mana, refl::attr::usage::member())
+	REFL_FIELD(h, refl::attr::usage::member())
 	REFL_FUNC(GetInteger)
 REFL_END

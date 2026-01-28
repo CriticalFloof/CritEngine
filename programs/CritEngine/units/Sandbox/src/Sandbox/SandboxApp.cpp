@@ -29,11 +29,13 @@
 #include <Core/Threading/ThreadingHelpers.h>
 #include <Core/Resource/Loaders/GLSLShaderLoader.h>
 #include <Core/Scene/Actor.h>
+#include <Core/Serialization/Serializer.h>
 
 #include <imgui.h>
 #include <Core/Graphics/Material.h>
 #include <Core/Graphics/Model.h>
 #include <refl.hpp>
+#include <istream>
 
 const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path().parent_path().parent_path() / "data"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
 
@@ -50,6 +52,21 @@ public:
 	}
 
 };
+
+class Wrapper
+{
+public:
+	Engine::Actor actor;
+	double x = 0.1;
+	double y = 0.7;
+};
+
+REFL_TYPE(Wrapper, bases<>)
+	REFL_FIELD(actor, refl::attr::usage::member())
+	REFL_FIELD(x, refl::attr::usage::member())
+	REFL_FIELD(y, refl::attr::usage::member())
+REFL_END
+
 
 class Sandbox : public Engine::Application
 {
@@ -93,9 +110,18 @@ public:
 		scene->GetSceneRoot()->AddChild(std::make_shared<Engine::Actor>());
 		Engine::Actor* actor = static_cast<Engine::Actor*>(scene->GetSceneRoot().get());
 
-		// Woa
+		// Serialization Test
 
-		refl::runtime::detail::indent(std::cout, 1);
+		std::stringstream stream;
+
+		Wrapper e = Wrapper();
+		e.actor = *actor;
+
+		Serialization::Serialize(e, stream);
+
+		Wrapper deserialized = Serialization::Deserialize<Wrapper>(stream);
+
+		Serialization::Serialize(deserialized, std::cout);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
