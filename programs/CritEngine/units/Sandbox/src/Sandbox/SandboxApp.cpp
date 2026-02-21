@@ -34,7 +34,7 @@
 #include <imgui.h>
 #include <Core/Graphics/Material.h>
 #include <Core/Graphics/Model.h>
-#include <refl.hpp>
+#include <Core/Reflection/Traits.h>
 #include <istream>
 
 const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path().parent_path().parent_path() / "data"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
@@ -59,12 +59,14 @@ public:
 	Engine::Actor actor;
 	double x = 0.1;
 	double y = 0.7;
+	std::array<uint32_t, 8> arr = {1};
 };
 
 REFL_TYPE(Wrapper, bases<>)
 	REFL_FIELD(actor, refl::attr::usage::member())
 	REFL_FIELD(x, refl::attr::usage::member())
 	REFL_FIELD(y, refl::attr::usage::member())
+	REFL_FIELD(arr, refl::attr::usage::member())
 REFL_END
 
 
@@ -112,16 +114,23 @@ public:
 
 		// Serialization Test
 
-		std::stringstream stream;
+		//std::stringstream stream;
 
 		Wrapper e = Wrapper();
 		e.actor = *actor;
+		e.actor.h = "Hello Serializer";
+		e.actor.health = 3;
+		e.actor.mana = 4;
+		e.x = 777.7;
+		e.y = 888.8;
+		
+		std::string json = Serialization::ToJson(e);
+		std::cout << json << '\n';
+		auto json_view = std::string_view(json);
+		Wrapper ne;
+		Serialization::FromJson<Wrapper>(json_view, ne);
+		
 
-		Serialization::Serialize(e, stream);
-
-		Wrapper deserialized = Serialization::Deserialize<Wrapper>(stream);
-
-		Serialization::Serialize(deserialized, std::cout);
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
@@ -276,7 +285,7 @@ public:
 		Engine::Renderer::EndScene();
 	}
 
-	~Sandbox()
+	~Sandbox() override
 	{
 		LogWarning("Sandbox", "Destroyed!");
 	}

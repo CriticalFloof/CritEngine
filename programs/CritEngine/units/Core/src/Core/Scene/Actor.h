@@ -15,7 +15,7 @@ namespace Engine {
 		
 		int health = 100;
 		short mana = 600;
-		std::string h = "Hello!";
+		std::string h = "Hello World!";
 
 		int GetInteger(std::string str) { 
 			std::cout << "Hello, from GetInteger!! " << str << "\n";
