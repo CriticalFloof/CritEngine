@@ -266,7 +266,7 @@ public:
 		// Testing our ECS 
 		//CE_PROFILE_FUNC(UpdateLoop);
 		std::shared_ptr<Engine::Window> window = this->window.lock();
-
+		
 		this->physicsSystem.Update();
 		SpatialComponent* transform = this->ECSContext.GetComponent<SpatialComponent>(player);
 

@@ -8,9 +8,6 @@
 #include <variant>
 #include <expected>
 
-#include "Core/Reflection/Traits.h"
-
-
 namespace Serialization {
 	
 	class bad_json : public std::runtime_error
