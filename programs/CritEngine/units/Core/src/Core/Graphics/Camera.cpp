@@ -4,11 +4,11 @@
 
 namespace Engine {
 	BaseCamera::BaseCamera(
-		float aspect_ratio, 
-		float near_plane, 
-		float far_plane, 
-		Vector3 position, 
-		Quaternion rotation
+		const float aspect_ratio, 
+		const float near_plane, 
+		const float far_plane, 
+		const Vector3 position, 
+		const Quaternion rotation
 	) : m_rotation(rotation), m_position(position), m_aspectRatio(aspect_ratio), m_nearPlane(near_plane), m_farPlane(far_plane)
 	{
 	}
@@ -57,11 +57,11 @@ namespace Engine {
 	// Perspective 
 	PerspectiveCamera::PerspectiveCamera(
 		const float vertical_fov,
-		float aspect_ratio,
-		float near_plane,
-		float far_plane,
-		Vector3 position,
-		Quaternion rotation
+		const float aspect_ratio,
+		const float near_plane,
+		const float far_plane,
+		const Vector3 position,
+		const Quaternion rotation
 	) : BaseCamera(aspect_ratio, near_plane, far_plane, position, rotation), m_verticalFov(vertical_fov)
 	{
 		PerspectiveCamera::calculatePerspectiveMatrix();
@@ -114,12 +114,12 @@ namespace Engine {
 
 	// Orthographic 
 	OrthographicCamera::OrthographicCamera(
-		float height,
-		float aspect_ratio,
-		float near_plane,
-		float far_plane,
-		Vector3 position,
-		Quaternion rotation
+		const float height,
+		const float aspect_ratio,
+		const float near_plane,
+		const float far_plane,
+		const Vector3 position,
+		const Quaternion rotation
 	) : BaseCamera(aspect_ratio, near_plane, far_plane, position, rotation), m_height(height)
 	{
 		OrthographicCamera::calculatePerspectiveMatrix();
