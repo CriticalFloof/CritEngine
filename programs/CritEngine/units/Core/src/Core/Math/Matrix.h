@@ -12,43 +12,27 @@ namespace Engine {
 		//Matrix Data is stored in column major order
 		T data[Rows * Columns];
 
-		Matrix() : data{} {};
+		Matrix() : data{}
+		{
+		}
 
 		Matrix(T data[Rows * Columns]) {
 			for (size_t i = 0; i < Rows * Columns; i++)
 			{
 				this->data[i] = data[i];
 			}
-		};
+		}
 
 		Matrix(std::initializer_list<T> data) {
 			for (size_t i = 0; i < Rows * Columns; i++)
 			{
 				this->data[i] = data.begin()[i];
 			}
-		};
-
-		Matrix(const Matrix& base) { 
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				this->data[i] = base.data[i];
-			}
-		};
-
-		Matrix& operator=(const Matrix& other)
-		{
-			if (this != &other)
-			{
-				for (size_t i = 0; i < Rows * Columns; i++)
-				{
-					this->data[i] = other.data[i];
-				}
-			}
-			return *this;
 		}
-
-		template<int R = Rows, int C = Columns>
-		static std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Identity()
+		
+		template<typename _ = T>
+		requires(Rows == Columns)
+		static Matrix Identity()
 		{
 			Matrix out = Matrix();
 
@@ -241,7 +225,7 @@ namespace Engine {
 		bool IsEqual(Matrix& other) const { return Matrix::IsEqual(*this, other); }
 
 		template<size_t OtherColumns>
-		Matrix<T, Rows, OtherColumns> operator*(const Matrix<T, Columns, OtherColumns>& other) { return Matrix::Mul(*this, other); }
+		Matrix<T, Rows, OtherColumns> operator*(const Matrix<T, Columns, OtherColumns>& other) const { return Matrix::Mul(*this, other); }
 	};
 
 	
