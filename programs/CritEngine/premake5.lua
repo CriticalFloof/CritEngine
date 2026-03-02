@@ -32,6 +32,9 @@ project "Core"
 	language "C++"
 	cppdialect "C++23"
 
+	clangtidy("On")
+	runcodeanalysis("Off")
+
 	filter "system:windows"
 		staticruntime "Off"
 		systemversion "latest"
@@ -87,6 +90,9 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++23"
+
+	clangtidy("On")
+	runcodeanalysis("Off")
 
 	filter "system:windows"
 		staticruntime "Off"
