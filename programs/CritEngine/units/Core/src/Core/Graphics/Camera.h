@@ -4,81 +4,73 @@
 
 
 namespace Engine {
-
+	
 	class ENGINE_API BaseCamera
 	{
 	public:
-		BaseCamera(float aspectRatio = (16 / 9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
-		virtual ~BaseCamera() {};
-
-		virtual Matrix4f GetViewPerspectiveMatrix() = 0;
-		virtual Matrix4f GetPerspectiveMatrix() = 0;
-		virtual Matrix4f GetViewMatrix() = 0;
-
-		virtual void CalculateViewMatrix() = 0;
-		virtual void CalculatePerspectiveMatrix() = 0;
-
-		virtual void SetPosition(Vector3 newPosition) { this->position = newPosition; this->CalculateViewMatrix(); }
-		virtual Vector3 GetPosition() { return this->position; }
-		virtual void SetRotation(Quaternion newRotation) { this->rotation = newRotation; this->CalculateViewMatrix(); }
-		virtual Quaternion GetRotation() { return this->rotation; }
-		virtual void SetAspectRatio(float newAspectRatio) { this->aspectRatio = newAspectRatio; this->CalculatePerspectiveMatrix(); }
-		virtual float GetAspectRatio() { return this->aspectRatio; }
-		virtual void SetNearPlane(float newNearPlane) { this->nearPlane = newNearPlane; this->CalculatePerspectiveMatrix(); }
-		virtual float GetNearPlane() { return this->nearPlane; }
-		virtual void SetFarPlane(float newFarPlane) { this->farPlane = newFarPlane; this->CalculatePerspectiveMatrix(); }
-		virtual float GetFarPlane() { return this->farPlane; }
-
+		BaseCamera(float aspect_ratio = (16.f/9.f), float near_plane = 0.01f, float far_plane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		virtual ~BaseCamera() = default;
+		BaseCamera(const BaseCamera&) = default;
+		BaseCamera& operator=(const BaseCamera&) = default;
+		
+		void setPosition(const Vector3& new_position);
+		void setRotation(const Quaternion& new_rotation);
+		void setAspectRatio(float new_aspect_ratio);
+		void setNearPlane(float new_near_plane);
+		void setFarPlane(float new_far_plane);
+		
+		[[nodiscard]] Vector3 getPosition() const;
+		[[nodiscard]] Quaternion getRotation() const;
+		[[nodiscard]] float getAspectRatio() const;
+		[[nodiscard]] float getNearPlane() const;
+		[[nodiscard]] float getFarPlane() const;
+		
+		[[nodiscard]] Matrix4f getViewPerspectiveMatrix() const;
+		[[nodiscard]] Matrix4f getPerspectiveMatrix() const;
+		[[nodiscard]] Matrix4f getViewMatrix() const;
 	protected:
-		Matrix4f viewMatrix = Matrix4f::Identity();
-		Matrix4f perspectiveMatrix = Matrix4f::Identity();
-		Matrix4f viewPerspectiveMatrix = Matrix4f::Identity();
-
-		Quaternion rotation;
-		Vector3 position;
-		float aspectRatio;
-		float nearPlane;
-		float farPlane;
+		virtual void calculateViewMatrix() = 0;
+		virtual void calculatePerspectiveMatrix() = 0;
+		
+		Matrix4f m_viewMatrix = Matrix4f::Identity();
+		Matrix4f m_perspectiveMatrix = Matrix4f::Identity();
+		Matrix4f m_viewPerspectiveMatrix = Matrix4f::Identity();
+		
+		Quaternion m_rotation;
+		Vector3 m_position;
+		float m_aspectRatio;
+		float m_nearPlane;
+		float m_farPlane;
 	};
-
+	
 	class ENGINE_API PerspectiveCamera : public BaseCamera
 	{
 	public:
-		PerspectiveCamera(float verticalFOV = 60.f, float aspectRatio = (16/9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
-		virtual ~PerspectiveCamera() {};
-
-		virtual Matrix4f GetViewPerspectiveMatrix() override;
-		virtual Matrix4f GetPerspectiveMatrix() override;
-		virtual Matrix4f GetViewMatrix() override;
-
-		virtual void CalculateViewMatrix() override;
-		virtual void CalculatePerspectiveMatrix() override;
-
-		virtual void SetVertialFOV(float newVerticalFOV) { this->verticalFOV = newVerticalFOV; this->CalculateViewMatrix(); }
-		virtual float GetVertialFOV() { return this->verticalFOV; }
-
-	private:
-		float verticalFOV;
-	};		  
+		PerspectiveCamera(float vertical_fov = 60.f, float aspect_ratio = (16.f/9.f), float near_plane = 0.01f, float far_plane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		
+		void setVerticalFov(float new_vertical_fov);
+		[[nodiscard]] float getVerticalFOV() const;
+	
+	protected:
+		void calculateViewMatrix() override;
+		void calculatePerspectiveMatrix() override;
+		
+		float m_verticalFov;
+	};
 
 	class ENGINE_API OrthographicCamera : public BaseCamera
 	{
 	public:
-		OrthographicCamera(float height = 720.f, float aspectRatio = (16/9), float nearPlane = 0.01f, float farPlane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
-		virtual ~OrthographicCamera() {};
-
-		virtual Matrix4f GetViewPerspectiveMatrix() override;
-		virtual Matrix4f GetPerspectiveMatrix() override;
-		virtual Matrix4f GetViewMatrix() override;
-
-		virtual void CalculateViewMatrix() override;
-		virtual void CalculatePerspectiveMatrix() override;
-
-		virtual void SetHeight(float newHeight) { this->height = newHeight; this->CalculateViewMatrix(); }
-		virtual float GetHeight() { return this->height; }
-
-	private:
-		float height;
+		OrthographicCamera(float height = 720.f, float aspect_ratio = (16.f/9.f), float near_plane = 0.01f, float far_plane = 1000.f, Vector3 position = Vector3(0, 0, 0), Quaternion rotation = Quaternion());
+		
+		void setHeight(float new_height);
+		[[nodiscard]] float getHeight() const;
+	
+	protected:
+		void calculateViewMatrix() override;
+		void calculatePerspectiveMatrix() override;
+		
+		float m_height;
 	};
 
 }

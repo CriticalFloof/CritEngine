@@ -2,7 +2,7 @@
 
 namespace Engine {
 
-	std::shared_ptr<Engine::BaseCamera> Renderer::activeCamera = std::make_shared<PerspectiveCamera>();
+	std::shared_ptr<BaseCamera> Renderer::activeCamera = std::make_shared<PerspectiveCamera>();
 
 	void Renderer::BeginScene(std::shared_ptr<BaseCamera> camera)
 	{
@@ -11,7 +11,6 @@ namespace Engine {
 
 	void Renderer::EndScene()
 	{
-
 	}
 
 	void Renderer::Submit(const std::shared_ptr<Model>& model)
@@ -19,9 +18,9 @@ namespace Engine {
 		std::shared_ptr<Mesh> mesh = model->GetMesh();
 		std::shared_ptr<Pipeline> program = InternalMaterialAccessor::GetPipeline(mesh->GetMaterial());
 		program->Bind();
-		program->UploadUniformMat4("uViewProjection", Renderer::activeCamera->GetViewMatrix());
-		program->UploadUniformMat4("uPerspectiveProjection", Renderer::activeCamera->GetPerspectiveMatrix());
-		program->UploadUniformMat4("uViewPerspectiveProjection", Renderer::activeCamera->GetViewPerspectiveMatrix());
+		program->UploadUniformMat4("uViewProjection", Renderer::activeCamera->getViewMatrix());
+		program->UploadUniformMat4("uPerspectiveProjection", Renderer::activeCamera->getPerspectiveMatrix());
+		program->UploadUniformMat4("uViewPerspectiveProjection", Renderer::activeCamera->getViewPerspectiveMatrix());
 		program->UploadUniformMat4("uModelProjection", model->GetModelProjection());
 
 		std::vector<std::shared_ptr<Texture>> textures = InternalMaterialAccessor::GetTextures(mesh->GetMaterial());
