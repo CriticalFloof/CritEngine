@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <functional>
 #include <iostream>
 #include <chrono>
@@ -9,23 +8,19 @@
 #include <Core/Layer.h>
 #include <Core/Application.h>
 #include <Core/Core/GlobalEngine.h>
-#include <Core/Core/MainLoop.h>
 #include <Core/Logging/Logger.h>
 #include <Core/Event/Event.h>
-#include <Core/Event/KeyboardEvent.h>
 #include <Core/Input/Input.h>
-#include <Core/Entry.h>
 #include <Core/Math/Vector2.h>
 #include <Core/Graphics/Renderer.h>
 #include <Core/Graphics/Camera.h>
 #include <Core/Graphics/PIL/Texture.h>
-#include <Core/Graphics/PIL/Pipeline.h>
 #include <Core/Resource/Resource.h>
 #include <Core/ECS/Context.h>
 #include <Core/ECS/Components/Spatial.h>
 #include <Core/Profiler/Profiler.h>
+#include <Core/Entry.h>
 
-#include <Core/Tasks/TaskScheduler.h>
 #include <Core/Threading/ThreadingHelpers.h>
 #include <Core/Resource/Loaders/GLSLShaderLoader.h>
 #include <Core/Scene/Actor.h>
@@ -34,8 +29,6 @@
 #include <imgui.h>
 #include <Core/Graphics/Material.h>
 #include <Core/Graphics/Model.h>
-#include <Core/Reflection/Traits.h>
-#include <istream>
 
 const std::filesystem::path ROOT_ASSET_PATH = ((std::filesystem::path)(__FILE__)).parent_path().parent_path().parent_path() / "data"; // TODO: This is temporary, the engine should provide easy to use "virtual" file system capabilities.
 
@@ -219,7 +212,7 @@ public:
 		Engine::Vector2 velocity = (cursorPosition - this->prevCursorPos) / 1000.f;
 		
 		// Prevent roll by separating yaw and pitch rotations in the multiplication order.
-		this->camera->SetRotation(Engine::Quaternion::FromEulerAngles(Engine::Vector3(velocity.y, 0, 0)) * this->camera->GetRotation() * Engine::Quaternion::FromEulerAngles(Engine::Vector3(0, velocity.x, 0)));
+		this->camera->setRotation(Engine::Quaternion::FromEulerAngles(Engine::Vector3(velocity.y, 0, 0)) * this->camera->getRotation() * Engine::Quaternion::FromEulerAngles(Engine::Vector3(0, velocity.x, 0)));
 		
 		this->prevCursorPos = cursorPosition;
 		return;
@@ -227,8 +220,8 @@ public:
 
 	void MoveCameraPosition(unsigned int key)
 	{
-		Engine::Vector3 cameraPosition = this->camera->GetPosition();
-		Engine::Quaternion cameraRotation = this->camera->GetRotation();
+		Engine::Vector3 cameraPosition = this->camera->getPosition();
+		Engine::Quaternion cameraRotation = this->camera->getRotation();
 		
 		Engine::Vector3 forwardVector = cameraRotation.RotateVector(Engine::Vector3(0, 0, -1));
 		Engine::Vector3 rightVector = cameraRotation.RotateVector(Engine::Vector3(1, 0, 0));
@@ -258,7 +251,7 @@ public:
 		}
 		
 		
-		this->camera->SetPosition(cameraPosition);
+		this->camera->setPosition(cameraPosition);
 	}
 
 	void Tick() override
@@ -270,7 +263,7 @@ public:
 		this->physicsSystem.Update();
 		SpatialComponent* transform = this->ECSContext.GetComponent<SpatialComponent>(player);
 
-		this->camera->SetAspectRatio(window->GetAspectRatio());
+		this->camera->setAspectRatio(window->GetAspectRatio());
 
 		this->cubeModel->SetProjection(transform->GetMatrix());
 
