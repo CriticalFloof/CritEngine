@@ -58,24 +58,24 @@ namespace Engine {
 			return out;
 		}
 
-		template<size_t OtherColumns>
-		static Matrix<T, Rows, OtherColumns> Mul(const Matrix<T, Rows, Columns>& first, const Matrix<T, Columns, OtherColumns>& second)
+		template<size_t RowsLhs = Rows, size_t SharedDepth = Columns, size_t ColumnsRhs>
+		static Matrix<T, RowsLhs, ColumnsRhs> Mul(const Matrix<T, RowsLhs, SharedDepth>& first, const Matrix<T, SharedDepth, ColumnsRhs>& second)
 		{
 			// Naive implementation
-			Matrix<T, Rows, OtherColumns> out = Matrix<T, Rows, OtherColumns>();
+			
+			Matrix<T, RowsLhs, ColumnsRhs> out;
 
-			for (size_t i = 0; i < Rows; i++)
+			for (size_t i = 0; i < RowsLhs; i++)
 			{
-				for (size_t j = 0; j < OtherColumns; j++)
+				for (size_t j = 0; j < ColumnsRhs; j++)
 				{
-					out.data[j * Rows + i] = 0;
-					for (size_t k = 0; k < Columns; k++)
+					out.data[i * RowsLhs + j] = 0;
+					for (size_t k = 0; k < SharedDepth; k++)
 					{
-						out.data[j * Rows + i] += first.data[k * Rows + i] * second.data[j * Columns + k];
+						out.data[i * RowsLhs + j] += first.data[i * RowsLhs + k] * second.data[k * SharedDepth + j];
 					}
 				}
 			}
-
 			return out;
 		}
 
