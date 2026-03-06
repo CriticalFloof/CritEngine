@@ -82,7 +82,7 @@ public:
 			{
 				SpatialComponent* primitive = this->context->GetComponent<SpatialComponent>(entity);
 				
-				primitive->rotation = primitive->rotation * Engine::Quaternion::FromEulerAngles(Engine::Vector3(0, (deltaTime.count() * 10.f), 0));
+				primitive->rotation = (primitive->rotation * Engine::Quaternion::FromEulerAngles(Engine::Vector3(0, (deltaTime.count() * 10.f), 0))).Normalize();
 				primitive->position.y = sinf(std::chrono::duration_cast<std::chrono::milliseconds>(curTime - this->startTime).count() * 0.001f);
 
 			}
@@ -122,8 +122,6 @@ public:
 		auto json_view = std::string_view(json);
 		Wrapper ne;
 		Serialization::FromJson<Wrapper>(json_view, ne);
-		
-
 
 		// Window Setup
 		this->window = Engine::GlobalEngine::Get().GetWindowManager().CreateWindow(800, 600, "Sandbox");
