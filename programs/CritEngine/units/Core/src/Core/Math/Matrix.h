@@ -3,243 +3,277 @@
 #include "../Core/Base.h"
 #include <initializer_list>
 
-namespace Engine {
+namespace Engine
+{
+    // Matrices are stored in column-major and use column-vector math.
 
-	template<typename T, size_t Rows, size_t Columns>
-	struct Matrix
-	{
-		static_assert(std::is_arithmetic<T>::value, "Matrix elements must be of a numeric type!");
-		//Matrix Data is stored in column major order
-		T data[Rows * Columns];
+    template <typename T, size_t Rows, size_t Columns>
+    struct Matrix
+    {
+        static_assert(std::is_arithmetic_v<T>, "Matrix elements must be of a numeric type!");
+        //Matrix Data is stored in column major order
+        T data[Rows * Columns];
 
-		Matrix() : data{}
-		{
-		}
+        Matrix() : data{}
+        {
+        }
 
-		Matrix(T data[Rows * Columns]) {
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				this->data[i] = data[i];
-			}
-		}
+        Matrix(T data[Rows * Columns])
+        {
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                this->data[i] = data[i];
+            }
+        }
 
-		Matrix(std::initializer_list<T> data) {
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				this->data[i] = data.begin()[i];
-			}
-		}
-		
-		template<typename _ = T>
-		requires(Rows == Columns)
-		static Matrix Identity()
-		{
-			Matrix out = Matrix();
+        Matrix(std::initializer_list<T> data)
+        {
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                this->data[i] = data.begin()[i];
+            }
+        }
 
-			for (size_t i = 0; i < Rows; i++)
-			{
-				out.data[i * Rows + i] = 1;
-			};
+        [[nodiscard]] static T& at(Matrix& mat, const size_t row, const size_t column)
+        {
+            ASSERT(row < Rows && column < Columns,
+                   ("Matrix Index Access Out of Bounds. Accessed: [" + std::to_string(row) + "][" + std::to_string(
+                       column) + "] Bounds: [" + std::to_string(Rows) + "][" + std::to_string(Columns) + "]").c_str())
 
-			return out;
-		}
+            return mat.data[column * Columns + row];
+        }
 
-		//Static Math Operations
+        [[nodiscard]] static const T& at(const Matrix& mat, const size_t row, const size_t column)
+        {
+            ASSERT(row < Rows && column < Columns,
+                   ("Matrix Index Access Out of Bounds. Accessed: [" + std::to_string(row) + "][" + std::to_string(
+                       column) + "] Bounds: [" + std::to_string(Rows) + "][" + std::to_string(Columns) + "]").c_str())
 
-		static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first, const Matrix<T, Rows, Columns>& second)
-		{
-			Matrix out = Matrix();
+            return mat.data[column * Columns + row];
+        }
 
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				out.data[i] = first.data[i] + second.data[i];
-			}
+        template <typename _ = T>
+            requires(Rows == Columns)
+        static Matrix Identity()
+        {
+            Matrix out = Matrix();
 
-			return out;
-		}
+            for (size_t i = 0; i < Rows; i++)
+            {
+                out.data[i * Rows + i] = 1;
+            }
 
-		template<size_t RowsLhs = Rows, size_t SharedDepth = Columns, size_t ColumnsRhs>
-		static Matrix<T, RowsLhs, ColumnsRhs> Mul(const Matrix<T, RowsLhs, SharedDepth>& first, const Matrix<T, SharedDepth, ColumnsRhs>& second)
-		{
-			// Naive implementation
-			
-			Matrix<T, RowsLhs, ColumnsRhs> out;
+            return out;
+        }
 
-			for (size_t i = 0; i < RowsLhs; i++)
-			{
-				for (size_t j = 0; j < ColumnsRhs; j++)
-				{
-					out.data[i * RowsLhs + j] = 0;
-					for (size_t k = 0; k < SharedDepth; k++)
-					{
-						out.data[i * RowsLhs + j] += first.data[i * RowsLhs + k] * second.data[k * SharedDepth + j];
-					}
-				}
-			}
-			return out;
-		}
+        //Static Math Operations
 
-		static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first, const T scalar)
-		{
-			Matrix out = Matrix();
+        static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first,
+                                            const Matrix<T, Rows, Columns>& second)
+        {
+            Matrix out = Matrix();
 
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				out.data[i] = first.data[i] + scalar;
-			}
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                out.data[i] = first.data[i] + second.data[i];
+            }
 
-			return out;
-		}
+            return out;
+        }
 
-		static Matrix<T, Rows, Columns> Mul(const Matrix& base, const T scalar)
-		{
-			Matrix out = Matrix();
+        template <size_t RowsLhs = Rows, size_t SharedDepth = Columns, size_t ColumnsRhs>
+        static Matrix<T, RowsLhs, ColumnsRhs> Mul(const Matrix<T, RowsLhs, SharedDepth>& first,
+                                                  const Matrix<T, SharedDepth, ColumnsRhs>& second)
+        {
+            // Naive implementation
+            // TODO: Look into SSE for speedup
 
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				out.data[i] = base.data[i] * scalar;
-			}
+            Matrix<T, RowsLhs, ColumnsRhs> out;
 
-			return out;
-		}
+            for (size_t r = 0; r < RowsLhs; r++)
+            {
+                for (size_t c = 0; c < ColumnsRhs; c++)
+                {
+                    out.at(r, c) = 0;
+                    for (size_t d = 0; d < SharedDepth; d++)
+                    {
+                        out.at(r, c) += first.at(r, d) * second.at(d, c);
+                    }
+                }
+            }
+            return out;
+        }
 
-		static Matrix<T, Columns, Rows> Transpose(const Matrix<T, Rows, Columns>& base)
-		{
-			Matrix out = Matrix<T, Columns, Rows>();
+        static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first, const T scalar)
+        {
+            Matrix out = Matrix();
 
-			for (size_t i = 0; i < Columns; i++)
-			{
-				for (size_t j = 0; j < Rows; j++)
-				{
-					out.data[i * Rows + j] = base.data[j * Columns + i];
-				}
-			}
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                out.data[i] = first.data[i] + scalar;
+            }
 
-			return out;
-		}
+            return out;
+        }
 
-		template<int R = Rows, int C = Columns>
-		static std::enable_if_t<R == C, T> Determinant(const Matrix<T, Rows, Columns>& base)
-		{
+        static Matrix<T, Rows, Columns> Mul(const Matrix& base, const T scalar)
+        {
+            Matrix out = Matrix();
 
-			Matrix m = Matrix(base);
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                out.data[i] = base.data[i] * scalar;
+            }
 
-			T det = 1.0;
-			T temp;
-			for (int i = 0; i < Rows; i++)
-			{
-				int pivot = i;
-				for (size_t j = i + 1; j < Rows; j++)
-				{
-					if (abs(m.data[j * Rows + i]) > abs(m.data[pivot * Rows + i]))
-					{
-						pivot = j;
-					}
-				}
-				if (pivot != i)
-				{
-					for (size_t k = 0; k < Rows; k++)
-					{
-						temp = m.data[i * Rows + k];
-						m.data[i * Rows + k] = m.data[pivot * Rows + k];
-						m.data[pivot * Rows + k] = temp;
-					}
-					det *= -1;
-				}
-				if (m.data[i * Rows + i] == 0)
-				{
-					return 0;
-				}
-				det *= m.data[i * Rows + i];
-				for (size_t j = i + 1; j < Rows; j++)
-				{
-					T factor = m.data[j * Rows + i] / m.data[i * Rows + i];
-					for (size_t k = i + 1; k < Rows; k++)
-					{
-						m.data[j * Rows + k] -= factor * m.data[i * Rows + k];
-					}
-				}
-			}
-			return det;
-		}
+            return out;
+        }
 
-		template<int R = Rows, int C = Columns>
-		static std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse(const Matrix& base)
-		{
+        static Matrix<T, Columns, Rows> Transpose(const Matrix<T, Rows, Columns>& base)
+        {
+            Matrix out = Matrix<T, Columns, Rows>();
 
-			Matrix input = Matrix(base);
-			Matrix inverse = Matrix::Identity();
+            for (size_t i = 0; i < Columns; i++)
+            {
+                for (size_t j = 0; j < Rows; j++)
+                {
+                    out.data[i * Rows + j] = base.data[j * Columns + i];
+                }
+            }
 
-			for (size_t i = 0; i < Rows; i++)
-			{
-				T pivot = input.data[i * Rows + i];
-				ASSERT(pivot != 0, "Inverse matrix doesn't exist!");
+            return out;
+        }
 
-				for (size_t j = 0; j < Rows; j++)
-				{
-					input.data[i * Rows + j] /= pivot;
-					inverse.data[i * Rows + j] /= pivot;
-				}
+        template <int R = Rows, int C = Columns>
+        static std::enable_if_t<R == C, T> Determinant(const Matrix<T, Rows, Columns>& base)
+        {
+            Matrix m = Matrix(base);
 
-				for (size_t j = 0; j < Rows; j++)
-				{
-					if (i != j)
-					{
-						T scale = input.data[j * Rows + i];
-						for (size_t k = 0; k < Rows; k++)
-						{
-							input.data[j * Rows + k] -= scale * input.data[i * Rows + k];
-							inverse.data[j * Rows + k] -= scale * inverse.data[i * Rows + k];
-						}
-					}
-				}
-			}
+            T det = 1.0;
+            T temp;
+            for (int i = 0; i < Rows; i++)
+            {
+                int pivot = i;
+                for (size_t j = i + 1; j < Rows; j++)
+                {
+                    if (abs(m.data[j * Rows + i]) > abs(m.data[pivot * Rows + i]))
+                    {
+                        pivot = j;
+                    }
+                }
+                if (pivot != i)
+                {
+                    for (size_t k = 0; k < Rows; k++)
+                    {
+                        temp = m.data[i * Rows + k];
+                        m.data[i * Rows + k] = m.data[pivot * Rows + k];
+                        m.data[pivot * Rows + k] = temp;
+                    }
+                    det *= -1;
+                }
+                if (m.data[i * Rows + i] == 0)
+                {
+                    return 0;
+                }
+                det *= m.data[i * Rows + i];
+                for (size_t j = i + 1; j < Rows; j++)
+                {
+                    T factor = m.data[j * Rows + i] / m.data[i * Rows + i];
+                    for (size_t k = i + 1; k < Rows; k++)
+                    {
+                        m.data[j * Rows + k] -= factor * m.data[i * Rows + k];
+                    }
+                }
+            }
+            return det;
+        }
 
-			return inverse;
-		}
+        template <int R = Rows, int C = Columns>
+        static std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse(const Matrix& base)
+        {
+            Matrix input = Matrix(base);
+            Matrix inverse = Matrix::Identity();
+
+            for (size_t i = 0; i < Rows; i++)
+            {
+                T pivot = input.data[i * Rows + i];
+                ASSERT(pivot != 0, "Inverse matrix doesn't exist!");
+
+                for (size_t j = 0; j < Rows; j++)
+                {
+                    input.data[i * Rows + j] /= pivot;
+                    inverse.data[i * Rows + j] /= pivot;
+                }
+
+                for (size_t j = 0; j < Rows; j++)
+                {
+                    if (i != j)
+                    {
+                        T scale = input.data[j * Rows + i];
+                        for (size_t k = 0; k < Rows; k++)
+                        {
+                            input.data[j * Rows + k] -= scale * input.data[i * Rows + k];
+                            inverse.data[j * Rows + k] -= scale * inverse.data[i * Rows + k];
+                        }
+                    }
+                }
+            }
+
+            return inverse;
+        }
 
 
+        static bool IsEqual(const Matrix<T, Rows, Columns>& first, const Matrix<T, Rows, Columns>& second)
+        {
+            for (size_t i = 0; i < Rows * Columns; i++)
+            {
+                if (first.data[i] != second.data[i]) return false;
+            }
+            return true;
+        }
 
-		static bool IsEqual(const Matrix<T, Rows, Columns>& first, const Matrix<T, Rows, Columns>& second)
-		{
-			for (size_t i = 0; i < Rows * Columns; i++)
-			{
-				if (first.data[i] != second.data[i]) return false;
-			}
-			return true;
-		}
+        //Object Math Operations
+        [[nodiscard]] T& at(const size_t row, const size_t column) { return Matrix::at(*this, row, column); }
 
-		//Object Math Operations
-		Matrix Add(Matrix& other) const { return Matrix::Add(*this, other); }
-		Matrix Mul(Matrix& other) const { return Matrix::Mul(*this, other); }
+        [[nodiscard]] const T& at(const size_t row, const size_t column) const
+        {
+            return Matrix::at(*this, row, column);
+        }
 
-		Matrix Add(const T scalar) const { return Matrix::Add(*this, scalar); }
-		Matrix Mul(const T scalar) const { return Matrix::Mul(*this, scalar); }
+        Matrix Add(Matrix& other) const { return Matrix::Add(*this, other); }
+        Matrix Mul(Matrix& other) const { return Matrix::Mul(*this, other); }
 
-		Matrix Transpose() const { return Matrix::Transpose(*this); }
-		template<size_t R = Rows, size_t C = Columns>
-		std::enable_if_t<R == C, T> Determinant() const { return Matrix::Determinant(*this); }
-		template<size_t R = Rows, size_t C = Columns>
-		std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse() const { return Matrix::Inverse(*this); }
+        Matrix Add(const T scalar) const { return Matrix::Add(*this, scalar); }
+        Matrix Mul(const T scalar) const { return Matrix::Mul(*this, scalar); }
 
-		bool IsEqual(Matrix& other) const { return Matrix::IsEqual(*this, other); }
+        Matrix Transpose() const { return Matrix::Transpose(*this); }
 
-		template<size_t OtherColumns>
-		Matrix<T, Rows, OtherColumns> operator*(const Matrix<T, Columns, OtherColumns>& other) const { return Matrix::Mul(*this, other); }
-	};
+        template <size_t R = Rows, size_t C = Columns>
+        std::enable_if_t<R == C, T> Determinant() const { return Matrix::Determinant(*this); }
 
-	
-	using Matrix2f = Matrix<float, 2, 2>;
-	template struct ENGINE_API Matrix<float, 2, 2>;
-	using Matrix3f = Matrix<float, 3, 3>;
-	template struct ENGINE_API Matrix<float, 3, 3>;
-	using Matrix4f = Matrix<float, 4, 4>;
-	template struct ENGINE_API Matrix<float, 4, 4>;
+        template <size_t R = Rows, size_t C = Columns>
+        std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse() const { return Matrix::Inverse(*this); }
 
-	using Matrix2d = Matrix<double, 2, 2>;
-	template struct ENGINE_API Matrix<double, 2, 2>;
-	using Matrix3d = Matrix<double, 3, 3>;
-	template struct ENGINE_API Matrix<double, 3, 3>;
-	using Matrix4d = Matrix<double, 4, 4>;
-	template struct ENGINE_API Matrix<double, 4, 4>;
+        bool IsEqual(Matrix& other) const { return Matrix::IsEqual(*this, other); }
+
+        template <size_t OtherColumns>
+        Matrix<T, Rows, OtherColumns> operator*(const Matrix<T, Columns, OtherColumns>& other) const
+        {
+            return Matrix::Mul(*this, other);
+        }
+    };
+
+
+    using Matrix2f = Matrix<float, 2, 2>;
+    template struct ENGINE_API Matrix<float, 2, 2>;
+    using Matrix3f = Matrix<float, 3, 3>;
+    template struct ENGINE_API Matrix<float, 3, 3>;
+    using Matrix4f = Matrix<float, 4, 4>;
+    template struct ENGINE_API Matrix<float, 4, 4>;
+
+    using Matrix2d = Matrix<double, 2, 2>;
+    template struct ENGINE_API Matrix<double, 2, 2>;
+    using Matrix3d = Matrix<double, 3, 3>;
+    template struct ENGINE_API Matrix<double, 3, 3>;
+    using Matrix4d = Matrix<double, 4, 4>;
+    template struct ENGINE_API Matrix<double, 4, 4>;
 }
