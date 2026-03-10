@@ -1,33 +1,31 @@
-
 #include "MainLoop.h"
 #include "GlobalEngine.h"
 
-namespace Engine {
+namespace Engine
+{
+    MainLoop::MainLoop()
+        : m_is_running(false)
+    {
+    };
 
-	MainLoop::MainLoop()
-		: is_running(false)
-	{
-	};
+    void MainLoop::run()
+    {
+        logInfo("MainLoop", "Starting");
+        this->m_is_running = true;
 
-	void MainLoop::Run()
-	{
-		LogInfo("MainLoop", "Starting");
-		this->is_running = true;
+        while (m_is_running)
+        {
+            this->tick();
+        }
+    };
 
-		while (is_running)
-		{
-			this->Tick();
-		}
+    void MainLoop::stop()
+    {
+        this->m_is_running = false;
+    };
 
-	};
-
-	void MainLoop::Stop()
-	{
-		this->is_running = false;
-	};
-
-	void MainLoop::Tick()
-	{
-		GlobalEngine::Get().Tick();
-	};
+    void MainLoop::tick()
+    {
+        GlobalEngine::get().tick();
+    };
 }

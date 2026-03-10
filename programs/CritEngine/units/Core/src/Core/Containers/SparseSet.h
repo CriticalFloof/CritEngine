@@ -2,65 +2,62 @@
 #include <vector>
 #include <type_traits>
 
-namespace Engine {
+namespace Engine
+{
+    template <typename T>
+    class SparseSet
+    {
+    public:
+        SparseSet()
+        {
+            static_assert(std::is_integral_v<T>, "Type T must be integral");
+        }
 
-	template<typename T>
-	class SparseSet
-	{
-	public:
-		SparseSet()
-		{
-			static_assert(std::is_integral_v<T>, "Type T must be integral");
-		}
+        void insert(T entry)
+        {
+            this->m_sparse[entry] = this->m_packed.size();
+            this->m_packed.push_back(entry);
+        }
 
-		void Insert(T entry)
-		{
-			this->sparse[entry] = this->packed.size();
-			this->packed.push_back(entry);
-		}
+        void remove(T entry)
+        {
+            this->m_packed[this->m_sparse[entry]] = this->m_packed.back();
+            m_sparse[this->m_packed.back()] = this->m_sparse[entry];
 
-		void Remove(T entry)
-		{
-			this->packed[this->sparse[entry]] = this->packed.back();
-			sparse[this->packed.back()] = this->sparse[entry];
+            m_packed.pop_back();
+            m_sparse[entry] = static_cast<T>(UINT64_MAX);
+        }
 
-			packed.pop_back();
-			sparse[entry] = static_cast<T>(UINT64_MAX);
-		}
+        bool contains(T entry)
+        {
+            return this->m_packed.size() > 0 && this->m_packed[this->m_sparse[entry]] == entry;
+        }
 
-		bool Contains(T entry)
-		{
-			return this->packed.size() > 0 && this->packed[this->sparse[entry]] == entry;
-		}
+        T get(T entry)
+        {
+            if (this->m_packed[this->m_sparse[entry]] == entry)
+            {
+                return this->m_sparse[entry];
+            }
+            return static_cast<T>(UINT64_MAX);
+        }
 
-		T Get(T entry)
-		{
-			if (this->packed[this->sparse[entry]] == entry)
-			{
-				return this->sparse[entry];
-			}
-			else
-			{
-				return static_cast<T>(UINT64_MAX);
-			}
-		}
+        std::vector<T>::size_type size()
+        {
+            return this->m_packed.size();
+        }
 
-		std::vector<T>::size_type Size()
-		{
-			return this->packed.size();
-		}
+        void Clear()
+        {
+            for (T i = this->m_packed.size() - 1; i >= 0; --i)
+            {
+                this->m_sparse[this->m_packed[i]] = static_cast<T>(UINT64_MAX);
+                this->m_packed.pop_back();
+            }
+        }
 
-		void Clear()
-		{
-			for (T i = this->packed.size() - 1; i >= 0; i--)
-			{
-				this->sparse[this->packed[i]] = static_cast<T>(UINT64_MAX);
-				this->packed.pop_back();
-			}
-		}
-
-	private:
-		std::vector<T> sparse;
-		std::vector<T> packed;
-	};
+    private:
+        std::vector<T> m_sparse;
+        std::vector<T> m_packed;
+    };
 }

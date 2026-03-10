@@ -4,8 +4,8 @@
 #include "../FileAccessor.h"
 #include "../../Graphics/PIL/Shader.h"
 
-namespace Engine {
-
+namespace Engine
+{
     inline constexpr std::string_view VERTEX_SHADER_EXT = ".vertshader";
     inline constexpr std::string_view FRAGMENT_SHADER_EXT = ".fragshader";
     inline constexpr std::string_view GEOMETRY_SHADER_EXT = ".geomshader";
@@ -15,18 +15,16 @@ namespace Engine {
     inline constexpr std::string_view TESE_SHADER_EXT = ".teseshader";
     inline constexpr std::string_view COMPUTE_SHADER_EXT = ".compshader";
 
-class GLSLShaderLoader : public ResourceLoader {
-public:
+    class GlslShaderLoader : public ResourceLoader
+    {
+    public:
+        ~GlslShaderLoader() override = default;
 
-	virtual ~GLSLShaderLoader() override {};
+        std::string getResourceType() override;
+        std::shared_ptr<void> load(std::filesystem::path filepath) override;
 
-	virtual std::string GetResourceType() override;
-	virtual std::shared_ptr<void> Load(std::filesystem::path filepath) override;
-
-private:
-	std::string shaderFile;
-	Engine::ShaderType shaderType;
-
-};
-
+    private:
+        std::string m_shaderFile;
+        ShaderType m_shaderType;
+    };
 }

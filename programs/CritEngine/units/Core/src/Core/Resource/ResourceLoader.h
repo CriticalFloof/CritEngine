@@ -5,15 +5,17 @@
 
 #include "Resource.h"
 
-namespace Engine {
-
-	class ResourceLoader
-	{
-	public:
-		virtual ~ResourceLoader() {};
-
-		virtual std::string GetResourceType() = 0;
-		virtual std::shared_ptr<void> Load(std::filesystem::path filepath) = 0;
-	};
-
+namespace Engine
+{
+    class ResourceLoader
+    {
+    public:
+        ResourceLoader() = default;
+        ResourceLoader(const ResourceLoader&) = default;
+        ResourceLoader& operator=(const ResourceLoader&) = default;
+        virtual ~ResourceLoader() = default;
+        
+        virtual std::string getResourceType() = 0;
+        virtual std::shared_ptr<void> load(std::filesystem::path filepath) = 0;
+    };
 }

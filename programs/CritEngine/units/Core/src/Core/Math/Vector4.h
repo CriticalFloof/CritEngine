@@ -2,72 +2,83 @@
 
 #include "../Core/Base.h"
 
-namespace Engine {
+namespace Engine
+{
+    struct ENGINE_API Vector4
+    {
+        float x, y, z, w;
 
-	struct ENGINE_API Vector4
-	{
-		float x, y, z, w;
+        Vector4() : x(0), y(0), z(0), w(0)
+        {
+        }
 
-		Vector4() : x(0), y(0), z(0), w(0) {}
-		Vector4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar) {}
-		Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-		
-		//Static Math Operations
-		static Vector4 Add(const Vector4& first, const Vector4& second);
-		static Vector4 Sub(const Vector4& first, const Vector4& second);
-		static Vector4 Mul(const Vector4& first, const Vector4& second);
-		static Vector4 Div(const Vector4& first, const Vector4& second);
-		static float Dot(const Vector4& first, const Vector4& second);
+        Vector4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar)
+        {
+        }
 
-		static Vector4 Add(const Vector4& base, const float scalar);
-		static Vector4 Sub(const Vector4& base, const float scalar);
-		static Vector4 Mul(const Vector4& base, const float scalar);
-		static Vector4 Div(const Vector4& base, const float scalar);
+        Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w)
+        {
+        }
 
-		static float Length(const Vector4& base);
-		static Vector4 Normalize(const Vector4& base);
+        //Static Math Operations
+        static Vector4 add(const Vector4& first, const Vector4& second);
+        static Vector4 sub(const Vector4& first, const Vector4& second);
+        static Vector4 mul(const Vector4& first, const Vector4& second);
+        static Vector4 div(const Vector4& first, const Vector4& second);
+        static float dot(const Vector4& first, const Vector4& second);
 
-		static float Angle(const Vector4& first, const Vector4& second);
+        static Vector4 add(const Vector4& base, float scalar);
+        static Vector4 sub(const Vector4& base, float scalar);
+        static Vector4 mul(const Vector4& base, float scalar);
+        static Vector4 div(const Vector4& base, float scalar);
 
-		static bool IsEqual(const Vector4& first, const Vector4& second);
-		static bool IsNearlyEqual(const Vector4& first, const Vector4& second, const float threshold);
+        static float length(const Vector4& base);
+        static Vector4 normalize(const Vector4& base);
 
-		//Object Math Operations
-		Vector4 Add(const Vector4& other) const { return Vector4::Add(*this, other); }
-		Vector4 Sub(const Vector4& other) const { return Vector4::Sub(*this, other); }
-		Vector4 Mul(const Vector4& other) const { return Vector4::Mul(*this, other); }
-		Vector4 Div(const Vector4& other) const { return Vector4::Div(*this, other); }
-		float Dot(const Vector4& other) const { return Vector4::Dot(*this, other); }
+        static float angle(const Vector4& first, const Vector4& second);
 
-		Vector4 Add(const float scalar) const { return Vector4::Add(*this, scalar); }
-		Vector4 Sub(const float scalar) const { return Vector4::Sub(*this, scalar); }
-		Vector4 Mul(const float scalar) const { return Vector4::Mul(*this, scalar); }
-		Vector4 Div(const float scalar) const { return Vector4::Div(*this, scalar); }
+        static bool isEqual(const Vector4& first, const Vector4& second);
+        static bool isNearlyEqual(const Vector4& first, const Vector4& second, float threshold);
 
-		float Length() { return Vector4::Length(*this); }
-		Vector4 Normalize() { return Vector4::Normalize(*this); }
+        //Object Math Operations
+        Vector4 add(const Vector4& other) const { return add(*this, other); }
+        Vector4 sub(const Vector4& other) const { return sub(*this, other); }
+        Vector4 mul(const Vector4& other) const { return mul(*this, other); }
+        Vector4 div(const Vector4& other) const { return div(*this, other); }
+        float dot(const Vector4& other) const { return dot(*this, other); }
 
-		float Angle(const Vector4& other) { return Vector4::Angle(*this, other); }
+        Vector4 add(const float scalar) const { return add(*this, scalar); }
+        Vector4 sub(const float scalar) const { return sub(*this, scalar); }
+        Vector4 mul(const float scalar) const { return mul(*this, scalar); }
+        Vector4 div(const float scalar) const { return div(*this, scalar); }
 
-		bool IsEqual(const Vector4& other) { return Vector4::IsEqual(*this, other); }
-		bool IsNearlyEqual(const Vector4& other, const float threshold) { return Vector4::IsNearlyEqual(*this, other, threshold); }
+        float length() { return length(*this); }
+        Vector4 normalize() { return normalize(*this); }
 
-		// Operators
+        float angle(const Vector4& other) { return angle(*this, other); }
 
-		Vector4 operator+(const Vector4& other) const { return Vector4::Add(*this, other); }
-		Vector4 operator-(const Vector4& other) const { return Vector4::Sub(*this, other); }
-		Vector4 operator*(const Vector4& other) const { return Vector4::Mul(*this, other); }
-		Vector4 operator/(const Vector4& other) const { return Vector4::Div(*this, other); }
+        bool isEqual(const Vector4& other) { return isEqual(*this, other); }
 
-		Vector4 operator+(const float rhs) const { return Vector4::Add(*this, rhs); }
-		Vector4 operator-(const float rhs) const { return Vector4::Sub(*this, rhs); }
-		Vector4 operator*(const float rhs) const { return Vector4::Mul(*this, rhs); }
-		Vector4 operator/(const float rhs) const { return Vector4::Div(*this, rhs); }
+        bool isNearlyEqual(const Vector4& other, const float threshold)
+        {
+            return isNearlyEqual(*this, other, threshold);
+        }
 
-		friend Vector4 operator+(const float& lhs, const Vector4& rhs) { return Vector4::Add(rhs, lhs); }
-		friend Vector4 operator-(const float& lhs, const Vector4& rhs) { return Vector4::Sub(rhs, lhs); }
-		friend Vector4 operator*(const float& lhs, const Vector4& rhs) { return Vector4::Mul(rhs, lhs); }
-		friend Vector4 operator/(const float& lhs, const Vector4& rhs) { return Vector4::Div(rhs, lhs); }
-	};
+        // Operators
 
+        Vector4 operator+(const Vector4& other) const { return add(*this, other); }
+        Vector4 operator-(const Vector4& other) const { return sub(*this, other); }
+        Vector4 operator*(const Vector4& other) const { return mul(*this, other); }
+        Vector4 operator/(const Vector4& other) const { return div(*this, other); }
+
+        Vector4 operator+(const float rhs) const { return add(*this, rhs); }
+        Vector4 operator-(const float rhs) const { return sub(*this, rhs); }
+        Vector4 operator*(const float rhs) const { return mul(*this, rhs); }
+        Vector4 operator/(const float rhs) const { return div(*this, rhs); }
+
+        friend Vector4 operator+(const float& lhs, const Vector4& rhs) { return add(rhs, lhs); }
+        friend Vector4 operator-(const float& lhs, const Vector4& rhs) { return sub(rhs, lhs); }
+        friend Vector4 operator*(const float& lhs, const Vector4& rhs) { return mul(rhs, lhs); }
+        friend Vector4 operator/(const float& lhs, const Vector4& rhs) { return div(rhs, lhs); }
+    };
 }

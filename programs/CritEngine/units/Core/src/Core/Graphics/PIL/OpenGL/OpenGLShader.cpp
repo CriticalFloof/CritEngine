@@ -4,52 +4,54 @@
 #include "../../../Logging/Logger.h"
 
 
-namespace Engine {
+namespace Engine
+{
+    uint32_t engineShaderTypeToOpenGLShaderType(ShaderType shader_type)
+    {
+        switch (shader_type)
+        {
+        case ShaderType::Vertex: return GL_VERTEX_SHADER;
+        case ShaderType::Fragment: return GL_FRAGMENT_SHADER;
+        case ShaderType::Geometry: return GL_GEOMETRY_SHADER;
+        case ShaderType::TessellationControl: return GL_TESS_CONTROL_SHADER;
+        case ShaderType::TessellationEvaluation: return GL_TESS_EVALUATION_SHADER;
+        case ShaderType::Compute: return GL_COMPUTE_SHADER;
+        default: return GL_NONE;
+        }
+    }
 
-	uint32_t EngineShaderTypeToOpenGLShaderType(ShaderType shaderType)
-	{
-		switch (shaderType)
-		{
-			case ShaderType::Vertex: return GL_VERTEX_SHADER;
-			case ShaderType::Fragment: return GL_FRAGMENT_SHADER;
-			case ShaderType::Geometry: return GL_GEOMETRY_SHADER;
-			case ShaderType::TessellationControl: return GL_TESS_CONTROL_SHADER;
-			case ShaderType::TessellationEvaluation: return GL_TESS_EVALUATION_SHADER;
-			case ShaderType::Compute: return GL_COMPUTE_SHADER;
-			default: return GL_NONE;
-		}
-	}
+    OpenGLShader::OpenGLShader(const std::string& glsl_source, const ShaderType shader_type)
+        : shaderID(0)
+    {
+        ASSERT(shader_type != ShaderType::Task && shader_type != ShaderType::Mesh,
+               "OpenGL doesn't support Task & Mesh Shaders!");
 
-	OpenGLShader::OpenGLShader(const std::string& glslSource, const ShaderType shaderType)
-		: shaderID(0)
-	{
-		ASSERT(shaderType != ShaderType::Task && shaderType != ShaderType::Mesh, "OpenGL doesn't support Task & Mesh Shaders!");
+        this->shaderID = glCreateShader(engineShaderTypeToOpenGLShaderType(shader_type));
+        const char* source = glsl_source.c_str();
+        glShaderSource(this->shaderID, 1, &source, nullptr);
+        glCompileShader(this->shaderID);
 
-		this->shaderID = glCreateShader(EngineShaderTypeToOpenGLShaderType(shaderType));
-		const char* source = glslSource.c_str();
-		glShaderSource(this->shaderID, 1, &source, 0);
-		glCompileShader(this->shaderID);
+        int32_t is_compiled = 0;
+        glGetShaderiv(this->shaderID, GL_COMPILE_STATUS, &is_compiled);
+        if (is_compiled == false)
+        {
+            int32_t max_message_length = 0;
+            glGetShaderiv(this->shaderID, GL_INFO_LOG_LENGTH, &max_message_length);
 
-		int32_t isCompiled = 0;
-		glGetShaderiv(this->shaderID, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == false)
-		{
-			int32_t maxMessageLength = 0;
-			glGetShaderiv(this->shaderID, GL_INFO_LOG_LENGTH, &maxMessageLength);
+            std::vector<char> info_log(max_message_length);
+            glGetShaderInfoLog(this->shaderID, max_message_length, &max_message_length, info_log.data());
 
-			std::vector<char> infoLog(maxMessageLength);
-			glGetShaderInfoLog(this->shaderID, maxMessageLength, &maxMessageLength, &infoLog[0]);
+            glDeleteShader(this->shaderID);
 
-			glDeleteShader(this->shaderID);
+            logError("OpenGL", "Shader Compilation Failure!");
+            logError("OpenGL", std::string(info_log.begin(), info_log.end()));
 
-			LogError("OpenGL", "Shader Compilation Failure!");
-			LogError("OpenGL", std::string(infoLog.begin(), infoLog.end()));
+            return;
+        }
+    }
 
-			return;
-		}
-	}
-	OpenGLShader::~OpenGLShader()
-	{
-		glDeleteShader(this->shaderID);
-	}
+    OpenGLShader::~OpenGLShader()
+    {
+        glDeleteShader(this->shaderID);
+    }
 }

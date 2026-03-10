@@ -2,50 +2,47 @@
 
 #include "PIL/RendererAPI.h"
 
-namespace Engine {
+namespace Engine
+{
+    class RenderCommand
+    {
+    public:
+        ENGINE_API static void setClearColor(const glm::vec4& color)
+        {
+            m_rendererAPI->setClearColor(color);
+        }
 
-	class RenderCommand
-	{
-	public:
-		ENGINE_API inline static void SetClearColor(const glm::vec4& color)
-		{
-			RenderCommand::rendererAPI->SetClearColor(color);
-		}
+        ENGINE_API static void clear()
+        {
+            m_rendererAPI->clear();
+        }
 
-		ENGINE_API inline static void Clear()
-		{
-			RenderCommand::rendererAPI->Clear();
-		}
+        ENGINE_API static void enableDepthTest(const bool new_state)
+        {
+            m_rendererAPI->enableDepthTest(new_state);
+        }
 
-		ENGINE_API inline static void EnableDepthTest(const  bool newState)
-		{
-			RenderCommand::rendererAPI->EnableDepthTest(newState);
-		}
+        ENGINE_API static void enableDepthMask(const bool new_state)
+        {
+            m_rendererAPI->enableDepthMask(new_state);
+        }
 
-		ENGINE_API inline static void EnableDepthMask(const bool newState)
-		{
-			RenderCommand::rendererAPI->EnableDepthMask(newState);
-		}
+        ENGINE_API static void setDepthTestFunc(const RendererAPI::DepthTestFunction new_function)
+        {
+            m_rendererAPI->setDepthTestFunc(new_function);
+        }
 
-		ENGINE_API inline static void SetDepthTestFunc(const RendererAPI::DepthTestFunction newFunction)
-		{
-			RenderCommand::rendererAPI->SetDepthTestFunc(newFunction);
-		}
+        ENGINE_API static void setViewportSize(const int width, const int height)
+        {
+            m_rendererAPI->setViewportSize(width, height);
+        }
 
-		ENGINE_API inline static void SetViewportSize(const int width, const int height)
-		{
-			RenderCommand::rendererAPI->SetViewportSize(width, height);
-		}
+        ENGINE_API static void drawIndexed(const std::shared_ptr<Mesh>& mesh)
+        {
+            m_rendererAPI->drawIndexed(mesh);
+        }
 
-		ENGINE_API inline static void DrawIndexed(const std::shared_ptr<Mesh>& mesh)
-		{
-			RenderCommand::rendererAPI->DrawIndexed(mesh);
-		}
-
-
-
-	private:
-		static std::unique_ptr<RendererAPI> rendererAPI;
-	};
-
+    private:
+        static std::unique_ptr<RendererAPI> m_rendererAPI;
+    };
 }

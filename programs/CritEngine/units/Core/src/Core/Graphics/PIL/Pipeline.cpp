@@ -4,18 +4,19 @@
 
 #include "OpenGL/OpenGLPipeline.h"
 
-namespace Engine {
+namespace Engine
+{
+    std::shared_ptr<Pipeline> Pipeline::create(std::shared_ptr<Shader> vertex_shader,
+                                               std::shared_ptr<Shader> fragment_shader)
+    {
+        switch (RendererAPI::getAPI())
+        {
+        case RendererAPI::API::None: ASSERT(false, "RendererAPI::None is currently not supported!");
+            return nullptr;
+        case RendererAPI::API::OpenGL: return std::make_unique<OpenGLPipeline>(vertex_shader, fragment_shader);
+        }
 
-	std::shared_ptr<Pipeline> Pipeline::Create(std::shared_ptr<Engine::Shader> vertexShader, std::shared_ptr<Engine::Shader> fragmentShader)
-	{
-		switch (RendererAPI::GetAPI())
-		{
-			case RendererAPI::API::None: ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL: return std::make_unique<OpenGLPipeline>(vertexShader, fragmentShader);
-		}
-
-		ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
-
+        ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
 }

@@ -4,21 +4,22 @@
 
 struct GLFWwindow;
 
-namespace Engine {
+namespace Engine
+{
+    class RenderContext
+    {
+    public:
+        ENGINE_API virtual ~RenderContext() = default;
 
-	class RenderContext
-	{
-	public:
-		ENGINE_API virtual ~RenderContext() = default;
+        ENGINE_API static std::shared_ptr<RenderContext> create(GLFWwindow* window_handle);
 
-		ENGINE_API static std::shared_ptr<RenderContext> Create(GLFWwindow* windowHandle);
+        virtual void init() = 0;
+        virtual void swapBuffers() = 0;
+        virtual void initImGui() = 0;
+        virtual void imGuiStartFrame() = 0;
+        virtual void imGuiRender() = 0;
 
-		virtual void Init() = 0;
-		virtual void SwapBuffers() = 0;
-		virtual void InitImGui() = 0;
-		virtual void ImGuiStartFrame() = 0;
-		virtual void ImGuiRender() = 0;
-	protected:
-		GLFWwindow* windowHandle;
-	};
+    protected:
+        GLFWwindow* m_windowHandle;
+    };
 }

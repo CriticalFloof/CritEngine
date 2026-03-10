@@ -1,9 +1,8 @@
 #include "Actor.h"
 
-namespace Engine {
-
-	Actor::Actor()
-	{
-
-	}
+namespace Engine
+{
+    Actor::Actor()
+    {
+    }
 }

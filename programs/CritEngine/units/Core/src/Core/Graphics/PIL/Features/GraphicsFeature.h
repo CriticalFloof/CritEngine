@@ -2,22 +2,23 @@
 
 #include <stdint.h>
 
-namespace Engine {
+namespace Engine
+{
+    enum GraphicsFeatureSupport : uint8_t
+    {
+        Unsupported,
+        Emulated,
+        Available
+    };
 
-	enum GraphicsFeatureSupport : uint8_t
-	{
-		Unsupported,
-		Emulated,
-		Available
-	};
+    class GraphicsFeature
+    {
+    public:
+        GraphicsFeature(GraphicsFeatureSupport support_level = Unsupported);
 
-	class GraphicsFeature
-	{
-	public:
-		GraphicsFeature(GraphicsFeatureSupport supportLevel = GraphicsFeatureSupport::Unsupported);
+        GraphicsFeatureSupport getSupportLevel();
 
-		GraphicsFeatureSupport GetSupportLevel();
-	private:
-		GraphicsFeatureSupport supportLevel;
-	};
+    private:
+        GraphicsFeatureSupport m_supportLevel;
+    };
 }

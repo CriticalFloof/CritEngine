@@ -4,18 +4,18 @@
 
 #include "OpenGL/OpenGLContext.h"
 
-namespace Engine {
+namespace Engine
+{
+    std::shared_ptr<RenderContext> RenderContext::create(GLFWwindow* window_handle)
+    {
+        switch (RendererAPI::getAPI())
+        {
+        case RendererAPI::API::None: ASSERT(false, "RendererAPI::None is currently not supported!");
+            return nullptr;
+        case RendererAPI::API::OpenGL: return std::make_unique<OpenGLContext>(window_handle);
+        }
 
-	std::shared_ptr<RenderContext> RenderContext::Create(GLFWwindow* windowHandle)
-	{
-		switch (RendererAPI::GetAPI())
-		{
-			case RendererAPI::API::None: ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL: return std::make_unique<OpenGLContext>(windowHandle);
-		}
-
-		ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
-
+        ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
 }

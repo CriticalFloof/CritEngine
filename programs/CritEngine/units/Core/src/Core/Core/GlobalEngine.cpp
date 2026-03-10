@@ -1,69 +1,65 @@
 #include "GlobalEngine.h"
 
 #include "../Resource/Loaders/BitmapLoader.h"
-#include "../Resource/Loaders/GLSLShaderLoader.h"
+#include "../Resource/Loaders/GlslShaderLoader.h"
 #include "../Resource/Loaders/ObjLoader.h"
 
 
-namespace Engine {
+namespace Engine
+{
+    void GlobalEngine::initialize(std::unique_ptr<Application> injected_app, MainLoop main_loop)
+    {
+        auto engine = std::make_unique<GlobalEngine>(GlobalEngine());
 
-	void GlobalEngine::Initialize(std::unique_ptr<Application> injectedApp, MainLoop mainLoop)
-	{
-		std::unique_ptr<GlobalEngine> engine = std::make_unique<GlobalEngine>(GlobalEngine());
+        engine->m_application = std::move(injected_app);
+        engine->m_mainLoop = main_loop;
 
-		engine->application = std::move(injectedApp);
-		engine->mainLoop = mainLoop;
+        engine->m_resourceManager = ResourceManager();
+        engine->m_resourceManager.registerLoader(std::make_unique<GlslShaderLoader>());
+        engine->m_resourceManager.registerLoader(std::make_unique<BitmapLoader>());
+        engine->m_resourceManager.registerLoader(std::make_unique<ObjLoader>());
 
-		engine->resourceManager = ResourceManager();
-		engine->resourceManager.RegisterLoader(std::make_unique<GLSLShaderLoader>());
-		engine->resourceManager.RegisterLoader(std::make_unique<BitmapLoader>());
-		engine->resourceManager.RegisterLoader(std::make_unique<ObjLoader>());
+        engine->m_windowManager = WindowManager();
 
-		engine->windowManager = WindowManager();
+        engine->m_sceneManager = SceneManager();
 
-		engine->sceneManager = SceneManager();
+        m_globalInstance = std::move(engine);
+        m_globalInstance->m_application->initialize();
 
-		GlobalEngine::globalInstance = std::move(engine);
-		GlobalEngine::globalInstance->application->Initialize();
+        m_globalInstance->m_mainLoop.run();
+    }
 
-		GlobalEngine::globalInstance->mainLoop.Run();
-	}
+    void GlobalEngine::shutdown()
+    {
+        m_globalInstance->m_mainLoop.stop();
+    }
 
-	void GlobalEngine::Shutdown()
-	{
-		GlobalEngine::globalInstance->mainLoop.Stop();
-	}
+    GlobalEngine& GlobalEngine::get()
+    {
+        return *m_globalInstance;
+    }
 
-	GlobalEngine& GlobalEngine::Get()
-	{
-		return *GlobalEngine::globalInstance;
-	}
+    ResourceManager& GlobalEngine::getResourceManager()
+    {
+        return this->m_resourceManager;
+    }
 
-	ResourceManager& GlobalEngine::GetResourceManager()
-	{
-		return this->resourceManager;
-	}
+    WindowManager& GlobalEngine::getWindowManager()
+    {
+        return this->m_windowManager;
+    }
 
-	WindowManager& GlobalEngine::GetWindowManager()
-	{
-		return this->windowManager;
-	}
-	
-	SceneManager& GlobalEngine::GetSceneManager()
-	{
-		return this->sceneManager;
-	}
+    SceneManager& GlobalEngine::getSceneManager()
+    {
+        return this->m_sceneManager;
+    }
 
-	void GlobalEngine::Tick()
-	{
-		this->windowManager.Tick();
-		this->application->TickInternal();
-		this->application->Tick();
-	}
+    void GlobalEngine::tick()
+    {
+        this->m_windowManager.tick();
+        this->m_application->tickInternal();
+        this->m_application->tick();
+    }
 
-	GlobalEngine::GlobalEngine()
-	{
-	}
-
-	std::unique_ptr<GlobalEngine> GlobalEngine::globalInstance = nullptr;
+    std::unique_ptr<GlobalEngine> GlobalEngine::m_globalInstance = nullptr;
 }

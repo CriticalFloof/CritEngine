@@ -1,17 +1,13 @@
-#pragma once 
+#pragma once
 
 #include "../GraphicsEntry.h"
 
-namespace Engine {
+namespace Engine
+{
+    class OpenGLGraphicsEntry : public GraphicsEntry
+    {
+        ~OpenGLGraphicsEntry() override = default;
 
-	class OpenGLGraphicsEntry : public GraphicsEntry
-	{
-
-		OpenGLGraphicsEntry();
-		virtual ~OpenGLGraphicsEntry() override {};
-
-		virtual void Init() override;
-
-	};
-
+        void init() override;
+    };
 }

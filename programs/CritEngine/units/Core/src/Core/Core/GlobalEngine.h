@@ -7,31 +7,30 @@
 #include "MainLoop.h"
 
 
-namespace Engine {
+namespace Engine
+{
+    class GlobalEngine
+    {
+    public:
+        ENGINE_API static GlobalEngine& get();
+        ENGINE_API static void initialize(std::unique_ptr<Application> injected_app = std::make_unique<Application>(),
+                                          MainLoop main_loop = MainLoop());
+        ENGINE_API static void shutdown();
 
-	class GlobalEngine
-	{
-	public:
-		ENGINE_API static GlobalEngine& Get();
-		ENGINE_API static void Initialize(std::unique_ptr<Application> injectedApp = std::make_unique<Application>(), MainLoop mainLoop = MainLoop());
-		ENGINE_API static void Shutdown();
+        ENGINE_API ResourceManager& getResourceManager();
+        ENGINE_API WindowManager& getWindowManager();
+        ENGINE_API SceneManager& getSceneManager();
 
-		ENGINE_API ResourceManager& GetResourceManager();
-		ENGINE_API WindowManager& GetWindowManager();
-		ENGINE_API SceneManager& GetSceneManager();
+        void tick();
 
-		void Tick();
+    private:
 
-	private:
-		GlobalEngine();
+        static std::unique_ptr<GlobalEngine> m_globalInstance;
 
-		static std::unique_ptr<GlobalEngine> globalInstance;
-
-		ResourceManager resourceManager;
-		WindowManager windowManager;
-		SceneManager sceneManager;
-		std::unique_ptr<Application> application = nullptr;
-		MainLoop mainLoop;
-	};
-
+        ResourceManager m_resourceManager;
+        WindowManager m_windowManager;
+        SceneManager m_sceneManager;
+        std::unique_ptr<Application> m_application = nullptr;
+        MainLoop m_mainLoop;
+    };
 }

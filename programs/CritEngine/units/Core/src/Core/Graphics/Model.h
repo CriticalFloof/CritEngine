@@ -1,23 +1,24 @@
 #pragma once
 #include "PIL/Mesh.h"
 
-namespace Engine {
+namespace Engine
+{
+    class Model
+    {
+    public:
+        Model(std::shared_ptr<Mesh> mesh, Matrix4f projection = Matrix4f::identity())
+            : m_mesh(mesh), m_modelProjection(projection)
+        {
+        };
 
-	class Model
-	{
-	public:
-		Model(std::shared_ptr<Mesh> mesh, Matrix4f projection = Matrix4f::Identity())
-			: mesh(mesh), modelProjection(projection) {};
+        void setMesh(std::shared_ptr<Mesh> newMesh) { this->m_mesh = newMesh; }
+        void setProjection(Matrix4f projection) { this->m_modelProjection = projection; }
 
-		void SetMesh(std::shared_ptr<Mesh> newMesh) { this->mesh = newMesh; }
-		void SetProjection(Matrix4f projection) { this->modelProjection = projection; }
-		
-		std::shared_ptr<Mesh> GetMesh() { return this->mesh; }
-		Matrix4f& GetModelProjection() { return this->modelProjection; }
+        std::shared_ptr<Mesh> getMesh() { return this->m_mesh; }
+        Matrix4f& getModelProjection() { return this->m_modelProjection; }
 
-	private:
-		std::shared_ptr<Mesh> mesh;
-		Matrix4f modelProjection;
-	};
-
+    private:
+        std::shared_ptr<Mesh> m_mesh;
+        Matrix4f m_modelProjection;
+    };
 }

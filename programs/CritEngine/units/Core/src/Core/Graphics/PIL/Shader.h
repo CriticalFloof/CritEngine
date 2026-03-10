@@ -4,26 +4,27 @@
 #include "../../Math/Common.h"
 
 
-namespace Engine {
+namespace Engine
+{
+    enum class ShaderType : uint8_t
+    {
+        Vertex,
+        Fragment,
+        Geometry,
+        Mesh,
+        Task,
+        TessellationControl,
+        TessellationEvaluation,
+        Compute
+    };
 
-	enum class ShaderType : uint8_t
-	{
-		Vertex,
-		Fragment,
-		Geometry,
-		Mesh,
-		Task,
-		TessellationControl,
-		TessellationEvaluation,
-		Compute
-	};
+    class Shader
+    {
+    public:
+        ENGINE_API static std::shared_ptr<Shader> create(const std::string& glsl_source, ShaderType shader_type);
 
-	class Shader
-	{
-	public:
-		ENGINE_API static std::shared_ptr<Shader> Create(const std::string& glslSource, const ShaderType shaderType);
-
-		virtual ~Shader() {};
-	};
-
+        virtual ~Shader()
+        {
+        };
+    };
 }

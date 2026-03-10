@@ -1,15 +1,14 @@
 #include "GraphicsFeature.h"
 
-namespace Engine {
+namespace Engine
+{
+    GraphicsFeature::GraphicsFeature(GraphicsFeatureSupport support_level)
+        : m_supportLevel(support_level)
+    {
+    };
 
-	GraphicsFeature::GraphicsFeature(GraphicsFeatureSupport supportLevel)
-		: supportLevel(supportLevel)
-	{
-	};
-
-	GraphicsFeatureSupport GraphicsFeature::GetSupportLevel()
-	{
-		return this->supportLevel;
-	};
-
+    GraphicsFeatureSupport GraphicsFeature::getSupportLevel()
+    {
+        return this->m_supportLevel;
+    };
 }

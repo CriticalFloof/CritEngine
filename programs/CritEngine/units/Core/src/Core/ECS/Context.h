@@ -8,191 +8,197 @@
 #include <memory>
 
 
-namespace ECS {
-	static const int MAX_COMPONENTS = 32;
-	static const int MAX_ENTITIES = 65536;
+namespace ECS
+{
+    static constexpr int MAX_COMPONENTS = 32;
+    static constexpr int MAX_ENTITIES = 65536;
 
-	typedef std::bitset<MAX_COMPONENTS> ComponentMask;
+    using ComponentMask = std::bitset<MAX_COMPONENTS>;
 
-	class Context
-	{
-	public:
+    class Context
+    {
+    public:
+        struct EntityDescription
+        {
+            EntityID id;
+            ComponentMask mask;
+        };
 
-		struct EntityDescription
-		{
-			EntityID id;
-			ComponentMask mask;
-		};
+        EntityID createEntity()
+        {
+            if (!m_freeEntities.empty())
+            {
+                EntityIndex newIndex = m_freeEntities.back();
+                m_freeEntities.pop_back();
+                EntityID newID = EntityUtils::createEntityId(
+                    newIndex, EntityUtils::getEntityVersion(m_entities[newIndex].id));
+                m_entities[newIndex].id = newID;
+                return m_entities[newIndex].id;
+            }
 
-		EntityID CreateEntity()
-		{
-			if (!freeEntities.empty())
-			{
-				EntityIndex newIndex = freeEntities.back();
-				freeEntities.pop_back();
-				EntityID newID = EntityUtils::CreateEntityId(newIndex, EntityUtils::GetEntityVersion(entities[newIndex].id));
-				entities[newIndex].id = newID;
-				return entities[newIndex].id;
-			}
 
-			
-			this->entities.push_back({ EntityUtils::CreateEntityId(static_cast<EntityIndex>(entities.size()), 0), ComponentMask() });
-			return entities.back().id;
-		}
+            this->m_entities.push_back({
+                EntityUtils::createEntityId(static_cast<EntityIndex>(m_entities.size()), 0), ComponentMask()
+            });
+            return m_entities.back().id;
+        }
 
-		void DestroyEntity(EntityID id)
-		{
-			EntityID newID = EntityUtils::CreateEntityId(EntityIndex(UINT32_MAX), EntityUtils::GetEntityVersion(id) + 1);
+        void destroyEntity(EntityID id)
+        {
+            EntityID newID = EntityUtils::createEntityId(static_cast<EntityIndex>(UINT32_MAX),
+                                                         EntityUtils::getEntityVersion(id) + 1);
 
-			entities[EntityUtils::GetEntityIndex(id)].id = newID;
-			entities[EntityUtils::GetEntityIndex(id)].mask.reset();
+            m_entities[EntityUtils::getEntityIndex(id)].id = newID;
+            m_entities[EntityUtils::getEntityIndex(id)].mask.reset();
 
-			freeEntities.push_back(EntityUtils::GetEntityIndex(id));
-		}
+            m_freeEntities.push_back(EntityUtils::getEntityIndex(id));
+        }
 
-		EntityDescription& GetEntity(EntityID id)
-		{
-			return this->entities[id];
-		}
+        EntityDescription& getEntity(EntityID id)
+        {
+            return this->m_entities[id];
+        }
 
-		size_t Size()
-		{
-			return this->entities.size();
-		}
+        size_t size()
+        {
+            return this->m_entities.size();
+        }
 
-		template<typename T>
-		T* Assign(EntityID id)
-		{
-			size_t componentId = GetId<T>();
+        template <typename T>
+        T* assign(EntityID id)
+        {
+            size_t componentId = getId<T>();
 
-			if (this->componentPools.size() <= componentId)
-			{
-				this->componentPools.resize(componentId + 1);
-			}
-			if (this->componentPools[componentId] == nullptr)
-			{
-				this->componentPools[componentId] = std::make_unique<ComponentMemoryPool>(sizeof(T), MAX_ENTITIES, alignof(T));
-			}
+            if (this->m_componentPools.size() <= componentId)
+            {
+                this->m_componentPools.resize(componentId + 1);
+            }
+            if (this->m_componentPools[componentId] == nullptr)
+            {
+                this->m_componentPools[componentId] = std::make_unique<ComponentMemoryPool>(
+                    sizeof(T), MAX_ENTITIES, alignof(T));
+            }
 
-			T* component = new (this->componentPools[componentId]->Get(EntityUtils::GetEntityIndex(id))) T();
-			
-			entities[id].mask.set(componentId, true);
+            T* component = new(this->m_componentPools[componentId]->get(EntityUtils::getEntityIndex(id))) T();
 
-			return component;
-		}
+            m_entities[id].mask.set(componentId, true);
 
-		template<typename T>
-		T* GetComponent(EntityID id)
-		{
-			int componentId = GetId<T>();
-			if (!entities[id].mask.test(componentId))
-				return nullptr;
+            return component;
+        }
 
-			T* component = static_cast<T*>(this->componentPools[componentId]->Get(EntityUtils::GetEntityIndex(id)));
-			return component;
-		}
+        template <typename T>
+        T* getComponent(EntityID id)
+        {
+            int componentId = getId<T>();
+            if (!m_entities[id].mask.test(componentId))
+                return nullptr;
 
-		template<typename T>
-		void Unassign(EntityID id)
-		{
-			if (entities[EntityUtils::GetEntityIndex(id)].id != id) return;
+            T* component = static_cast<T*>(this->m_componentPools[componentId]->get(EntityUtils::getEntityIndex(id)));
+            return component;
+        }
 
-			int componentId = GetId<T>();
-			entities[id].mask.set(componentId, false);
-		}
+        template <typename T>
+        void unassign(EntityID id)
+        {
+            if (m_entities[EntityUtils::getEntityIndex(id)].id != id) return;
 
-	private:
-		std::vector<EntityIndex> freeEntities;
-		std::vector<EntityDescription> entities;
-		std::vector<std::unique_ptr<ComponentMemoryPool>> componentPools;
-	};
+            int componentId = getId<T>();
+            m_entities[id].mask.set(componentId, false);
+        }
 
-	template<typename... ComponentTypes>
-	struct ContextView
-	{
-		ContextView(Context& context) : context(&context)
-		{
-			if (sizeof...(ComponentTypes) == 0)
-			{
-				all = true;
-			}
-			else
-			{
-				// Unpack the template parameters into an initializer list
-				int componentIds[] = { 0, GetId<ComponentTypes>() ... };
-				for (size_t i = 1; i < (sizeof...(ComponentTypes) + 1); i++)
-				{
-					this->componentMask.set(componentIds[i], true);
-				}
-			}
-		}
+    private:
+        std::vector<EntityIndex> m_freeEntities;
+        std::vector<EntityDescription> m_entities;
+        std::vector<std::unique_ptr<ComponentMemoryPool>> m_componentPools;
+    };
 
-		struct Iterator
-		{
-			Iterator(Context* context, EntityIndex index, ComponentMask mask, bool all)
-				: index(index), context(context), mask(mask), all(all)
-			{
-			}
+    template <typename... ComponentTypes>
+    struct ContextView
+    {
+        ContextView(Context& context) : context(&context)
+        {
+            if (sizeof...(ComponentTypes) == 0)
+            {
+                all = true;
+            }
+            else
+            {
+                // Unpack the template parameters into an initializer list
+                int component_ids[] = {0, getId<ComponentTypes>()...};
+                for (size_t i = 1; i < (sizeof...(ComponentTypes) + 1); i++)
+                {
+                    this->componentMask.set(component_ids[i], true);
+                }
+            }
+        }
 
-			EntityID operator*() const
-			{
-				return this->context->GetEntity(this->index).id;
-			}
+        struct Iterator
+        {
+            Iterator(Context* context, EntityIndex index, ComponentMask mask, bool all)
+                : index(index), context(context), mask(mask), all(all)
+            {
+            }
 
-			bool operator==(const Iterator& other) const
-			{
-				return this->index == other.index || this->index == this->context->Size();
-			}
+            EntityID operator*() const
+            {
+                return this->context->getEntity(this->index).id;
+            }
 
-			bool operator!=(const Iterator& other) const
-			{
-				return this->index != other.index && this->index != this->context->Size();
-			}
+            bool operator==(const Iterator& other) const
+            {
+                return this->index == other.index || this->index == this->context->size();
+            }
 
-			Iterator& operator++()
-			{
-				do
-				{
-					index++;
-				} while (index < this->context->Size() && !ValidIndex());
-				return *this;
-			}
+            bool operator!=(const Iterator& other) const
+            {
+                return this->index != other.index && this->index != this->context->size();
+            }
 
-			bool ValidIndex()
-			{
-				return 
-				(
-					EntityUtils::IsEntityValid(this->context->GetEntity(this->index).id) &&
-					(this->all || this->mask == (this->mask & this->context->GetEntity(this->index).mask))
-				);
-			}
+            Iterator& operator++()
+            {
+                do
+                {
+                    index++;
+                }
+                while (index < this->context->size() && !validIndex());
+                return *this;
+            }
 
-			EntityIndex index;
-			Context* context;
-			ComponentMask mask;
-			bool all { false };
-		};
+            bool validIndex()
+            {
+                return
+                (
+                    EntityUtils::isEntityValid(this->context->getEntity(this->index).id) &&
+                    (this->all || this->mask == (this->mask & this->context->getEntity(this->index).mask))
+                );
+            }
 
-		const Iterator begin() const
-		{
-			size_t firstIndex = 0;
-			while (firstIndex < this->context->Size() &&
-				   (this->componentMask != (this->componentMask & this->context->GetEntity(firstIndex).mask)
-				   || !EntityUtils::IsEntityValid(this->context->GetEntity(firstIndex).id)))
-			{
-				firstIndex++;
-			}
-			return Iterator(this->context, static_cast<EntityIndex>(firstIndex), this->componentMask, this->all);
-		}
+            EntityIndex index;
+            Context* context;
+            ComponentMask mask;
+            bool all{false};
+        };
 
-		const Iterator end() const
-		{
-			return Iterator(this->context, EntityIndex(this->context->Size()), this->componentMask, this->all);
-		}
+        const Iterator begin() const
+        {
+            size_t first_index = 0;
+            while (first_index < this->context->size() &&
+                (this->componentMask != (this->componentMask & this->context->getEntity(first_index).mask)
+                    || !EntityUtils::isEntityValid(this->context->getEntity(first_index).id)))
+            {
+                first_index++;
+            }
+            return Iterator(this->context, static_cast<EntityIndex>(first_index), this->componentMask, this->all);
+        }
 
-		Context* context { nullptr };
-		ComponentMask componentMask;
-		bool all { false };
-	};
+        const Iterator end() const
+        {
+            return Iterator(this->context, static_cast<EntityIndex>(this->context->size()), this->componentMask,
+                            this->all);
+        }
 
+        Context* context{nullptr};
+        ComponentMask componentMask;
+        bool all{false};
+    };
 }

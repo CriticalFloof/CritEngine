@@ -1,21 +1,27 @@
 #pragma once
 
-namespace ECS {
-
+namespace ECS
+{
     class Context;
 
-    class System {
+    class System
+    {
     public:
-        System() {};
-        virtual ~System() {};
+        System()
+        {
+        };
 
-        void SetContext(Context* scene)
+        virtual ~System()
+        {
+        };
+
+        void setContext(Context* scene)
         {
             this->context = scene;
         }
-        virtual void Update() = 0;
+
+        virtual void update() = 0;
 
         Context* context = nullptr;
     };
-
 }

@@ -2,199 +2,211 @@
 #include "../Logging/Logger.h"
 #include "../Profiler/Profiler.h"
 
-namespace Engine {
-
-    FileAccessor::FileAccessor() 
-        : systemIsBigEndian(IsSystemBigEndian())
-    { 
+namespace Engine
+{
+    FileAccessor::FileAccessor()
+        : m_systemIsBigEndian(isSystemBigEndian())
+    {
     }
 
-    void FileAccessor::OpenFile(const std::filesystem::path& filePath)
+    void FileAccessor::openFile(const std::filesystem::path& file_path)
     {
-        this->file = std::ifstream(filePath, std::ios::binary);
+        this->m_file = std::ifstream(file_path, std::ios::binary);
 
-        if (this->file.is_open()) {
+        if (this->m_file.is_open())
+        {
+            this->m_file.seekg(0, std::ios::end);
+            std::streamsize size = this->m_file.tellg();
+            this->m_file.seekg(0, std::ios::beg);
+            this->m_buffer.resize(size); // Pre-allocates memory for the entire file
 
-            this->file.seekg(0, std::ios::end);
-            std::streamsize size = this->file.tellg();
-            this->file.seekg(0, std::ios::beg);
-            this->buffer.resize(size); // Pre-allocates memory for the entire file
-
-            if (this->file.read(this->buffer.data(), size)) {
-                this->position = 0;
+            if (this->m_file.read(this->m_buffer.data(), size))
+            {
+                this->m_position = 0;
                 // Successful read
             }
-            this->file.close();
-            this->ReadAsBigEndian(false);
+            this->m_file.close();
+            this->readAsBigEndian(false);
         }
     }
 
     // If the value of the first byte is 1, we are in little endian since the least significant byte is stored first
-    bool FileAccessor::IsSystemBigEndian() const {
+    bool FileAccessor::isSystemBigEndian() const
+    {
         int val = 1;
         return (!(*(char*)&val == 1));
     }
 
-    void FileAccessor::Seek(const uint64_t offset) {
-        ASSERT(CheckOffsetBounds(offset), "Position is out of bounds")
-
-        this->position = offset;
-    }
-
-    void FileAccessor::SeekEnd()
+    void FileAccessor::seek(const uint64_t offset)
     {
-        this->position = this->buffer.size();
+        ASSERT(checkOffsetBounds(offset), "Position is out of bounds")
+
+        this->m_position = offset;
     }
 
-    uint64_t FileAccessor::GetPosition()
+    void FileAccessor::seekEnd()
     {
-        return this->position;
+        this->m_position = this->m_buffer.size();
     }
 
-    uint64_t FileAccessor::GetSize()
+    uint64_t FileAccessor::getPosition()
     {
-        return this->buffer.size();
+        return this->m_position;
     }
 
-    bool FileAccessor::IsAtEof() const
+    uint64_t FileAccessor::getSize()
     {
-        return this->position >= buffer.size();
+        return this->m_buffer.size();
     }
 
-    void FileAccessor::ReadAsBigEndian(const bool isBigEndian) {
-        this->fileIsBigEndian = isBigEndian;
+    bool FileAccessor::isAtEof() const
+    {
+        return this->m_position >= m_buffer.size();
+    }
+
+    void FileAccessor::readAsBigEndian(const bool is_big_endian)
+    {
+        this->m_fileIsBigEndian = is_big_endian;
     }
 
     // This section reads binary data from a char* pointer and stores it for us in a specific interger type
     // After the read, we use pointer arithmetic to ensure the next read starts at the correct position
- 
-    // For a single byte type, we're simply using a static_cast to avoid unnecessary overhead from memcpy
-    uint8_t FileAccessor::ReadUINT8() {
-        ASSERT(CheckReadBounds(sizeof(uint8_t)), "Can not read out of buffer's bounds");
 
-        uint8_t value = static_cast<uint8_t>(*(this->buffer.data() + this->position));
-        this->position += sizeof(uint8_t);
+    // For a single byte type, we're simply using a static_cast to avoid unnecessary overhead from memcpy
+    uint8_t FileAccessor::readUint8()
+    {
+        ASSERT(checkReadBounds(sizeof(uint8_t)), "Can not read out of buffer's bounds");
+
+        uint8_t value = static_cast<uint8_t>(*(this->m_buffer.data() + this->m_position));
+        this->m_position += sizeof(uint8_t);
         return value;
     }
 
-    uint16_t FileAccessor::ReadUINT16() {
-        ASSERT(CheckReadBounds(sizeof(uint16_t)), "Can not read out of buffer's bounds");
+    uint16_t FileAccessor::readUint16()
+    {
+        ASSERT(checkReadBounds(sizeof(uint16_t)), "Can not read out of buffer's bounds");
 
         uint16_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(uint16_t));
-        this->position += sizeof(uint16_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(uint16_t));
+        this->m_position += sizeof(uint16_t);
 
-        if (fileIsBigEndian != systemIsBigEndian)
+        if (m_fileIsBigEndian != m_systemIsBigEndian)
             value = BSWAP_16(value);
         return value;
     }
 
-    uint32_t FileAccessor::ReadUINT32() {
-        ASSERT(CheckReadBounds(sizeof(uint32_t)), "Can not read out of buffer's bounds");
+    uint32_t FileAccessor::readUint32()
+    {
+        ASSERT(checkReadBounds(sizeof(uint32_t)), "Can not read out of buffer's bounds");
 
         uint32_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(uint32_t));
-        this->position += sizeof(uint32_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(uint32_t));
+        this->m_position += sizeof(uint32_t);
 
-        if (this->fileIsBigEndian != systemIsBigEndian)
-            value = BSWAP_32(value);      
+        if (this->m_fileIsBigEndian != m_systemIsBigEndian)
+            value = BSWAP_32(value);
         return value;
     }
 
-    uint64_t FileAccessor::ReadUINT64() {
-        ASSERT(CheckReadBounds(sizeof(uint64_t)), "Can not read out of buffer's bounds");
+    uint64_t FileAccessor::readUint64()
+    {
+        ASSERT(checkReadBounds(sizeof(uint64_t)), "Can not read out of buffer's bounds");
 
         uint64_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(uint64_t));
-        this->position += sizeof(uint64_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(uint64_t));
+        this->m_position += sizeof(uint64_t);
 
-        if (this->fileIsBigEndian != systemIsBigEndian)
-            value = BSWAP_64(value);      
+        if (this->m_fileIsBigEndian != m_systemIsBigEndian)
+            value = BSWAP_64(value);
         return value;
     }
 
-    int8_t FileAccessor::ReadINT8() {
-        ASSERT(CheckReadBounds(sizeof(int8_t)), "Can not read out of buffer's bounds");
+    int8_t FileAccessor::readInt8()
+    {
+        ASSERT(checkReadBounds(sizeof(int8_t)), "Can not read out of buffer's bounds");
 
-        int8_t value = static_cast<int8_t>(*(this->buffer.data() + this->position));
-        this->position += sizeof(int8_t);
+        int8_t value = static_cast<int8_t>(*(this->m_buffer.data() + this->m_position));
+        this->m_position += sizeof(int8_t);
         return value;
     }
 
-    int16_t FileAccessor::ReadINT16() {
-        ASSERT(CheckReadBounds(sizeof(int16_t)), "Can not read out of buffer's bounds");
+    int16_t FileAccessor::readInt16()
+    {
+        ASSERT(checkReadBounds(sizeof(int16_t)), "Can not read out of buffer's bounds");
 
         int16_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(int16_t));
-        this->position += sizeof(int16_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(int16_t));
+        this->m_position += sizeof(int16_t);
 
-        if (this->fileIsBigEndian != systemIsBigEndian)
-            value = BSWAP_16(value);      
+        if (this->m_fileIsBigEndian != m_systemIsBigEndian)
+            value = BSWAP_16(value);
         return value;
     }
 
-    int32_t FileAccessor::ReadINT32() {
-        ASSERT(CheckReadBounds(sizeof(int32_t)), "Can not read out of buffer's bounds");
+    int32_t FileAccessor::readInt32()
+    {
+        ASSERT(checkReadBounds(sizeof(int32_t)), "Can not read out of buffer's bounds");
 
         int32_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(int32_t));
-        this->position += sizeof(int32_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(int32_t));
+        this->m_position += sizeof(int32_t);
 
-        if (this->fileIsBigEndian != this->systemIsBigEndian)
-            value = BSWAP_32(value);     
+        if (this->m_fileIsBigEndian != this->m_systemIsBigEndian)
+            value = BSWAP_32(value);
         return value;
     }
 
-    int64_t FileAccessor::ReadINT64() {
-        ASSERT(CheckReadBounds(sizeof(int64_t)), "Can not read out of buffer's bounds");
+    int64_t FileAccessor::readInt64()
+    {
+        ASSERT(checkReadBounds(sizeof(int64_t)), "Can not read out of buffer's bounds");
 
         int64_t value;
-        std::memcpy(&value, this->buffer.data() + this->position, sizeof(int64_t));
-        this->position += sizeof(int64_t);
+        std::memcpy(&value, this->m_buffer.data() + this->m_position, sizeof(int64_t));
+        this->m_position += sizeof(int64_t);
 
-        if (this->fileIsBigEndian != this->systemIsBigEndian)
-            value = BSWAP_64(value);   
+        if (this->m_fileIsBigEndian != this->m_systemIsBigEndian)
+            value = BSWAP_64(value);
         return value;
     }
 
-    std::string FileAccessor::ReadLine(char delimiter)
+    std::string FileAccessor::readLine(char delimiter)
     {
         std::string output = "";
 
-        size_t iter = this->buffer.size() - this->position;
+        size_t iter = this->m_buffer.size() - this->m_position;
         for (size_t i = 0; i < iter; i++)
         {
-            char value = static_cast<char>(*(this->buffer.data() + this->position));
+            char value = *(this->m_buffer.data() + this->m_position);
             if (value == delimiter)
             {
-                this->position += sizeof(char);
+                this->m_position += sizeof(char);
                 break;
             }
             output += value;
-            this->position += sizeof(char);
+            this->m_position += sizeof(char);
         }
         return output;
     }
 
-    bool FileAccessor::CheckReadBounds(uint64_t size) const {
-        if (this->position < 0 || this->position + size > this->buffer.size())
+    bool FileAccessor::checkReadBounds(uint64_t size) const
+    {
+        if (this->m_position < 0 || this->m_position + size > this->m_buffer.size())
         {
             return false;
         }
         return true;
     }
 
-    bool FileAccessor::CheckOffsetBounds(uint64_t offset) const
+    bool FileAccessor::checkOffsetBounds(uint64_t offset) const
     {
-        return offset <= this->buffer.size();
+        return offset <= this->m_buffer.size();
     }
 
-    void FileAccessor::ReadBuffer(uint8_t* dest, uint64_t size)
+    void FileAccessor::readBuffer(uint8_t* dest, uint64_t size)
     {
         //CE_PROFILE_FUNC(ReadBufferDataAssert);
-        ASSERT(CheckReadBounds(size), "Can not read out of buffer's bounds");
-        std::memcpy(dest, this->buffer.data() + this->position, size);
-        this->position += size;
+        ASSERT(checkReadBounds(size), "Can not read out of buffer's bounds");
+        std::memcpy(dest, this->m_buffer.data() + this->m_position, size);
+        this->m_position += size;
     }
-
-} 
+}

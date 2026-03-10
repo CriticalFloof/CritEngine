@@ -1,7 +1,6 @@
 #include "RenderCommand.h"
 
-namespace Engine {
-
-	std::unique_ptr<RendererAPI> RenderCommand::rendererAPI = RendererAPI::Create();
-
+namespace Engine
+{
+    std::unique_ptr<RendererAPI> RenderCommand::m_rendererAPI = RendererAPI::create();
 }

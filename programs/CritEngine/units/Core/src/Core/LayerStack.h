@@ -4,26 +4,24 @@
 #include "Layer.h"
 #include <vector>
 
-namespace Engine {
+namespace Engine
+{
+    class LayerStack
+    {
+    public:
+        ENGINE_API LayerStack();
+        ENGINE_API ~LayerStack();
 
-	class LayerStack {
+        ENGINE_API void pushLayer(Layer* layer);
+        ENGINE_API void popLayer(Layer* layer);
+        ENGINE_API void pushOverlay(Layer* overlay);
+        ENGINE_API void popOverlay(Layer* overlay);
 
-	public:
-		ENGINE_API LayerStack();
-		ENGINE_API ~LayerStack();
+        std::vector<Layer*>::iterator begin() { return m_layers.begin(); }
+        std::vector<Layer*>::iterator end() { return m_layers.end(); }
 
-		ENGINE_API void PushLayer(Layer* layer);
-		ENGINE_API void PopLayer(Layer* layer);
-		ENGINE_API void PushOverlay(Layer* overlay);
-		ENGINE_API void PopOverlay(Layer* overlay);
-
-		std::vector<Layer*>::iterator begin() { return layers.begin(); }
-		std::vector<Layer*>::iterator end() { return layers.end(); }
-		
-	private:
-		std::vector<Layer*> layers;
-		std::vector<Layer*>::iterator layerInsert;
-		
-	};
-
+    private:
+        std::vector<Layer*> m_layers;
+        std::vector<Layer*>::iterator m_layerInsert;
+    };
 }

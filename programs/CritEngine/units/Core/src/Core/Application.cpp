@@ -2,41 +2,39 @@
 #include "Logging/Logger.h"
 #include "Core/GlobalEngine.h"
 
-namespace Engine {
+namespace Engine
+{
+    Application::Application()
+    {
+    };
 
-	Application::Application()
-	{
-	};
+    Application::~Application()
+    {
+    };
 
-	Application::~Application()
-	{
-	};
+    void Application::initialize()
+    {
+        // This function gets called after the global engine has been initialized.
+    };
 
-	void Application::Initialize()
-	{
-		// This function gets called after the global engine has been initialized.
-	};
+    void Application::tickInternal()
+    {
+        for (Layer* layer : this->m_layerStack)
+            layer->onUpdate();
+    }
 
-	void Application::TickInternal()
-	{
-		for (Layer* layer : this->layerStack)
-			layer->OnUpdate();
-	}
+    void Application::pushLayer(Layer* layer)
+    {
+        this->m_layerStack.pushLayer(layer);
+    }
 
-	void Application::PushLayer(Layer* layer)
-	{
-		this->layerStack.PushLayer(layer);
-	}
+    void Application::pushOverlay(Layer* overlay)
+    {
+        this->m_layerStack.pushLayer(overlay);
+    }
 
-	void Application::PushOverlay(Layer* overlay)
-	{
-		this->layerStack.PushLayer(overlay);
-	}
-
-	void Application::Tick()
-	{
-		LogInfo("App", "Tick!");
-	}
-
+    void Application::tick()
+    {
+        logInfo("App", "Tick!");
+    }
 }
-

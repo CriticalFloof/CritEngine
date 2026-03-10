@@ -1,10 +1,8 @@
 #include "Scene.h"
 
-namespace Engine {
-
-	Scene::Scene()
-	{
-	}
-
+namespace Engine
+{
+    Scene::Scene()
+    {
+    }
 }
-

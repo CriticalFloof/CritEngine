@@ -7,27 +7,25 @@
 #include "Event/KeyboardEvent.h"
 #include "Input/Input.h"
 
-namespace Engine {
+namespace Engine
+{
+    class Application
+    {
+    public:
+        ENGINE_API Application();
+        ENGINE_API virtual ~Application();
 
-	class Application
-	{
-	public:
+        ENGINE_API void virtual initialize();
 
-		ENGINE_API Application();
-		ENGINE_API virtual ~Application();
+        ENGINE_API void tickInternal();
+        ENGINE_API void virtual tick();
 
-		ENGINE_API void virtual Initialize();
+        ENGINE_API void pushLayer(Layer* layer);
+        ENGINE_API void pushOverlay(Layer* overlay);
 
-		ENGINE_API void TickInternal();
-		ENGINE_API void virtual Tick();
-
-		ENGINE_API void PushLayer(Layer* layer);
-		ENGINE_API void PushOverlay(Layer* overlay);
-
-	private:		
-		LayerStack layerStack;
-	};
-
+    private:
+        LayerStack m_layerStack;
+    };
 }
 
-extern std::unique_ptr<Engine::Application> CreateApplication();
+extern std::unique_ptr<Engine::Application> createApplication();

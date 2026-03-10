@@ -3,37 +3,41 @@
 #include "PIL/Pipeline.h"
 #include "PIL/Texture.h"
 
-namespace Engine {
+namespace Engine
+{
+    class InternalMaterialAccessor;
 
-	class InternalMaterialAccessor;
+    class Material
+    {
+    public:
+        friend class InternalMaterialAccessor;
 
-	class Material
-	{
-	public:
-		friend class InternalMaterialAccessor;
+        Material(std::shared_ptr<Shader> vertex_shader, std::shared_ptr<Shader> fragment_shader,
+                 std::vector<std::shared_ptr<Texture>> textures);
 
-		Material(std::shared_ptr<Shader> vertexShader, std::shared_ptr<Shader> fragmentShader, std::vector<std::shared_ptr<Texture>> textures);
+        ENGINE_API static std::shared_ptr<Material> create(std::shared_ptr<Shader> vertex_shader,
+                                                           std::shared_ptr<Shader> fragment_shader,
+                                                           std::vector<std::shared_ptr<Texture>> textures);
 
-		ENGINE_API static std::shared_ptr<Material> Create(std::shared_ptr<Shader> vertexShader, std::shared_ptr<Shader> fragmentShader, std::vector<std::shared_ptr<Texture>> textures);
-	private:
-		const std::shared_ptr<Pipeline> GetPipeline() const { return this->program; }
-		const std::vector<std::shared_ptr<Texture>> GetTextures() const { return this->textures; };
+    private:
+        const std::shared_ptr<Pipeline> getPipeline() const { return this->m_program; }
+        const std::vector<std::shared_ptr<Texture>> getTextures() const { return this->m_textures; }
 
-		std::shared_ptr<Pipeline> program;
-		std::vector<std::shared_ptr<Texture>> textures;
-	};
+        std::shared_ptr<Pipeline> m_program;
+        std::vector<std::shared_ptr<Texture>> m_textures;
+    };
 
-	class InternalMaterialAccessor
-	{
-	public:
-		static std::shared_ptr<Pipeline> GetPipeline(const std::shared_ptr<Material>& material)
-		{
-			return material->GetPipeline();
-		}
+    class InternalMaterialAccessor
+    {
+    public:
+        static std::shared_ptr<Pipeline> getPipeline(const std::shared_ptr<Material>& material)
+        {
+            return material->getPipeline();
+        }
 
-		static std::vector<std::shared_ptr<Texture>> GetTextures(const std::shared_ptr<Material>& material)
-		{
-			return material->GetTextures();
-		}
-	};
+        static std::vector<std::shared_ptr<Texture>> getTextures(const std::shared_ptr<Material>& material)
+        {
+            return material->getTextures();
+        }
+    };
 }

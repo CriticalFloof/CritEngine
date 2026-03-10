@@ -10,58 +10,55 @@
 #define BSWAP_64(x) _byteswap_uint64(x)
 
 #elif defined(__linux__)
-#include <byteswap.h> 
+#include <byteswap.h>
 #define BSWAP_16(x) bswap_16(x)
 #define BSWAP_32(x) bswap_32(x)
 #define BSWAP_64(x) bswap_64(x)
 
 #endif
 
-namespace Engine {
-
-	class FileAccessor  {
-
-	public:
-
+namespace Engine
+{
+    class FileAccessor
+    {
+    public:
         FileAccessor();
 
-        void OpenFile(const std::filesystem::path& filePath);
+        void openFile(const std::filesystem::path& file_path);
 
-        void ReadAsBigEndian(const bool val);
+        void readAsBigEndian(bool is_big_endian);
 
-        void Seek(const uint64_t offset);
-        void SeekEnd();
+        void seek(uint64_t offset);
+        void seekEnd();
 
-        void ReadBuffer(uint8_t* dest, uint64_t size);
+        void readBuffer(uint8_t* dest, uint64_t size);
 
-        uint8_t ReadUINT8();
-        uint16_t ReadUINT16();
-        uint32_t ReadUINT32();
-        uint64_t ReadUINT64();
+        uint8_t readUint8();
+        uint16_t readUint16();
+        uint32_t readUint32();
+        uint64_t readUint64();
 
-        int8_t ReadINT8();
-        int16_t ReadINT16();
-        int32_t ReadINT32();
-        int64_t ReadINT64();
+        int8_t readInt8();
+        int16_t readInt16();
+        int32_t readInt32();
+        int64_t readInt64();
 
-        std::string ReadLine(char delimiter = '\n');
+        std::string readLine(char delimiter = '\n');
 
-        uint64_t GetPosition();
-        uint64_t GetSize();
-        bool IsAtEof() const;
+        uint64_t getPosition();
+        uint64_t getSize();
+        bool isAtEof() const;
 
-        bool CheckReadBounds(uint64_t size) const;
-        bool CheckOffsetBounds(uint64_t offset) const;
+        bool checkReadBounds(uint64_t size) const;
+        bool checkOffsetBounds(uint64_t offset) const;
 
-	private:
-        bool IsSystemBigEndian() const;
-        bool fileIsBigEndian = false;
-        bool systemIsBigEndian = false;
+    private:
+        bool isSystemBigEndian() const;
+        bool m_fileIsBigEndian = false;
+        bool m_systemIsBigEndian = false;
 
-        uint64_t position;
-        std::ifstream file;
-        std::vector<char> buffer;
-
+        uint64_t m_position;
+        std::ifstream m_file;
+        std::vector<char> m_buffer;
     };
 }
-

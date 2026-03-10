@@ -5,21 +5,19 @@
 
 #include "Model.h"
 
-namespace Engine {
+namespace Engine
+{
+    class Renderer
+    {
+    public:
+        ENGINE_API static void beginScene(std::shared_ptr<BaseCamera> camera);
+        ENGINE_API static void endScene();
 
-	class Renderer
-	{
-	public:
+        ENGINE_API static void submit(const std::shared_ptr<Model>& model);
 
-		ENGINE_API static void BeginScene(std::shared_ptr<BaseCamera> camera);
-		ENGINE_API static void EndScene();
+        ENGINE_API static RendererAPI::API getAPI() { return RendererAPI::getAPI(); }
 
-		ENGINE_API static void Submit(const std::shared_ptr<Model>& model);
-
-		ENGINE_API inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-	private:
-
-		static std::shared_ptr<BaseCamera> activeCamera;
-
-	};
+    private:
+        static std::shared_ptr<BaseCamera> m_activeCamera;
+    };
 }

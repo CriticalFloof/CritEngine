@@ -3,22 +3,20 @@
 #include <vector>
 #include <string>
 
-namespace Engine {
+namespace Engine
+{
+    struct ISceneGraphable
+    {
+        virtual std::weak_ptr<ISceneGraphable> getParent() = 0;
 
-	struct ISceneGraphable
-	{
-	public:
-		virtual std::weak_ptr<ISceneGraphable> GetParent() = 0;
-		
-		virtual std::vector<std::shared_ptr<ISceneGraphable>> GetChildren() = 0;
-		virtual std::shared_ptr<ISceneGraphable> GetChildByIndex(size_t index) = 0;
-		virtual std::shared_ptr<ISceneGraphable> GetChildByName(std::string name) = 0;
-		
-		virtual void AddChild(std::shared_ptr<ISceneGraphable> newChild) = 0;
-		virtual void RemoveChild(std::shared_ptr<ISceneGraphable> newChild) = 0;
+        virtual std::vector<std::shared_ptr<ISceneGraphable>> getChildren() = 0;
+        virtual std::shared_ptr<ISceneGraphable> getChildByIndex(size_t index) = 0;
+        virtual std::shared_ptr<ISceneGraphable> getChildByName(std::string name) = 0;
 
-	protected:
-		virtual void SetParent(std::weak_ptr<ISceneGraphable>) = 0;
-	};
+        virtual void addChild(std::shared_ptr<ISceneGraphable> new_child) = 0;
+        virtual void removeChild(std::shared_ptr<ISceneGraphable> new_child) = 0;
 
+    protected:
+        virtual void setParent(std::weak_ptr<ISceneGraphable>) = 0;
+    };
 }

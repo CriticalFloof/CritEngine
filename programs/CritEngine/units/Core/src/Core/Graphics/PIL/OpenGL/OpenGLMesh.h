@@ -1,30 +1,36 @@
 #pragma once
 #include "../Mesh.h"
 
-namespace Engine {
+namespace Engine
+{
+    class OpenGLMesh : public Mesh
+    {
+    public:
+        OpenGLMesh();
 
-	class OpenGLMesh : public Mesh
-	{
-	public:
-		OpenGLMesh();
-		virtual ~OpenGLMesh() {};
+        virtual ~OpenGLMesh()
+        {
+        };
 
-		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
-		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
-		virtual void SetMaterial(const std::shared_ptr<Material>& material) override;
+        void addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertex_buffer) override;
+        void setIndexBuffer(const std::shared_ptr<IndexBuffer>& index_buffer) override;
+        void setMaterial(const std::shared_ptr<Material>& material) override;
 
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return this->vertexBuffers; } 
-		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const override { return this->indexBuffer; }
-		virtual const std::shared_ptr<Material>& GetMaterial() const override { return this->material; }
+        const std::vector<std::shared_ptr<VertexBuffer>>& getVertexBuffers() const override
+        {
+            return this->m_vertexBuffers;
+        }
 
-	private:
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+        const std::shared_ptr<IndexBuffer>& getIndexBuffer() const override { return this->m_indexBuffer; }
+        const std::shared_ptr<Material>& getMaterial() const override { return this->m_material; }
 
-		uint32_t vertexArrayID;
-		std::vector<std::shared_ptr<VertexBuffer>> vertexBuffers;
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		std::shared_ptr<Material> material;
-	};
+    private:
+        void bind() const override;
+        void unbind() const override;
 
+        uint32_t m_vertexArrayID;
+        std::vector<std::shared_ptr<VertexBuffer>> m_vertexBuffers;
+        std::shared_ptr<IndexBuffer> m_indexBuffer;
+        std::shared_ptr<Material> m_material;
+    };
 }

@@ -1,15 +1,14 @@
 #pragma once
 #include "../Shader.h"
 
-namespace Engine {
+namespace Engine
+{
+    class OpenGLShader : public Shader
+    {
+    public:
+        OpenGLShader(const std::string& glsl_source, ShaderType shader_type);
+        ~OpenGLShader() override;
 
-	class OpenGLShader : public Shader
-	{
-	public:
-		OpenGLShader(const std::string& glslSource, const ShaderType shaderType);
-		virtual ~OpenGLShader();
-
-		uint32_t shaderID;
-	};
-
+        uint32_t shaderID;
+    };
 }

@@ -3,11 +3,21 @@
 #include "../Logging/Logger.h"
 #include "Event.h"
 
-namespace Engine {
+namespace Engine
+{
+    struct KeyboardEvent : Event<std::tuple<unsigned int>, AnyEvent>
+    {
+    };
 
-	struct KeyboardEvent : Event<std::tuple<unsigned int>, AnyEvent> {};
+    struct KeyPressedEvent : Event<std::tuple<>, KeyboardEvent>
+    {
+    };
 
-	struct KeyPressedEvent : Event<std::tuple<>, KeyboardEvent> {};
-	struct KeyReleasedEvent : Event<std::tuple<>, KeyboardEvent> {};
-	struct KeyJustPressedEvent : Event<std::tuple<>, KeyboardEvent> {};
+    struct KeyReleasedEvent : Event<std::tuple<>, KeyboardEvent>
+    {
+    };
+
+    struct KeyJustPressedEvent : Event<std::tuple<>, KeyboardEvent>
+    {
+    };
 }

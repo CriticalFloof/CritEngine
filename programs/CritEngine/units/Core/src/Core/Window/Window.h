@@ -7,45 +7,50 @@
 
 struct GLFWwindow;
 
-namespace Engine {
+namespace Engine
+{
+    class Window
+    {
+    public:
+        ENGINE_API Window(int width, int height, const std::string& title);
+        ENGINE_API ~Window();
 
-	class Window
-	{
-	public:
+        ENGINE_API GLFWwindow* getHandle();
+        ENGINE_API std::shared_ptr<InputListener> getInput();
 
-		ENGINE_API Window(const int width, const int height, const std::string& title);
-		ENGINE_API ~Window();
+        ENGINE_API void setWidth(const int width) { m_width = width; }
+        ENGINE_API void setHeight(const int height) { m_height = height; }
 
-		ENGINE_API GLFWwindow* GetHandle();
-		ENGINE_API std::shared_ptr<InputListener> GetInput();
+        ENGINE_API int getWidth() { return m_width; }
+        ENGINE_API int getHeight() { return m_height; }
+        ENGINE_API float getAspectRatio() { return static_cast<float>(m_width) / static_cast<float>(m_height); }
 
-		ENGINE_API void SetWidth(const int _width) { this->width = _width; }
-		ENGINE_API void SetHeight(const int _height) { this->height = _height; }
+        ENGINE_API void imGuiStartFrame();
+        ENGINE_API void imGuiRender();
 
-		ENGINE_API int GetWidth() { return this->width; }
-		ENGINE_API int GetHeight() { return this->height; }
-		ENGINE_API float GetAspectRatio() { return (float)this->width / (float)this->height; }
+        void tick();
 
-		ENGINE_API void ImGuiStartFrame();
-		ENGINE_API void ImGuiRender();
+    private:
+        void pollEvents();
+        void swapBuffers();
 
-		void Tick();
+        EventEmitter m_eventEmitter;
+        GLFWwindow* m_windowHandle = nullptr;
+        std::shared_ptr<InputListener> m_input = nullptr;
+        std::shared_ptr<RenderContext> m_renderContext = nullptr;
+        int m_width;
+        int m_height;
+    };
 
-	private:
-		void PollEvents();
-		void SwapBuffers();
+    struct WindowEvent : Event<std::tuple<>, AnyEvent>
+    {
+    };
 
-		EventEmitter eventEmitter;
-		GLFWwindow* windowHandle = nullptr;
-		std::shared_ptr<InputListener> input = nullptr;
-		std::shared_ptr<RenderContext> renderContext = nullptr;
-		int width;
-		int height;
-		
-	};
+    struct WindowResizeEvent : Event<std::tuple<Window*, int, int>, WindowEvent>
+    {
+    };
 
-	struct WindowEvent : Event<std::tuple<>, AnyEvent> {};
-	struct WindowResizeEvent : Event<std::tuple<Window*, int, int>, WindowEvent> {};
-	struct WindowCloseEvent : Event<std::tuple<Window*>, WindowEvent> {};
-
+    struct WindowCloseEvent : Event<std::tuple<Window*>, WindowEvent>
+    {
+    };
 };

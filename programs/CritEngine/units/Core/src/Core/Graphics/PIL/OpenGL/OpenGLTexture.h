@@ -2,21 +2,22 @@
 
 #include "../Texture.h"
 
-namespace Engine {
-	class OpenGLTexture : public Texture
-	{
-	public:
-		OpenGLTexture(char* vertices, uint32_t width, uint32_t height, uint8_t channelCount);
-		virtual ~OpenGLTexture();
+namespace Engine
+{
+    class OpenGLTexture : public Texture
+    {
+    public:
+        OpenGLTexture(char* vertices, uint32_t width, uint32_t height, uint8_t channel_count);
+        ~OpenGLTexture() override;
 
-		virtual uint32_t GetWidth() override { return this->width; }
-		virtual uint32_t GetHeight() override { return this->height; }
+        uint32_t getWidth() override { return this->m_width; }
+        uint32_t getHeight() override { return this->m_height; }
 
-		virtual void Bind(uint32_t slot = 0) const override;
+        void bind(uint32_t slot = 0) const override;
 
-	private:
-		uint32_t textureID;
-		uint32_t width;
-		uint32_t height;
-	};
+    private:
+        uint32_t m_textureID;
+        uint32_t m_width;
+        uint32_t m_height;
+    };
 }

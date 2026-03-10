@@ -1,35 +1,35 @@
-#include "Renderer.h" 
+#include "Renderer.h"
 
-namespace Engine {
+namespace Engine
+{
+    std::shared_ptr<BaseCamera> Renderer::m_activeCamera = std::make_shared<PerspectiveCamera>();
 
-	std::shared_ptr<BaseCamera> Renderer::activeCamera = std::make_shared<PerspectiveCamera>();
+    void Renderer::beginScene(std::shared_ptr<BaseCamera> camera)
+    {
+        m_activeCamera = camera;
+    }
 
-	void Renderer::BeginScene(std::shared_ptr<BaseCamera> camera)
-	{
-		Renderer::activeCamera = camera;
-	}
+    void Renderer::endScene()
+    {
+    }
 
-	void Renderer::EndScene()
-	{
-	}
+    void Renderer::submit(const std::shared_ptr<Model>& model)
+    {
+        std::shared_ptr<Mesh> mesh = model->getMesh();
+        std::shared_ptr<Pipeline> program = InternalMaterialAccessor::getPipeline(mesh->getMaterial());
+        program->bind();
+        program->uploadUniformMat4("uViewProjection", m_activeCamera->getViewMatrix());
+        program->uploadUniformMat4("uPerspectiveProjection", m_activeCamera->getPerspectiveMatrix());
+        program->uploadUniformMat4("uViewPerspectiveProjection", m_activeCamera->getViewPerspectiveMatrix());
+        program->uploadUniformMat4("uModelProjection", model->getModelProjection());
 
-	void Renderer::Submit(const std::shared_ptr<Model>& model)
-	{
-		std::shared_ptr<Mesh> mesh = model->GetMesh();
-		std::shared_ptr<Pipeline> program = InternalMaterialAccessor::GetPipeline(mesh->GetMaterial());
-		program->Bind();
-		program->UploadUniformMat4("uViewProjection", Renderer::activeCamera->getViewMatrix());
-		program->UploadUniformMat4("uPerspectiveProjection", Renderer::activeCamera->getPerspectiveMatrix());
-		program->UploadUniformMat4("uViewPerspectiveProjection", Renderer::activeCamera->getViewPerspectiveMatrix());
-		program->UploadUniformMat4("uModelProjection", model->GetModelProjection());
+        std::vector<std::shared_ptr<Texture>> textures = InternalMaterialAccessor::getTextures(mesh->getMaterial());
+        for (size_t i = 0; i < textures.size(); i++)
+        {
+            textures[i]->bind(i);
+        }
 
-		std::vector<std::shared_ptr<Texture>> textures = InternalMaterialAccessor::GetTextures(mesh->GetMaterial());
-		for (int i = 0; i < textures.size(); i++)
-		{
-			textures[i]->Bind(i);
-		}
-
-		InternalMeshAccessor::Bind(mesh);
-		RenderCommand::DrawIndexed(mesh);
-	}
+        InternalMeshAccessor::bind(mesh);
+        RenderCommand::drawIndexed(mesh);
+    }
 }

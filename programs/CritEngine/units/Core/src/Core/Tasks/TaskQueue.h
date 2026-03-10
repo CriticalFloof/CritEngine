@@ -20,16 +20,16 @@ namespace Engine
         TaskQueue(TaskQueue&&) = delete;
         TaskQueue& operator=(TaskQueue&&) = delete;
 
-        ENGINE_API void PushBack(const Task& task);
-        ENGINE_API void PushFront(const Task& task);
+        ENGINE_API void pushBack(const Task& task);
+        ENGINE_API void pushFront(const Task& task);
 
-        ENGINE_API std::optional<Task> PopBack();
-        ENGINE_API std::optional<Task> StealFront();
+        ENGINE_API std::optional<Task> popBack();
+        ENGINE_API std::optional<Task> stealFront();
 
-        ENGINE_API bool IsEmpty();
+        ENGINE_API bool isEmpty();
 
     private:
-        std::deque<Task> deque;
-        std::mutex mutex;
+        std::deque<Task> m_deque;
+        std::mutex m_mutex;
     };
 }

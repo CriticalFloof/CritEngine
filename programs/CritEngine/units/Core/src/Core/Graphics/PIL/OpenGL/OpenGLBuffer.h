@@ -1,37 +1,38 @@
 #pragma once
 #include "../Buffer.h"
 
-namespace Engine {
-	class OpenGLVertexBuffer : public VertexBuffer
-	{
-	public:
-		OpenGLVertexBuffer(float* vertices, uint32_t size);
-		virtual ~OpenGLVertexBuffer();
+namespace Engine
+{
+    class OpenGLVertexBuffer : public VertexBuffer
+    {
+    public:
+        OpenGLVertexBuffer(float* vertices, uint32_t size);
+        ~OpenGLVertexBuffer() override;
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+        void bind() const override;
+        void unbind() const override;
 
-		virtual const BufferLayout& GetLayout() const override { return this->layout; }
-		virtual void SetLayout(BufferLayout layout) override { this->layout = layout; }
+        const BufferLayout& getLayout() const override { return this->m_layout; }
+        void setLayout(BufferLayout layout) override { this->m_layout = layout; }
 
-	private:
-		uint32_t bufferID;
-		BufferLayout layout;
-	};
+    private:
+        uint32_t m_bufferID;
+        BufferLayout m_layout;
+    };
 
-	class OpenGLIndexBuffer : public IndexBuffer
-	{
-	public:
-		OpenGLIndexBuffer(uint32_t* vertices, uint32_t count);
-		virtual ~OpenGLIndexBuffer();
+    class OpenGLIndexBuffer : public IndexBuffer
+    {
+    public:
+        OpenGLIndexBuffer(uint32_t* vertices, uint32_t count);
+        ~OpenGLIndexBuffer() override;
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+        void bind() const override;
+        void unbind() const override;
 
-		virtual uint32_t GetCount() const override { return this->count; }
+        uint32_t getCount() const override { return this->m_count; }
 
-	private:
-		uint32_t bufferID;
-		uint32_t count;
-	};
+    private:
+        uint32_t m_bufferID;
+        uint32_t m_count;
+    };
 }

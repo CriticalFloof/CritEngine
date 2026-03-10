@@ -1,5 +1,5 @@
 #include "Event.h"
 
-namespace Engine {
-
+namespace Engine
+{
 }

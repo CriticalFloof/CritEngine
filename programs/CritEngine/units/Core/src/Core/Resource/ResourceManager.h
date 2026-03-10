@@ -8,20 +8,19 @@
 #include "Resource.h"
 #include "ResourceLoader.h"
 
-namespace Engine {
+namespace Engine
+{
+    class ResourceManager
+    {
+    public:
+        ResourceManager();
 
-	class ResourceManager
-	{
-	public:
-		ResourceManager();
+        ENGINE_API void registerLoader(std::unique_ptr<ResourceLoader> loader);
+        ENGINE_API std::shared_ptr<void> getResourceData(const Resource& resource_handle);
 
-		ENGINE_API void RegisterLoader(std::unique_ptr<ResourceLoader> loader);
-		ENGINE_API std::shared_ptr<void> GetResourceData(const Resource& resourceHandle);
+    private:
+        std::unordered_map<std::string, std::unique_ptr<ResourceLoader>> m_registeredLoaders;
 
-	private:
-		std::unordered_map<std::string, std::unique_ptr<ResourceLoader>> registeredLoaders;
-
-		std::unordered_map<UUID, std::weak_ptr<void>> resourceDataCache;
-	};
-
+        std::unordered_map<UUID, std::weak_ptr<void>> m_resourceDataCache;
+    };
 }

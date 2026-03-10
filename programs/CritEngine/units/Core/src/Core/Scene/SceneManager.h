@@ -1,18 +1,17 @@
 #pragma once
 #include "Scene.h"
 
-namespace Engine {
+namespace Engine
+{
+    class SceneManager
+    {
+    public:
+        SceneManager();
 
-	class SceneManager
-	{
-	public:
-		SceneManager();
+        ENGINE_API std::shared_ptr<Scene> getBaseScene() { return this->m_baseScene; }
+        ENGINE_API void setBaseScene(std::shared_ptr<Scene> scene) { this->m_baseScene = scene; }
 
-		ENGINE_API std::shared_ptr<Scene> GetBaseScene() { return this->baseScene; }
-		ENGINE_API void SetBaseScene(std::shared_ptr<Scene> scene) { this->baseScene = scene; }
-
-	private:
-		std::shared_ptr<Scene> baseScene = nullptr;
-	};
-
+    private:
+        std::shared_ptr<Scene> m_baseScene = nullptr;
+    };
 }

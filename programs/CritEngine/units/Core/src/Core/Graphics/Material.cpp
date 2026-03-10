@@ -1,24 +1,26 @@
 #include "Material.h"
 
-namespace Engine {
+namespace Engine
+{
+    std::shared_ptr<Material> Material::create(std::shared_ptr<Shader> vertex_shader,
+                                               std::shared_ptr<Shader> fragment_shader,
+                                               std::vector<std::shared_ptr<Texture>> textures)
+    {
+        return std::make_shared<Material>(vertex_shader, fragment_shader, textures);
+    }
 
-	std::shared_ptr<Material> Material::Create(std::shared_ptr<Shader> vertexShader, std::shared_ptr<Shader> fragmentShader, std::vector<std::shared_ptr<Texture>> textures)
-	{
-		return std::make_shared<Material>(vertexShader, fragmentShader, textures);
-	}
+    Material::Material(std::shared_ptr<Shader> vertex_shader, std::shared_ptr<Shader> fragment_shader,
+                       std::vector<std::shared_ptr<Texture>> textures)
+        : m_textures(textures)
+    {
+        this->m_program = Pipeline::create(vertex_shader, fragment_shader);
 
-	Material::Material(std::shared_ptr<Shader> vertexShader, std::shared_ptr<Shader> fragmentShader, std::vector<std::shared_ptr<Texture>> textures)
-		: textures(textures)
-	{
-		this->program = Pipeline::Create(vertexShader, fragmentShader);
+        if (textures.size() == 0) return;
 
-		if (textures.size() == 0) return;
-
-		this->program->Bind();
-		for (int i = 0; i > textures.size(); i++)
-		{
-			this->program->UploadUniformInt("texture" + std::to_string(i), i);
-		}
-	}
-
+        this->m_program->bind();
+        for (int i = 0; i > textures.size(); i++)
+        {
+            this->m_program->uploadUniformInt("texture" + std::to_string(i), i);
+        }
+    }
 }

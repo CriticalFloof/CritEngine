@@ -1,14 +1,12 @@
 #include "Layer.h"
 
-namespace Engine {
+namespace Engine
+{
+    Layer::Layer(const std::string& name)
+    {
+    }
 
-	Layer::Layer(const std::string& name) {
-
-	}
-
-	Layer::~Layer()
-	{
-	}
-
+    Layer::~Layer()
+    {
+    }
 }
-

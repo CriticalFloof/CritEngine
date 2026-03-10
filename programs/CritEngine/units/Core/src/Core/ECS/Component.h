@@ -2,23 +2,28 @@
 #include <stdlib.h>
 #include "../Core/Base.h"
 
-namespace ECS {
-    struct Component {};
-
-    static int componentIdCounter = 0;
-    template <class T>
-    int GetId()
+namespace ECS
+{
+    struct Component
     {
-        static int componentId = componentIdCounter++;
-        return componentId;
+    };
+
+    static int g_component_id_counter = 0;
+
+    template <class T>
+    int getId()
+    {
+        static int component_id = g_component_id_counter++;
+        return component_id;
     };
 
     // Barebones runtime array memory allocator, type safety must be handled by its user.
-    struct ComponentMemoryPool {
+    struct ComponentMemoryPool
+    {
         ComponentMemoryPool(size_t elementSize, size_t maxEntities, size_t elementAlignment)
         {
-            const int BUFFER_ALIGNMENT = 64;
-            ASSERT(BUFFER_ALIGNMENT >= elementAlignment, "Components must have an alignment of 64 bytes or less.");
+            constexpr int buffer_alignment = 64;
+            ASSERT(buffer_alignment >= elementAlignment, "Components must have an alignment of 64 bytes or less.");
 
             this->stride = ((elementSize + elementAlignment - 1) / elementAlignment) * elementAlignment;
 
@@ -31,13 +36,12 @@ namespace ECS {
             delete[] this->data;
         }
 
-        inline void* Get(size_t index)
+        void* get(size_t index)
         {
             return this->data + index * this->stride;
         }
 
-        char* data { nullptr };
-        size_t stride { 0 };
+        char* data{nullptr};
+        size_t stride{0};
     };
 }
-

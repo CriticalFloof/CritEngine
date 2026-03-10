@@ -4,29 +4,38 @@
 #include "DefaultSceneGraphable.h"
 #include <refl.hpp>
 
-namespace Engine {
+namespace Engine
+{
+    class Actor : public BaseObject, public DefaultSceneGraphable
+    {
+    public:
+        ENGINE_API Actor();
 
-	class Actor : public BaseObject, public DefaultSceneGraphable
-	{
-	public:
-		ENGINE_API Actor();
-		virtual ~Actor() {};
+        virtual ~Actor()
+        {
+        };
 
-		
-		int health = 100;
-		short mana = 600;
-		std::string h = "Hello World!";
 
-		int GetInteger(std::string str) { 
-			std::cout << "Hello, from GetInteger!! " << str << "\n";
-			return 10; 
-		};
-	};
+        int health = 100;
+        short mana = 600;
+        std::string h = "Hello World!";
+
+        int getInteger(std::string str)
+        {
+            std::cout << "Hello, from GetInteger!! " << str << "\n";
+            return 10;
+        };
+    };
 }
 
 REFL_TYPE(Engine::Actor, bases<>)
+
     REFL_FIELD(health, refl::attr::usage::member())
-	REFL_FIELD(mana, refl::attr::usage::member())
-	REFL_FIELD(h, refl::attr::usage::member())
-	REFL_FUNC(GetInteger)
+
+    REFL_FIELD(mana, refl::attr::usage::member())
+
+    REFL_FIELD(h, refl::attr::usage::member())
+
+    REFL_FUNC(getInteger)
+
 REFL_END

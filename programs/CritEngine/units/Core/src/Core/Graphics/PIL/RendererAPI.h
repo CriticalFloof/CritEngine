@@ -3,48 +3,46 @@
 #include <glm/glm.hpp>
 #include "Mesh.h"
 
-namespace Engine {
+namespace Engine
+{
+    class RendererAPI
+    {
+    public:
+        enum class API
+        {
+            None = 0, OpenGL = 1
+        };
 
-	class RendererAPI
-	{
-	public:
+        enum class DepthTestFunction : uint8_t
+        {
+            Always,
+            Never,
+            Equal,
+            NotEqual,
+            Less,
+            LessOrEqual,
+            Greater,
+            GreaterOrEqual
+        };
 
-		enum class API
-		{
-			None = 0, OpenGL = 1
-		};
+        ENGINE_API virtual ~RendererAPI() = default;
 
-		enum class DepthTestFunction : uint8_t
-		{
-			Always,
-			Never,
-			Equal,
-			NotEqual,
-			Less,
-			LessOrEqual,
-			Greater,
-			GreaterOrEqual
-		};
+        ENGINE_API static std::unique_ptr<RendererAPI> create();
 
-		ENGINE_API virtual ~RendererAPI() = default;
+        static API getAPI() { return m_api; }
 
-		ENGINE_API static std::unique_ptr<RendererAPI> Create();
+        virtual void setClearColor(const glm::vec4& color) = 0;
+        virtual void clear() = 0;
 
-		inline static API GetAPI() { return RendererAPI::api; }
+        virtual void enableDepthTest(bool new_state) = 0;
+        virtual void enableDepthMask(bool new_state) = 0;
+        virtual void setDepthTestFunc(DepthTestFunction new_function) = 0;
 
-		virtual void SetClearColor(const glm::vec4& color) = 0;
-		virtual void Clear() = 0;
+        virtual void setViewportSize(int width, int height) = 0;
 
-		virtual void EnableDepthTest(const bool newState) = 0;
-		virtual void EnableDepthMask(const bool newState) = 0;
-		virtual void SetDepthTestFunc(const DepthTestFunction newFunction) = 0;
+        virtual void drawIndexed(const std::shared_ptr<Mesh>& vertex_array) = 0;
 
-		virtual void SetViewportSize(const int width, const int height) = 0;
-
-		virtual void DrawIndexed(const std::shared_ptr<Mesh>& vertexArray ) = 0;
-
-	private:
-		static API api;
-	};
-
+    private:
+        static API m_api;
+    };
 }

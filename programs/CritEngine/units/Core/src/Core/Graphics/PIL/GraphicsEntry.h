@@ -2,17 +2,15 @@
 
 #include "../../Core/Base.h"
 
-namespace Engine {
+namespace Engine
+{
+    class GraphicsEntry
+    {
+    public:
+        virtual ~GraphicsEntry() = 0;
 
-	class GraphicsEntry
-	{
-	public:
-		virtual ~GraphicsEntry() = 0;
+        static std::unique_ptr<GraphicsEntry> create();
 
-		static std::unique_ptr<GraphicsEntry> Create();
-
-		virtual void Init() = 0;
-
-	};
-
+        virtual void init() = 0;
+    };
 }

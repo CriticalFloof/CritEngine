@@ -3,100 +3,99 @@
 
 #include <GLFW/glfw3.h>
 
-namespace Engine {
+namespace Engine
+{
+    Window::Window(const int width, const int height, const std::string& title)
+        : m_eventEmitter(EventEmitter()), m_width(width), m_height(height)
+    {
+        bool success = glfwInit();
+        ASSERT(success, "Failed to initialize GLFW!");
 
-	Window::Window(const int width, const int height, const std::string& title)
-		: eventEmitter(EventEmitter()), width(width), height(height)
-	{
-		bool success = glfwInit();
-		ASSERT(success, "Failed to initialize GLFW!");
+        // We can use whatever version we want, I just set it to the latest
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		// We can use whatever version we want, I just set it to the latest
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        m_windowHandle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        ASSERT(m_windowHandle, "Failed to create GLFW window!");
 
-		this->windowHandle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-		ASSERT(this->windowHandle, "Failed to create GLFW window!");
+        glfwSetInputMode(m_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetWindowUserPointer(m_windowHandle, this);
 
-		glfwSetInputMode(this->windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetWindowUserPointer(this->windowHandle, this);
+        m_input = std::make_unique<InputListener>(this->getHandle());
+        m_renderContext = RenderContext::create(this->getHandle());
+        m_renderContext->init();
+        m_renderContext->initImGui();
 
-		this->input = std::make_unique<InputListener>(this->GetHandle());
-		this->renderContext = RenderContext::Create(this->GetHandle());
-		this->renderContext->Init();
-		this->renderContext->InitImGui();
+        glfwSetWindowCloseCallback(m_windowHandle, [](GLFWwindow* glfw_window)
+        {
+            auto window = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+            window->m_eventEmitter.emit<WindowCloseEvent>(window);
+        });
 
-		glfwSetWindowCloseCallback(this->windowHandle, [](GLFWwindow* glfwWindow)
-		{
-			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));
-			window->eventEmitter.Emit<WindowCloseEvent>(window);
-		});
+        m_eventEmitter.addListener<WindowCloseEvent>([](Window* window)
+        {
+            GlobalEngine::shutdown();
+        });
 
-		this->eventEmitter.AddListener<WindowCloseEvent>([](Window* window)
-		{
-			GlobalEngine::Shutdown();
-		});
+        glfwSetWindowSizeCallback(m_windowHandle, [](GLFWwindow* glfw_window, int width, int height)
+        {
+            auto window = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+            window->m_eventEmitter.emit<WindowResizeEvent>(window, width, height);
+        });
 
-		glfwSetWindowSizeCallback(this->windowHandle, [](GLFWwindow* glfwWindow, int width, int height) 
-		{
-            Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow));		
-			window->eventEmitter.Emit<WindowResizeEvent>(window, width, height);
-		});
+        m_eventEmitter.addListener<WindowResizeEvent>([](Window* window, int width, int height)
+        {
+            window->setWidth(width);
+            window->setHeight(height);
 
-		this->eventEmitter.AddListener<WindowResizeEvent>([](Window* window, int width, int height)
-		{
-			window->SetWidth(width);
-			window->SetHeight(height);
+            RenderCommand::setViewportSize(width, height);
+        });
+    }
 
-			RenderCommand::SetViewportSize(width, height);
+    Window::~Window()
+    {
+        glfwDestroyWindow(m_windowHandle);
+        glfwTerminate();
+    }
 
-		});
-		
-	}
+    GLFWwindow* Window::getHandle()
+    {
+        return m_windowHandle;
+    }
 
-	Window::~Window()
-	{
-		glfwDestroyWindow(this->windowHandle);
-		glfwTerminate();
-	}
+    void Window::tick()
+    {
+        this->getInput()->pollKeyEvents();
+        this->getInput()->pollMouseEvents();
+        this->pollEvents();
+        this->swapBuffers();
+    }
 
-	GLFWwindow* Window::GetHandle()
-	{
-		return this->windowHandle;
-	}
+    void Window::swapBuffers()
+    {
+        m_renderContext->swapBuffers();
+    }
 
-	void Window::Tick()
-	{
-		this->GetInput()->PollKeyEvents();
-		this->GetInput()->PollMouseEvents();
-		this->PollEvents();
-		this->SwapBuffers();
-	}
+    void Window::imGuiStartFrame()
+    {
+        m_renderContext->imGuiStartFrame();
+    }
 
-	void Window::SwapBuffers()
-	{
-		this->renderContext->SwapBuffers();
-	}
+    void Window::imGuiRender()
+    {
+        m_renderContext->imGuiRender();
+    }
 
-	void Window::ImGuiStartFrame()
-	{
-		this->renderContext->ImGuiStartFrame();
-	}
+    void Window::pollEvents()
+    {
+        glfwPollEvents();
+    }
 
-	void Window::ImGuiRender()
-	{
-		this->renderContext->ImGuiRender();
-	}
-
-	void Window::PollEvents()
-	{
-		glfwPollEvents();
-	}
-
-	std::shared_ptr<InputListener> Window::GetInput()
-	{
-		ASSERT(this->input);
-		return this->input;
-	}
+    std::shared_ptr<InputListener> Window::getInput()
+    {
+        ASSERT(this->m_input)
+        
+        return this->m_input;
+    }
 };

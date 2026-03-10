@@ -54,7 +54,7 @@ namespace Engine
 
         template <typename _ = T>
             requires(Rows == Columns)
-        static Matrix Identity()
+        static Matrix identity()
         {
             Matrix out = Matrix();
 
@@ -68,7 +68,7 @@ namespace Engine
 
         //Static Math Operations
 
-        static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first,
+        static Matrix<T, Rows, Columns> add(const Matrix<T, Rows, Columns>& first,
                                             const Matrix<T, Rows, Columns>& second)
         {
             Matrix out = Matrix();
@@ -82,7 +82,7 @@ namespace Engine
         }
 
         template <size_t RowsLhs = Rows, size_t SharedDepth = Columns, size_t ColumnsRhs>
-        static Matrix<T, RowsLhs, ColumnsRhs> Mul(const Matrix<T, RowsLhs, SharedDepth>& first,
+        static Matrix<T, RowsLhs, ColumnsRhs> mul(const Matrix<T, RowsLhs, SharedDepth>& first,
                                                   const Matrix<T, SharedDepth, ColumnsRhs>& second)
         {
             // Naive implementation
@@ -104,7 +104,7 @@ namespace Engine
             return out;
         }
 
-        static Matrix<T, Rows, Columns> Add(const Matrix<T, Rows, Columns>& first, const T scalar)
+        static Matrix<T, Rows, Columns> add(const Matrix<T, Rows, Columns>& first, const T scalar)
         {
             Matrix out = Matrix();
 
@@ -116,7 +116,7 @@ namespace Engine
             return out;
         }
 
-        static Matrix<T, Rows, Columns> Mul(const Matrix& base, const T scalar)
+        static Matrix<T, Rows, Columns> mul(const Matrix& base, const T scalar)
         {
             Matrix out = Matrix();
 
@@ -128,7 +128,7 @@ namespace Engine
             return out;
         }
 
-        static Matrix<T, Columns, Rows> Transpose(const Matrix<T, Rows, Columns>& base)
+        static Matrix<T, Columns, Rows> transpose(const Matrix<T, Rows, Columns>& base)
         {
             Matrix out = Matrix<T, Columns, Rows>();
 
@@ -144,7 +144,7 @@ namespace Engine
         }
 
         template <int R = Rows, int C = Columns>
-        static std::enable_if_t<R == C, T> Determinant(const Matrix<T, Rows, Columns>& base)
+        static std::enable_if_t<R == C, T> determinant(const Matrix<T, Rows, Columns>& base)
         {
             Matrix m = Matrix(base);
 
@@ -188,10 +188,10 @@ namespace Engine
         }
 
         template <int R = Rows, int C = Columns>
-        static std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse(const Matrix& base)
+        static std::enable_if_t<R == C, Matrix<T, Rows, Columns>> inverse(const Matrix& base)
         {
             Matrix input = Matrix(base);
-            Matrix inverse = Matrix::Identity();
+            Matrix inverse = Matrix::identity();
 
             for (size_t i = 0; i < Rows; i++)
             {
@@ -222,7 +222,7 @@ namespace Engine
         }
 
 
-        static bool IsEqual(const Matrix<T, Rows, Columns>& first, const Matrix<T, Rows, Columns>& second)
+        static bool isEqual(const Matrix<T, Rows, Columns>& first, const Matrix<T, Rows, Columns>& second)
         {
             for (size_t i = 0; i < Rows * Columns; i++)
             {
@@ -239,26 +239,26 @@ namespace Engine
             return Matrix::at(*this, row, column);
         }
 
-        Matrix Add(Matrix& other) const { return Matrix::Add(*this, other); }
-        Matrix Mul(Matrix& other) const { return Matrix::Mul(*this, other); }
+        Matrix add(Matrix& other) const { return Matrix::add(*this, other); }
+        Matrix mul(Matrix& other) const { return Matrix::mul(*this, other); }
 
-        Matrix Add(const T scalar) const { return Matrix::Add(*this, scalar); }
-        Matrix Mul(const T scalar) const { return Matrix::Mul(*this, scalar); }
+        Matrix add(const T scalar) const { return Matrix::add(*this, scalar); }
+        Matrix mul(const T scalar) const { return Matrix::mul(*this, scalar); }
 
-        Matrix Transpose() const { return Matrix::Transpose(*this); }
-
-        template <size_t R = Rows, size_t C = Columns>
-        std::enable_if_t<R == C, T> Determinant() const { return Matrix::Determinant(*this); }
+        Matrix transpose() const { return Matrix::transpose(*this); }
 
         template <size_t R = Rows, size_t C = Columns>
-        std::enable_if_t<R == C, Matrix<T, Rows, Columns>> Inverse() const { return Matrix::Inverse(*this); }
+        std::enable_if_t<R == C, T> determinant() const { return Matrix::determinant(*this); }
 
-        bool IsEqual(Matrix& other) const { return Matrix::IsEqual(*this, other); }
+        template <size_t R = Rows, size_t C = Columns>
+        std::enable_if_t<R == C, Matrix<T, Rows, Columns>> inverse() const { return Matrix::inverse(*this); }
+
+        bool isEqual(Matrix& other) const { return Matrix::isEqual(*this, other); }
 
         template <size_t OtherColumns>
         Matrix<T, Rows, OtherColumns> operator*(const Matrix<T, Columns, OtherColumns>& other) const
         {
-            return Matrix::Mul(*this, other);
+            return Matrix::mul(*this, other);
         }
     };
 

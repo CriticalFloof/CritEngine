@@ -8,21 +8,19 @@
 #include "../Core/UUID.h"
 
 
-namespace Engine {
+namespace Engine
+{
+    class Resource
+    {
+    public:
+        ENGINE_API Resource();
+        ENGINE_API Resource(std::string resource_type, std::filesystem::path filepath);
 
-	class Resource
-	{
-	public:
-		ENGINE_API Resource();
-		ENGINE_API Resource(std::string resourceType, std::filesystem::path filepath);
+        ENGINE_API std::shared_ptr<void> get() const;
 
-		ENGINE_API ~Resource();
-
-		ENGINE_API std::shared_ptr<void> Get() const;
-
-		UUID id;
-		std::vector<UUID> dependencies;
-		std::filesystem::path sourcePath;
-		std::string resourceType;
-	};
+        UUID id;
+        std::vector<UUID> dependencies;
+        std::filesystem::path sourcePath;
+        std::string resourceType;
+    };
 }

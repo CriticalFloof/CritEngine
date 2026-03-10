@@ -2,75 +2,86 @@
 
 #include "../Core/Base.h"
 
-namespace Engine {
+namespace Engine
+{
+    struct ENGINE_API Vector3
+    {
+        float x, y, z;
 
-	struct ENGINE_API Vector3
-	{
-		float x, y, z;
+        Vector3() : x(0), y(0), z(0)
+        {
+        }
 
-		Vector3() : x(0), y(0), z(0) {}
-		Vector3(float scalar) : x(scalar), y(scalar), z(scalar) {}
-		Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+        Vector3(float scalar) : x(scalar), y(scalar), z(scalar)
+        {
+        }
 
-		//Static Math Operations
-		static Vector3 Add(const Vector3& first, const Vector3& second);
-		static Vector3 Sub(const Vector3& first, const Vector3& second);
-		static Vector3 Mul(const Vector3& first, const Vector3& second);
-		static Vector3 Div(const Vector3& first, const Vector3& second);
-		static Vector3 Cross(const Vector3& first, const Vector3& second);
-		static float Dot(const Vector3& first, const Vector3& second);
-		
+        Vector3(float x, float y, float z) : x(x), y(y), z(z)
+        {
+        }
 
-		static Vector3 Add(const Vector3& base, const float scalar);
-		static Vector3 Sub(const Vector3& base, const float scalar);
-		static Vector3 Mul(const Vector3& base, const float scalar);
-		static Vector3 Div(const Vector3& base, const float scalar);
+        //Static Math Operations
+        static Vector3 add(const Vector3& first, const Vector3& second);
+        static Vector3 sub(const Vector3& first, const Vector3& second);
+        static Vector3 mul(const Vector3& first, const Vector3& second);
+        static Vector3 div(const Vector3& first, const Vector3& second);
+        static Vector3 cross(const Vector3& first, const Vector3& second);
+        static float dot(const Vector3& first, const Vector3& second);
 
-		static float Length(const Vector3& base);
-		static Vector3 Normalize(const Vector3& base);
 
-		static float Angle(const Vector3& first, const Vector3& second);
+        static Vector3 add(const Vector3& base, float scalar);
+        static Vector3 sub(const Vector3& base, float scalar);
+        static Vector3 mul(const Vector3& base, float scalar);
+        static Vector3 div(const Vector3& base, float scalar);
 
-		static bool IsEqual(const Vector3& first, const Vector3& second);
-		static bool IsNearlyEqual(const Vector3& first, const Vector3& second, const float threshold);
+        static float length(const Vector3& base);
+        static Vector3 normalize(const Vector3& base);
 
-		//Object Math Operations
-		Vector3 Add(const Vector3& other) const { return Vector3::Add(*this, other); }
-		Vector3 Sub(const Vector3& other) const { return Vector3::Sub(*this, other); }
-		Vector3 Mul(const Vector3& other) const { return Vector3::Mul(*this, other); }
-		Vector3 Div(const Vector3& other) const { return Vector3::Div(*this, other); }
-		Vector3 Cross(const Vector3& other) const { return Vector3::Cross(*this, other); }
-		float Dot(const Vector3& other) const { return Vector3::Dot(*this, other); }
+        static float angle(const Vector3& first, const Vector3& second);
 
-		Vector3 Add(const float scalar) const { return Vector3::Add(*this, scalar); }
-		Vector3 Sub(const float scalar) const { return Vector3::Sub(*this, scalar); }
-		Vector3 Mul(const float scalar) const { return Vector3::Mul(*this, scalar); }
-		Vector3 Div(const float scalar) const { return Vector3::Div(*this, scalar); }
+        static bool isEqual(const Vector3& first, const Vector3& second);
+        static bool isNearlyEqual(const Vector3& first, const Vector3& second, float threshold);
 
-		float Length() const { return Vector3::Length(*this); }
-		Vector3 Normalize() const { return Vector3::Normalize(*this); }
+        //Object Math Operations
+        Vector3 add(const Vector3& other) const { return add(*this, other); }
+        Vector3 sub(const Vector3& other) const { return sub(*this, other); }
+        Vector3 mul(const Vector3& other) const { return mul(*this, other); }
+        Vector3 div(const Vector3& other) const { return div(*this, other); }
+        Vector3 cross(const Vector3& other) const { return cross(*this, other); }
+        float dot(const Vector3& other) const { return dot(*this, other); }
 
-		float Angle(const Vector3& other) const { return Vector3::Angle(*this, other); }
+        Vector3 add(const float scalar) const { return add(*this, scalar); }
+        Vector3 sub(const float scalar) const { return sub(*this, scalar); }
+        Vector3 mul(const float scalar) const { return mul(*this, scalar); }
+        Vector3 div(const float scalar) const { return div(*this, scalar); }
 
-		bool IsEqual(const Vector3& other) const { return Vector3::IsEqual(*this, other); }
-		bool IsNearlyEqual(const Vector3& other, const float threshold) const { return Vector3::IsNearlyEqual(*this, other, threshold); }
+        float length() const { return length(*this); }
+        Vector3 normalize() const { return normalize(*this); }
 
-		//Operators
+        float angle(const Vector3& other) const { return angle(*this, other); }
 
-		Vector3 operator+(const Vector3& other) const { return Vector3::Add(*this, other); }
-		Vector3 operator-(const Vector3& other) const { return Vector3::Sub(*this, other); }
-		Vector3 operator*(const Vector3& other) const { return Vector3::Mul(*this, other); }
-		Vector3 operator/(const Vector3& other) const { return Vector3::Div(*this, other); }
+        bool isEqual(const Vector3& other) const { return isEqual(*this, other); }
 
-		Vector3 operator+(const float rhs) const { return Vector3::Add(*this, rhs); }
-		Vector3 operator-(const float rhs) const { return Vector3::Sub(*this, rhs); }
-		Vector3 operator*(const float rhs) const { return Vector3::Mul(*this, rhs); }
-		Vector3 operator/(const float rhs) const { return Vector3::Div(*this, rhs); }
+        bool isNearlyEqual(const Vector3& other, const float threshold) const
+        {
+            return isNearlyEqual(*this, other, threshold);
+        }
 
-		friend Vector3 operator+(const float& lhs, const Vector3& rhs) { return Vector3::Add(rhs, lhs); }
-		friend Vector3 operator-(const float& lhs, const Vector3& rhs) { return Vector3::Sub(rhs, lhs); }
-		friend Vector3 operator*(const float& lhs, const Vector3& rhs) { return Vector3::Mul(rhs, lhs); }
-		friend Vector3 operator/(const float& lhs, const Vector3& rhs) { return Vector3::Div(rhs, lhs); }
-	};
+        //Operators
 
+        Vector3 operator+(const Vector3& other) const { return add(*this, other); }
+        Vector3 operator-(const Vector3& other) const { return sub(*this, other); }
+        Vector3 operator*(const Vector3& other) const { return mul(*this, other); }
+        Vector3 operator/(const Vector3& other) const { return div(*this, other); }
+
+        Vector3 operator+(const float rhs) const { return add(*this, rhs); }
+        Vector3 operator-(const float rhs) const { return sub(*this, rhs); }
+        Vector3 operator*(const float rhs) const { return mul(*this, rhs); }
+        Vector3 operator/(const float rhs) const { return div(*this, rhs); }
+
+        friend Vector3 operator+(const float& lhs, const Vector3& rhs) { return add(rhs, lhs); }
+        friend Vector3 operator-(const float& lhs, const Vector3& rhs) { return sub(rhs, lhs); }
+        friend Vector3 operator*(const float& lhs, const Vector3& rhs) { return mul(rhs, lhs); }
+        friend Vector3 operator/(const float& lhs, const Vector3& rhs) { return div(rhs, lhs); }
+    };
 }

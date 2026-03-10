@@ -2,23 +2,24 @@
 
 #include "../RendererAPI.h"
 
-namespace Engine {
+namespace Engine
+{
+    class OpenGLRendererAPI : public RendererAPI
+    {
+    public:
+        ~OpenGLRendererAPI() override
+        {
+        };
 
-	class OpenGLRendererAPI : public RendererAPI
-	{
-	public:
-		virtual ~OpenGLRendererAPI() override {};
+        void setClearColor(const glm::vec4& color) override;
+        void clear() override;
 
-		virtual void SetClearColor(const glm::vec4& color) override;
-		virtual void Clear() override;
+        void enableDepthTest(bool new_state) override;
+        void enableDepthMask(bool new_state) override;
+        void setDepthTestFunc(DepthTestFunction new_function) override;
 
-		virtual void EnableDepthTest(const bool newState) override;
-		virtual void EnableDepthMask(const bool newState) override;
-		virtual void SetDepthTestFunc(const DepthTestFunction newFunction) override;
+        void setViewportSize(int width, int height) override;
 
-		virtual void SetViewportSize(const int width, const int height) override;
-
-		virtual void DrawIndexed(const std::shared_ptr<Mesh>& mesh) override;
-	};
-
+        void drawIndexed(const std::shared_ptr<Mesh>& mesh) override;
+    };
 }
